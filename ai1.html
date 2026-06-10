@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CATCH AI Command Layer - 餐飲 AI 中控層</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#3b82f6',
+                            green: '#10b981',
+                            amber: '#f59e0b',
+                            purple: '#8b5cf6',
+                            rose: '#f43f5e',
+                            slate: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js (用於分析與流量圖表) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- MathJax for Latex-style calculations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* 自定義隱藏滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(15, 23, 42, 0.1);
+            border-radius: 4px;
+        }
+        
+        /* 動態流線動畫 */
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -40;
+            }
+        }
+        .flow-line {
+            stroke-dasharray: 8, 8;
+            animation: dash 2s linear infinite;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+
+    <!-- 頂部導航控制列 -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0 dark:bg-slate-900 dark:border-slate-800">
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+            <div class="bg-blue-600 p-2.5 rounded-2xl text-white shadow-md shadow-blue-500/20">
+                <i data-lucide="cpu" class="w-6 h-6 animate-pulse"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">CATCH AI Command Layer</span>
+                    <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">Live Active</span>
+                </div>
+                <h1 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">餐飲 AI 中控層</h1>
+            </div>
+        </div>
+        
+        <!-- 全局狀態與主題切換 -->
+        <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+            <div class="hidden md:flex items-center space-x-4 text-xs">
+                <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>營運大腦: qwen3.6-Instruct (Online)</span>
+                </div>
+                <div class="h-4 w-[1px] bg-slate-200 dark:bg-slate-800"></div>
+                <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span>Code引擎: OpenClaw V2.4</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <!-- Home -->
+                <a href="index.html" class="nav-home text-xs flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition text-slate-200">
+                    <i class="fa-solid fa-home"></i>
+                    <span>首頁</span>
+                </a>
+                <!-- 亮暗模式切換 -->
+                <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition" title="切換色彩模式">
+                    <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+                </button>
+                <!-- 重置 -->
+                <button onclick="resetSandbox()" class="text-xs font-bold flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-100 px-4 py-2 rounded-xl transition shadow-sm">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置模擬環境
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主頁面架構 -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        <div class="mx-auto max-w-7xl">
+            <!-- 導言 -->
+            <div class="text-center mb-8 max-w-3xl mx-auto">
+                <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+                    依照 POS、CRM、會員、庫存與門市大數據，建立可分析、可追蹤、可自動執行的餐飲決策大腦。<br>
+                    <span class="text-blue-600 dark:text-blue-400 font-semibold">💡 點擊下方各節點，可深入查看模組細節並進行實體數據沙盒演練。</span>
+                </p>
+            </div>
+
+            <!-- 主佈局網格：側邊雙引擎 + 五大核心層 -->
+            <div class="grid gap-6 lg:grid-cols-12 items-start">
+                
+                <!-- 左側：雙核心引擎側邊欄 (OpenClaw + Hermes) -->
+                <aside class="lg:col-span-3 space-y-5">
+                    
+                    <!-- OpenClaw + Codex -->
+                    <div id="card-openclaw" onclick="openDetail('openclaw')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-emerald-500/20 dark:bg-emerald-950/10">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-emerald-100 dark:bg-emerald-950 p-2 rounded-xl text-emerald-600 dark:text-emerald-400">
+                                    <i data-lucide="code-2" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-slate-900 dark:text-slate-100">OpenClaw + Codex</h3>
+                                    <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold">工程開發層</p>
+                                </div>
+                            </div>
+                            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-400 pl-1">
+                            <li class="flex items-center gap-1.5">• 改程式 / API 介面</li>
+                            <li class="flex items-center gap-1.5">• 自適應建置資料表</li>
+                            <li class="flex items-center gap-1.5">• 串接外部 POS / CRM</li>
+                            <li class="flex items-center gap-1.5">• Cyberbiz / Oddle 數據採集</li>
+                            <li class="flex items-center gap-1.5">• 自動 ETL 與爬蟲治理</li>
+                            <li class="flex items-center gap-1.5">• 自動修復 bug 與雲端部署</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/20 flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                            <span>進入開發沙盒</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+
+                    <!-- Hermes + qwen3.6 -->
+                    <div id="card-hermes" onclick="openDetail('hermes')" class="group cursor-pointer rounded-2xl border border-purple-200 bg-purple-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-purple-500/20 dark:bg-purple-950/10">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-purple-100 dark:bg-purple-950 p-2 rounded-xl text-purple-600 dark:text-purple-400">
+                                    <i data-lucide="brain" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-slate-900 dark:text-slate-100">Hermes + qwen3.6</h3>
+                                    <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">營運大腦</p>
+                                </div>
+                            </div>
+                            <span class="h-2 w-2 rounded-full bg-purple-500 animate-pulse"></span>
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-400 pl-1">
+                            <li class="flex items-center gap-1.5">• 診斷分析營收異常原因</li>
+                            <li class="flex items-center gap-1.5">• 多維度會員流失預估</li>
+                            <li class="flex items-center gap-1.5">• 產生全通路行動行銷建議</li>
+                            <li class="flex items-center gap-1.5">• 每日自動整理營運摘要</li>
+                            <li class="flex items-center gap-1.5">• 跨模組調配與指派 Agent</li>
+                            <li class="flex items-center gap-1.5">• 發送即時警報至 Telegram</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t border-purple-200/50 dark:border-purple-800/20 flex items-center justify-between text-[11px] text-purple-600 dark:text-purple-400 font-bold">
+                            <span>喚醒推理診斷</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+
+                </aside>
+
+                <!-- 右側：1 -> 5 管道主幹層 (A-C, D, E) -->
+                <section class="lg:col-span-9 space-y-4">
+                    
+                    <!-- A. 資料接入層 -->
+                    <div id="card-node-a" onclick="openDetail('node-a')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/30 hover:bg-blue-50/60 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-blue-500/20 dark:bg-blue-950/5 dark:hover:bg-blue-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0 shadow-inner">
+                                A
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                    資料接入層
+                                    <span class="text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 px-2 py-0.5 rounded-full">每日同步</span>
+                                </h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">POS · CRM · Cyberbiz · Oddle · 外送平台 · 庫存 · 門市日報池</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-bold">
+                            <span>詳細接入設定與流速監控</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+
+                    <!-- 流向箭頭 A -> B -->
+                    <div class="flex justify-center my-1"><i data-lucide="arrow-down" class="w-5 h-5 text-blue-400 dark:text-blue-500 animate-bounce"></i></div>
+
+                    <!-- B. 營運資料層 -->
+                    <div id="card-node-b" onclick="openDetail('node-b')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50/60 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-emerald-500/20 dark:bg-emerald-950/5 dark:hover:bg-emerald-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 font-black text-xl shrink-0 shadow-inner">
+                                B
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-extrabold text-slate-900 dark:text-slate-100">營運資料層</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">會員表 · 交易表 · 商品表 · 門市表 · 優惠券表 · 活動表 · 庫存表 · 異常事件表</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-bold">
+                            <span>瀏覽微型關聯數據庫</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+
+                    <!-- 流向箭頭 B -> C -->
+                    <div class="flex justify-center my-1"><i data-lucide="arrow-down" class="w-5 h-5 text-emerald-400 dark:text-emerald-500 animate-bounce"></i></div>
+
+                    <!-- C. 分析規則層 -->
+                    <div id="card-node-c" onclick="openDetail('node-c')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/30 hover:bg-amber-50/60 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-amber-500/20 dark:bg-amber-950/5 dark:hover:bg-amber-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0 shadow-inner">
+                                C
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-extrabold text-slate-900 dark:text-slate-100">分析規則層</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">計算指標：營收增長、回購率、LTV、RFM、優惠券使用率 | AI解釋原因與行動規劃</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-bold">
+                            <span>公式調整與數據透視</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+
+                    <!-- 流向箭頭 C -> D -->
+                    <div class="flex justify-center my-1"><i data-lucide="arrow-down" class="w-5 h-5 text-amber-400 dark:text-amber-500 animate-bounce"></i></div>
+
+                    <!-- D. Agent 層 -->
+                    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-base font-black text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+                                <span class="bg-blue-600 text-white w-5 h-5 rounded-lg flex items-center justify-center text-xs">D</span>
+                                Agent 層 (AI 專家團隊系統)
+                            </h2>
+                            <span class="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-bold">5 Agents Collaborative</span>
+                        </div>
+                        
+                        <div class="grid gap-4 sm:grid-cols-5">
+                            
+                            <!-- 店長 Agent -->
+                            <div onclick="openDetail('agent-shop')" class="group cursor-pointer rounded-2xl border border-rose-200 bg-rose-50/40 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all text-center dark:border-rose-500/20 dark:bg-rose-950/10">
+                                <div class="bg-rose-100 dark:bg-rose-950 w-10 h-10 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto mb-3">
+                                    <i data-lucide="store" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-extrabold text-sm text-slate-900 dark:text-slate-100">店長 Agent</h3>
+                                <ul class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 space-y-1">
+                                    <li>今日營運異常</li>
+                                    <li>熱賣/低迷商品</li>
+                                    <li>智能排班調度</li>
+                                    <li>原料備貨指令</li>
+                                </ul>
+                            </div>
+
+                            <!-- 行銷 Agent -->
+                            <div onclick="openDetail('agent-marketing')" class="group cursor-pointer rounded-2xl border border-pink-200 bg-pink-50/40 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all text-center dark:border-pink-500/20 dark:bg-pink-950/10">
+                                <div class="bg-pink-100 dark:bg-pink-950 w-10 h-10 rounded-xl flex items-center justify-center text-pink-600 dark:text-pink-400 mx-auto mb-3">
+                                    <i data-lucide="megaphone" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-extrabold text-sm text-slate-900 dark:text-slate-100">行銷 Agent</h3>
+                                <ul class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 space-y-1">
+                                    <li>流失會員挽回</li>
+                                    <li>高價值會員促銷</li>
+                                    <li>LINE 推播文案</li>
+                                    <li>優惠券效益精算</li>
+                                </ul>
+                            </div>
+
+                            <!-- 商品 Agent -->
+                            <div onclick="openDetail('agent-product')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all text-center dark:border-emerald-500/20 dark:bg-emerald-950/10">
+                                <div class="bg-emerald-100 dark:bg-emerald-950 w-10 h-10 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto mb-3">
+                                    <i data-lucide="package-search" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-extrabold text-sm text-slate-900 dark:text-slate-100">商品 Agent</h3>
+                                <ul class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 space-y-1">
+                                    <li>新上市產品追蹤</li>
+                                    <li>滯銷品優化調整</li>
+                                    <li>高毛利套餐組合</li>
+                                    <li>關聯銷售挖掘</li>
+                                </ul>
+                            </div>
+
+                            <!-- 庫存 Agent -->
+                            <div onclick="openDetail('agent-inventory')" class="group cursor-pointer rounded-2xl border border-orange-200 bg-orange-50/40 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all text-center dark:border-orange-500/20 dark:bg-orange-950/10">
+                                <div class="bg-orange-100 dark:bg-orange-950 w-10 h-10 rounded-xl flex items-center justify-center text-orange-600 dark:text-orange-400 mx-auto mb-3">
+                                    <i data-lucide="boxes" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-extrabold text-sm text-slate-900 dark:text-slate-100">庫存 Agent</h3>
+                                <ul class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 space-y-1">
+                                    <li>材料斷貨預警</li>
+                                    <li>即期品報廢預警</li>
+                                    <li>節慶原物料估算</li>
+                                    <li>跨店智能調發單</li>
+                                </ul>
+                            </div>
+
+                            <!-- 老闆 Agent -->
+                            <div onclick="openDetail('agent-boss')" class="group cursor-pointer rounded-2xl border border-indigo-200 bg-indigo-50/40 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all text-center dark:border-indigo-500/20 dark:bg-indigo-950/10">
+                                <div class="bg-indigo-100 dark:bg-indigo-950 w-10 h-10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mx-auto mb-3">
+                                    <i data-lucide="crown" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-extrabold text-sm text-slate-900 dark:text-slate-100">老闆 Agent</h3>
+                                <ul class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 space-y-1">
+                                    <li>多分店損益異常</li>
+                                    <li>新分店選址建議</li>
+                                    <li>品項停賣評估</li>
+                                    <li>下週核心擴張戰略</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 流向箭頭 D -> E -->
+                    <div class="flex justify-center my-1"><i data-lucide="arrow-down" class="w-5 h-5 text-slate-400 dark:text-slate-600 animate-bounce"></i></div>
+
+                    <!-- E. 治理與稽核層 -->
+                    <div id="card-node-e" onclick="openDetail('node-e')" class="group cursor-pointer rounded-2xl border border-stone-200 bg-stone-50/40 hover:bg-stone-50/80 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-stone-700/50 dark:bg-stone-900/10 dark:hover:bg-stone-900/20">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400 font-black text-xl shrink-0 shadow-inner">
+                                    E
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-extrabold text-slate-900 dark:text-slate-100">E ｜ 治理與稽核層</h2>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">紀錄每次建議：資料來源 · 分析時間 · 判斷理由 · 建議內容 · 採納與否 · 執行結果 · 下次修正方向</p>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-bold">
+                                <span>進行人工決策與 RLHF 優化</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                        <p class="text-center text-xs font-bold text-slate-500 dark:text-slate-400 border-t border-dashed border-stone-200 dark:border-stone-800/80 mt-3 pt-3">
+                            🛡️ 從傳統聊天機器人，進化為可控、可追蹤、可自我強化優化的 AI 中控層
+                        </p>
+                    </div>
+
+                </section>
+            </div>
+
+            <!-- 底層技術棧展示 -->
+            <section class="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
+                <h2 class="text-center text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Core Technology Stack 底層核心技術棧</h2>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    
+                    <div onclick="openDetail('tech-ollama')" class="cursor-pointer border border-slate-200 rounded-2xl p-4 bg-white hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 text-center">
+                        <div class="bg-blue-100/60 dark:bg-blue-950/40 w-10 h-10 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 mx-auto mb-2">
+                            <i data-lucide="bot" class="w-5 h-5"></i>
+                        </div>
+                        <div class="font-extrabold text-sm text-slate-900 dark:text-slate-100">Ollama</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">本地大模型推論</div>
+                    </div>
+
+                    <div onclick="openDetail('tech-postgres')" class="cursor-pointer border border-slate-200 rounded-2xl p-4 bg-white hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 text-center">
+                        <div class="bg-emerald-100/60 dark:bg-emerald-950/40 w-10 h-10 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto mb-2">
+                            <i data-lucide="database" class="w-5 h-5"></i>
+                        </div>
+                        <div class="font-extrabold text-sm text-slate-900 dark:text-slate-100">PostgreSQL</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">營運資料庫 (Vector)</div>
+                    </div>
+
+                    <div onclick="openDetail('tech-fastapi')" class="cursor-pointer border border-slate-200 rounded-2xl p-4 bg-white hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 text-center">
+                        <div class="bg-amber-100/60 dark:bg-amber-950/40 w-10 h-10 rounded-xl flex items-center justify-center text-amber-600 dark:text-amber-400 mx-auto mb-2">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                        </div>
+                        <div class="font-extrabold text-sm text-slate-900 dark:text-slate-100">FastAPI</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">高速異步 API 服務</div>
+                    </div>
+
+                    <div onclick="openDetail('tech-telegram')" class="cursor-pointer border border-slate-200 rounded-2xl p-4 bg-white hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 text-center">
+                        <div class="bg-purple-100/60 dark:bg-purple-950/40 w-10 h-10 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 mx-auto mb-2">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        </div>
+                        <div class="font-extrabold text-sm text-slate-900 dark:text-slate-100">Telegram / Slack</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">多通路警報與協作</div>
+                    </div>
+
+                    <div onclick="openDetail('tech-mvp')" class="cursor-pointer border border-emerald-300 dark:border-emerald-500/30 rounded-2xl p-4 bg-emerald-500/5 hover:shadow-md transition text-center">
+                        <div class="bg-emerald-500/10 w-10 h-10 rounded-xl flex items-center justify-center text-emerald-500 mx-auto mb-2">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                        </div>
+                        <div class="font-extrabold text-sm text-emerald-600 dark:text-emerald-400">MVP 交付</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">每日自動 AI 簡報</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- MVP：每日 AI 簡報特別板塊 -->
+            <section class="mt-8 rounded-3xl bg-slate-900 text-white p-6 md:p-8 shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none translate-x-12 translate-y-12">
+                    <i data-lucide="bar-chart-3" class="w-64 h-64"></i>
+                </div>
+                <div class="relative z-10 grid gap-6 md:grid-cols-[1fr_260px] md:items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold flex items-center gap-2 text-emerald-400">
+                            <i data-lucide="sparkles" class="w-6 h-6 animate-pulse"></i>
+                            MVP：每日 AI 簡報
+                        </h2>
+                        <p class="mt-3 leading-relaxed text-sm text-slate-300">
+                            先從最核心的商業回報開始！每天自動彙整全渠道營收、分店異常、熱賣與滯銷商品趨勢、會員流失預警。
+                            讓管理者與現場店長每天早晨自動在通訊軟體內獲得一份**「今日最優先行動清單」**，打造極致具現化、小步快跑的餐飲決策神經網絡。
+                        </p>
+                    </div>
+                    <button onclick="openDetail('tech-mvp')" class="w-full bg-white text-slate-950 font-extrabold px-6 py-4 rounded-2xl transition hover:bg-slate-100 hover:shadow-lg flex items-center justify-center gap-2">
+                        <i data-lucide="eye" class="w-4 h-4"></i> 查看 MVP 規格範圍
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 🔮 核心「細節與沙盒演練」對話框 (DetailPanel Modal) -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm transition-all duration-300">
+        <div class="w-full max-w-2xl rounded-3xl bg-white text-slate-900 shadow-2xl overflow-hidden transform transition-all duration-300 scale-95 opacity-0 dark:bg-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
+            
+            <!-- 對話框頁眉 -->
+            <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4 shrink-0">
+                <div class="flex gap-4">
+                    <div id="modal-icon-container" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-inner">
+                        <i id="modal-icon" data-lucide="bot" class="h-6 w-6"></i>
+                    </div>
+                    <div>
+                        <div id="modal-subtitle" class="text-xs font-bold text-slate-400 dark:text-slate-500">A 層</div>
+                        <h2 id="modal-title" class="text-xl font-black text-slate-950 dark:text-slate-50">資料接入層</h2>
+                    </div>
+                </div>
+                <button onclick="closeDetail()" class="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <!-- 對話框內容區 (可滾動) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- 模組概述 -->
+                <p id="modal-summary" class="text-sm md:text-base leading-relaxed text-slate-700 dark:text-slate-300 font-medium">
+                    核心摘要加載中...
+                </p>
+
+                <!-- 細部項目 (Details List) -->
+                <div id="modal-details-list" class="space-y-2.5">
+                    <!-- 細節項目條目 -->
+                </div>
+
+                <!-- 🚀 深度實境演練沙盒 (Interactive Sandbox Content) -->
+                <div id="modal-sandbox-container" class="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 space-y-4">
+                    <!-- 此處動態由 JS 生成即時互動控制面版 -->
+                </div>
+            </div>
+
+            <!-- 對話框頁尾 -->
+            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-400 dark:text-slate-500 flex justify-between items-center shrink-0">
+                <span class="flex items-center gap-1"><i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-500"></i> 已連接 CATCH 數據架構主網</span>
+                <span id="modal-foot-info">狀態：就緒</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 浮動系統通知 Toast -->
+    <div id="system-toast" class="fixed bottom-6 right-6 transform translate-y-12 opacity-0 transition-all duration-300 pointer-events-none bg-slate-800 border border-blue-500/50 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-50">
+        <div class="text-blue-400"><i data-lucide="bell" class="w-5 h-5"></i></div>
+        <div>
+            <div class="text-xs font-bold text-slate-200">系統中控通知</div>
+            <div id="toast-msg" class="text-[11px] text-slate-400">系統狀態正常</div>
+        </div>
+    </div>
+
+    <!-- JS 邏輯代碼 -->
+    <script>
+        // 初始化 Lucide 圖標
+        lucide.createIcons();
+
+        // 全局系統狀態 (State)
+        let systemState = {
+            activeModalNode: null,
+            theme: 'dark', // 預設暗色
+            recordsIngested: 14209,
+            isSyncing: false,
+            selectedTable: 'members',
+            tableSearchQuery: '',
+            rfmWeights: { recency: 30, frequency: 40, monetary: 30 },
+            isPipelineRunning: false,
+            historicalAudits: [
+                { id: 'REC-001', time: '10:15:30', source: '店長 Agent', reason: '台北大安店週二10:00咖啡銷量異常比平日低 25%', advice: '推播「週二咖啡第二杯半價」限時電子券給附近2公里會員。', status: 'pending', result: '-' },
+                { id: 'REC-002', time: '09:30:15', source: '庫存 Agent', reason: '中壢店雞肉飯鮮食原料備料不足，預計明天傍晚缺貨。', advice: '由桃園平鎮店調撥 15kg 原料，預計下午4點送達。', status: 'approved', result: '已調撥完成，避免 98% 缺貨風險' },
+                { id: 'REC-003', time: '08:45:00', source: '行銷 Agent', reason: '發現 120 名常客會員已超過 14 天未進店消費。', status: 'approved', advice: '發送「老友回娘家」100元折價券簡訊，預計可拉回15%顧客。', result: '已發送，24小時內喚醒21人' }
+            ]
+        };
+
+        // 載入時將主體套用為預設 (暗色)
+        document.documentElement.classList.add('dark');
+
+        // 切換亮/暗主題
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                systemState.theme = 'light';
+                icon.setAttribute('data-lucide', 'sun');
+            } else {
+                html.classList.add('dark');
+                systemState.theme = 'dark';
+                icon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+            showToast(`已切換至 ${systemState.theme === 'dark' ? '深邃科技暗色版' : '極致輕盈亮色版'}`);
+        }
+
+        // 顯示通知
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('system-toast');
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.innerText = message;
+            
+            toast.className = toast.className.replace(/border-\w+-\d+\/\d+/, 'border-blue-500/50');
+            if (type === 'success') toast.className = toast.className.replace(/border-\w+-\d+\/\d+/, 'border-emerald-500/50');
+            if (type === 'warning') toast.className = toast.className.replace(/border-\w+-\d+\/\d+/, 'border-amber-500/50');
+
+            toast.classList.remove('translate-y-12', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-12', 'opacity-0');
+            }, 3000);
+        }
+
+        // 重置模擬環境
+        function resetSandbox() {
+            systemState = {
+                activeModalNode: null,
+                theme: systemState.theme,
+                recordsIngested: 14209,
+                isSyncing: false,
+                selectedTable: 'members',
+                tableSearchQuery: '',
+                rfmWeights: { recency: 30, frequency: 40, monetary: 30 },
+                isPipelineRunning: false,
+                historicalAudits: [
+                    { id: 'REC-001', time: '10:15:30', source: '店長 Agent', reason: '台北大安店週二10:00咖啡銷量異常比平日低 25%', advice: '推播「週二咖啡第二杯半價」限時電子券給附近2公里會員。', status: 'pending', result: '-' },
+                    { id: 'REC-002', time: '09:30:15', source: '庫存 Agent', reason: '中壢店雞肉飯鮮食原料備料不足，預計明天傍晚缺貨。', advice: '由桃園平鎮店調撥 15kg 原料，預計下午4點送達。', status: 'approved', result: '已調撥完成，避免 98% 缺貨風險' },
+                    { id: 'REC-003', time: '08:45:00', source: '行銷 Agent', reason: '發現 120 名常客會員已超過 14 天未進店消費。', status: 'approved', advice: '發送「老友回娘家」100元折價券簡訊，預計可拉回15%顧客。', result: '已發送，24小時內喚醒21人' }
+                ]
+            };
+            closeDetail();
+            showToast('模擬中控台沙盒環境已重置！', 'success');
+        }
+
+        // ==================== 模組詳細數據結構 (整合 React 內容) ====================
+        const nodeDataset = {
+            'openclaw': {
+                layer: 'ENGINE', title: 'OpenClaw + Codex', subtitle: '工程開發層', icon: 'code-2', color: 'emerald',
+                summary: '負責把 AI 中控層真正做出來：自動編寫 API、動態建立資料庫、跨多個 POS 與點點平台進行 ETL 數據清洗與日常部署維運。',
+                details: [
+                    '代碼自適應調整：偵測外部 API schema 異動並自動重構對應程式。',
+                    '靈活動態擴充：自動產出 ALTER TABLE SQL 語句應用於 PostgreSQL 資料庫。',
+                    '多通路無縫集成：負責 Cyberbiz、Oddle、UberEats、街口等 API 對齊工作。'
+                ]
+            },
+            'hermes': {
+                layer: 'BRAIN', title: 'Hermes + qwen3.6', subtitle: '營運大腦', icon: 'brain', color: 'purple',
+                summary: 'CATCH 系統的主動決策大腦。負責對整體營收指標做多維度的異常診斷、流失會員預警、全盤營運摘要整理，並指派各 Agent 協作、通知 Telegram。',
+                details: [
+                    '非對稱邏輯推理：診斷指標（如客單、毛利）下降成因並提出根治行動。',
+                    '任務主動分派：決策後，主動為店長、庫存等 Agent 指派下一步任務。',
+                    '即時通知鏈路：支援將大腦判斷理由與建議直接發送至 Slack/Telegram 行動工作群。'
+                ]
+            },
+            'node-a': {
+                layer: 'A 層', title: '資料接入層', subtitle: '每日數據採集池', icon: 'database', color: 'blue',
+                summary: '把餐飲品牌分散在不同系統的資料定時採集接回來，消除系統壁壘，形成每日可分析的營運資料池。',
+                details: [
+                    '串接 POS 交易、CRM 會員、點數、電商、外送、庫存與門市日報。',
+                    '建立每日資料同步節奏，讓 AI 不只看單一系統，而是理解整體營運。',
+                    '支援 API、CSV、Excel、資料庫直連與人工上傳等多種方式。'
+                ]
+            },
+            'node-b': {
+                layer: 'B 層', title: '營運資料層', subtitle: '結構化資料湖 (Active Warehouse)', icon: 'server-cog', color: 'emerald',
+                summary: '將原始多通路資料整理成標準、AI 能理解、可即時查詢與追蹤關聯的標準業務資料模型。',
+                details: [
+                    '統一資料表結構，將來自不同平台的各異欄位統一成核心實體表。',
+                    '建立會員、商品、門市、交易、活動與庫存之間的關聯（Entity Graph）。',
+                    '讓後續各專屬 Agent 可以基於同一份「唯一事實（Single Source of Truth）」資料進行推理判斷。'
+                ]
+            },
+            'node-c': {
+                layer: 'C 層', title: '分析規則層', subtitle: '程式先算 · LLM 後解釋', icon: 'bar-chart-3', color: 'amber',
+                summary: '先用高性能程式計算出精密營運指標，再由 LLM（Qwen）把冰冷的數字解釋成具體決策背景、影響及下一個行動建議。',
+                details: [
+                    '精算引擎（先算）：高速計算 LTV、客單價、回購率、RFM 與各類券使用率。',
+                    '風險挖掘：商品毛利異常下探預估、庫存斷貨預估、鮮食報廢預估。',
+                    '管理語言翻譯（後解釋）：將數學公式計算結果轉化成店長與決策者好懂的行動備忘錄。'
+                ]
+            },
+            'agent-shop': {
+                layer: 'D 層 | Agent', title: '店長 Agent', subtitle: '分店營運顧問', icon: 'store', color: 'rose',
+                summary: '每日協助實體門市店長與幹部快速掌握現場營運狀況，降低完全依賴經驗判斷的決策風險。',
+                details: [
+                    '每日異常：店務與交易數、平均出餐耗時等突發異常偵測。',
+                    '商品診斷：自動列舉本日最熱銷與銷售落底之低迷品。',
+                    '動態備料：基於明日氣象與節慶預備，自動產出前置鮮食、咖啡原豆進貨建議。'
+                ]
+            },
+            'agent-marketing': {
+                layer: 'D 層 | Agent', title: '行銷 Agent', subtitle: 'OMO 精準促銷策劃', icon: 'megaphone', color: 'pink',
+                summary: '協助品牌行銷人員找出最精準的「推播受眾」、「促銷品項」及「發送時機」，大幅改善過度發券导致的利潤折損。',
+                details: [
+                    '精準圈人：智能定位高價值會員（VIP）及流失高風險老客。',
+                    '文案自動生成：基於會員屬性與偏好品項，自動起草高點擊率 LINE/SMS 個人化文案。',
+                    '券包精估：預估推播轉換率，計算該發 100 元通用券還是單品配搭組合 85 折優惠。'
+                ]
+            },
+            'agent-product': {
+                layer: 'D 層 | Agent', title: '商品 Agent', subtitle: '商品結構與毛利分析師', icon: 'package-search', color: 'emerald',
+                summary: '挖掘熱銷品背後的跨品項關聯模式，輔助新品測試，主動為門市設計高利潤交叉銷售套餐。',
+                details: [
+                    '跨銷售關聯（Association Rule）：挖掘類似「購買美式咖啡的顧客，64% 會加購貝果」的強關係。',
+                    '滯銷對策：針對在店庫存留天數過長的原料，及時設計限時下午茶特惠套餐予以消化。',
+                    '產品淘汰：自動標記毛利貢獻低、製備複雜、銷售末梢的品項，起草末端停賣清單。'
+                ]
+            },
+            'agent-inventory': {
+                layer: 'D 層 | Agent', title: '庫存 Agent', subtitle: '智能供應鏈優化', icon: 'boxes', color: 'orange',
+                summary: '協助中央廚房與前線門市降低原物料缺貨率、過量進貨率與鮮食到期報廢成本。',
+                details: [
+                    '斷貨倒數（Runout Prediction）：基於銷售速率預估原物料（如鮮奶、紙杯）斷貨具體天數。',
+                    '跨店配撥：當某分店庫存拉警報時，自動計算相近分店的冗餘量，生成最快調撥指派單。',
+                    '鮮食安全閥：結合常客到店規律與即期鮮食數量，設計自適應快銷方案。'
+                ]
+            },
+            'agent-boss': {
+                layer: 'D 層 | Agent', title: '老闆 Agent', subtitle: '商業大局觀中樞', icon: 'crown', color: 'indigo',
+                summary: '提供餐飲連鎖經營者跨品牌、跨門市、跨促銷檔期的全局財務與營運視角，並提供下一階段的擴張藍圖建言。',
+                details: [
+                    '虧損異常診斷：秒級回溯哪家分店、哪個時段因何故導致營業毛利受損。',
+                    '品牌營收摘要：生成供高層閱讀的綜合週策略建議，淘汰低效能業務。',
+                    '選址與擴張建議：整合多通路配送熱點與重合度數據，找出最合適的下個增設據點。'
+                ]
+            },
+            'node-e': {
+                layer: 'E 層', title: '治理與稽核層', subtitle: '人工反饋學習系統 (RLHF)', icon: 'shield-check', color: 'stone',
+                summary: '讓所有 AI 決策與建議都具備高透明度，在保障業務合規與品牌定位的同時，藉由人工反饋持續進化大腦神經權重。',
+                details: [
+                    '可信稽核：完整追溯每一次 AI 行動背後對應的數據庫來源與推理邏輯。',
+                    '反饋更新：記錄人工採納或駁回 AI 決策的理由，作為優化大腦推理（RLHF）的監督訊號。',
+                    '組織複製：將經人工驗證、成效優異的 Agent 營運規則一鍵派發複製至其他加盟店。'
+                ]
+            },
+            'tech-ollama': {
+                layer: 'TECH STACK', title: 'Ollama 本地模型推理', subtitle: '本地化大模型運行基礎設施', icon: 'bot', color: 'blue',
+                summary: '提供端側大模型安全部署與推論。保證敏感的會員資料、門市營收等隱私資料不用上傳公有雲，保證商業秘密的絕對安全。',
+                details: [
+                    '離線推理能力：不依賴高成本、低延遲外網即可快速生成報表成因。',
+                    '算力優化：針對 Qwen/Llama 等模型進行極速量化編譯，CPU 亦能流暢推論。'
+                ]
+            },
+            'tech-postgres': {
+                layer: 'TECH STACK', title: 'PostgreSQL 關聯與向量資料庫', subtitle: '唯一營運資料事實庫', icon: 'database', color: 'emerald',
+                summary: '存放餐飲體系中所有清洗過後的關係型資料、以及用於大腦向量搜尋 (RAG) 的運營策略知識庫。',
+                details: [
+                    '超高速關聯：輕鬆應對千萬級交易流與日誌。',
+                    '結合 pgvector 插件：儲存歷史成功行銷案例文本特徵，快速檢索以往成功的決策。'
+                ]
+            },
+            'tech-fastapi': {
+                layer: 'TECH STACK', title: 'FastAPI 異步服務框架', subtitle: '高性能 API 連接網關', icon: 'zap', color: 'amber',
+                summary: '負責 CATCH 系統與多端 POS、CRM、Web 介面的高速、低延遲 API 連接轉譯。',
+                details: [
+                    '非同步高併發：在高點餐尖峰，保障成百上千家分店的並行查詢請求不發生擁堵。',
+                    '自動化 Schema 導航：與 OpenClaw 連接，即時輸出精準 API 文檔。'
+                ]
+            },
+            'tech-telegram': {
+                layer: 'TECH STACK', title: 'Telegram / Slack 多終端通道', subtitle: 'Agent 派發端', icon: 'message-circle', color: 'purple',
+                summary: '作為決策建議的第一落地終端。AI 產出的排班調度、採購、促銷方案會直接推送至幹部的手機通訊群組內。',
+                details: [
+                    '一鍵互動：手機點選 Telegram 內嵌按鈕，即可直接觸發後端系統落實策略。',
+                    '分權派發：店長資訊推至店長群，全局財務警報僅老闆群可見。'
+                ]
+            },
+            'tech-mvp': {
+                layer: 'MVP TARGET', title: 'MVP：每日 AI 簡報', subtitle: '最小可行性交付標準', icon: 'bar-chart-3', color: 'emerald',
+                summary: '不要一開始就建構巨大的自動化執行網，而是先以每日早上 8 點在 Telegram 群裡發送一份「極緻可執行簡報」為起點，實現數據價值的快速轉換。',
+                details: [
+                    '昨日全通路營收總結與同期/目標達成率評估。',
+                    '分店、品項與庫存之三大核心異常預警。',
+                    '針對今日狀況，為行銷、店長開出的高優行動策略建議。'
+                ]
+            }
+        };
+
+        // ==================== 對話框開啟與關閉邏輯 ====================
+        function openDetail(nodeId) {
+            systemState.activeModalNode = nodeId;
+            const nodeData = nodeDataset[nodeId];
+            if (!nodeData) return;
+
+            // 1. 更新 header 資料
+            document.getElementById('modal-subtitle').innerText = nodeData.layer + ' | ' + nodeData.subtitle;
+            document.getElementById('modal-title').innerText = nodeData.title;
+            document.getElementById('modal-summary').innerText = nodeData.summary;
+            
+            // 2. 更換 icon
+            const iconContainer = document.getElementById('modal-icon-container');
+            iconContainer.innerHTML = `<i id="modal-icon" data-lucide="${nodeData.icon}" class="h-6 w-6"></i>`;
+            
+            // 更換 icon 顏色主題
+            iconContainer.className = `flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-inner ${getColorClasses(nodeData.color)}`;
+
+            // 3. 渲染項目細節
+            const detailsListContainer = document.getElementById('modal-details-list');
+            detailsListContainer.innerHTML = nodeData.details.map(detail => `
+                <div class="flex gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 p-3 bg-white/40 dark:bg-slate-900/40 text-xs sm:text-sm transition hover:bg-white dark:hover:bg-slate-900 duration-200">
+                    <i data-lucide="chevron-right" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"></i>
+                    <span class="text-slate-700 dark:text-slate-300">${detail}</span>
+                </div>
+            `).join('');
+
+            // 4. 🚀 渲染對應的動態實境演練沙盒工具
+            renderSandboxTools(nodeId);
+
+            // 5. 顯示對話框 (動態效果)
+            const modal = document.getElementById('detail-modal');
+            const modalContent = modal.querySelector('.scale-95');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            lucide.createIcons();
+            
+            // 確保 MathJax 重新處理新載入的公式
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function closeDetail() {
+            const modal = document.getElementById('detail-modal');
+            const modalContent = modal.querySelector('.scale-100');
+            
+            if (modalContent) {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+            }
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                systemState.activeModalNode = null;
+            }, 200);
+        }
+
+        function getColorClasses(color) {
+            const colorMap = {
+                blue: 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400',
+                emerald: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400',
+                amber: 'bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
+                purple: 'bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400',
+                rose: 'bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400',
+                pink: 'bg-pink-100 text-pink-600 dark:bg-pink-950 dark:text-pink-400',
+                orange: 'bg-orange-100 text-orange-600 dark:bg-orange-950 dark:text-orange-400',
+                indigo: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400',
+                stone: 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
+            };
+            return colorMap[color] || colorMap.stone;
+        }
+
+        // ==================== 實境演練沙盒：各模組專屬互動面板 ====================
+        function renderSandboxTools(nodeId) {
+            const container = document.getElementById('modal-sandbox-container');
+            const footInfo = document.getElementById('modal-foot-info');
+            container.innerHTML = ''; // 清空
+
+            switch(nodeId) {
+                case 'openclaw':
+                    footInfo.innerText = '開發進程: main 分支正常運行';
+                    container.innerHTML = `
+                        <div class="space-y-3 animate-fadeIn">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-emerald-500 font-mono">💻 OPENCLAW VIRTUAL DEPLOY CONTAINER</span>
+                                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            </div>
+                            <div id="virtual-terminal" class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-emerald-400/90 h-36 overflow-y-auto leading-relaxed">
+                                <div>[SYS] OpenClaw Daemon ready...</div>
+                                <div class="text-slate-500">&gt; Waiting for developer pipeline trigger...</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="triggerETLPipeline()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                                    <i data-lucide="play" class="w-3.5 h-3.5"></i> 執行自適應 ETL Sync
+                                </button>
+                                <button onclick="deployAPIPatch()" class="bg-slate-800 hover:bg-slate-700 dark:bg-slate-900 border border-slate-700 dark:border-slate-800 text-slate-200 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                                    <i data-lucide="code" class="w-3.5 h-3.5"></i> 部署 POS 異常 Patch
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'hermes':
+                    footInfo.innerText = '大腦狀態: 全天候監聽分析中';
+                    container.innerHTML = `
+                        <div class="space-y-3 animate-fadeIn">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-purple-500 font-mono">🧠 HERMES THINKING TRAIL (RAG + OLLAMA)</span>
+                                <span class="h-2 w-2 rounded-full bg-purple-500 animate-pulse"></span>
+                            </div>
+                            <div id="hermes-thought-flow" class="bg-slate-900 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-purple-300/90 h-36 overflow-y-auto leading-relaxed">
+                                <div class="text-slate-500">[System] 營運大腦待命。</div>
+                                <div class="text-slate-400">點擊下方按鈕啟動多維度異常因果鏈診斷。</div>
+                            </div>
+                            <button onclick="runHermesDiagnostic()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                                <i data-lucide="sparkles" class="w-4 h-4 animate-pulse"></i> 啟動全局異常分析與調發
+                            </button>
+                        </div>
+                    `;
+                    break;
+
+                case 'node-a':
+                    footInfo.innerText = '今日總流速: 正常';
+                    const syncBtnText = systemState.isSyncing ? '數據寫入中...' : '模擬即時 POS/Oddle 同步';
+                    const disableAttr = systemState.isSyncing ? 'disabled' : '';
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-blue-500 font-mono">📡 DATA INGESTION PIPELINE STREAM</span>
+                                <span class="text-[10px] text-slate-400">延遲: 12ms</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-center">
+                                <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                                    <span class="text-[9px] text-slate-400 block">今日已接交易與會員日誌</span>
+                                    <span id="counter-ingested" class="text-lg font-black font-mono text-blue-600 dark:text-blue-400">${systemState.recordsIngested.toLocaleString()}</span>
+                                </div>
+                                <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                                    <span class="text-[9px] text-slate-400 block">全平台 API 連通率</span>
+                                    <span class="text-lg font-black font-mono text-emerald-500">100.0%</span>
+                                </div>
+                            </div>
+                            <div class="h-28 relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-1">
+                                <canvas id="ingestionChart"></canvas>
+                            </div>
+                            <button onclick="runNodeASync()" ${disableAttr} class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 ${systemState.isSyncing ? 'animate-spin' : ''}"></i> ${syncBtnText}
+                            </button>
+                        </div>
+                    `;
+                    setTimeout(renderIngestionChart, 50); // 延遲渲染 Chart
+                    break;
+
+                case 'node-b':
+                    footInfo.innerText = '微型資料庫系統已就緒';
+                    container.innerHTML = `
+                        <div class="space-y-3">
+                            <span class="text-[10px] font-bold text-emerald-500 font-mono">🗄️ MICRO SCHEMATIC WAREHOUSE</span>
+                            
+                            <!-- 表格標籤與檢索 -->
+                            <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                                <div class="flex gap-1">
+                                    <button onclick="switchSandboxTable('members')" class="px-2.5 py-1 text-xs rounded-lg font-bold transition ${systemState.selectedTable === 'members' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'text-slate-400 hover:text-slate-300'}">👤 會員表</button>
+                                    <button onclick="switchSandboxTable('transactions')" class="px-2.5 py-1 text-xs rounded-lg font-bold transition ${systemState.selectedTable === 'transactions' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'text-slate-400 hover:text-slate-300'}">🧾 交易表</button>
+                                    <button onclick="switchSandboxTable('inventory')" class="px-2.5 py-1 text-xs rounded-lg font-bold transition ${systemState.selectedTable === 'inventory' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'text-slate-400 hover:text-slate-300'}">📦 庫存表</button>
+                                </div>
+                                <div class="relative w-full sm:w-44">
+                                    <i data-lucide="search" class="absolute left-2.5 top-2 h-3 w-3 text-slate-400"></i>
+                                    <input id="modal-table-search" oninput="searchSandboxTable(this.value)" type="text" placeholder="關鍵字篩選..." value="${systemState.tableSearchQuery}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg py-1 pl-7 pr-2 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition">
+                                </div>
+                            </div>
+
+                            <!-- 渲染篩選表格 -->
+                            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-44 overflow-y-auto">
+                                ${renderSchematicTable()}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'node-c':
+                    footInfo.innerText = '分析公式: 已啟動精確度校準';
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <span class="text-[10px] font-bold text-amber-500 font-mono">📐 RFM WEIGHT & ALGORITHMIC SCORE OPTIMIZATION</span>
+                            <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+                                <strong>核心數學估算公式：</strong><br>
+                                <div class="text-center my-2 text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-mono text-amber-600 dark:text-amber-400">
+                                    $$RFMScore = Recency \\cdot w_1 + Frequency \\cdot w_2 + Monetary \\cdot w_3$$
+                                </div>
+                                微調下列權重比例，系統將即時計算劃分核心客群：
+                            </div>
+
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-400">R 權重 (消費天數間隔 - Recency)</span>
+                                    <span class="text-amber-600 dark:text-amber-400 font-mono">${systemState.rfmWeights.recency}%</span>
+                                </div>
+                                <input type="range" min="10" max="80" value="${systemState.rfmWeights.recency}" oninput="updateRFMWeights('recency', this.value)" class="w-full accent-amber-500 bg-slate-200 dark:bg-slate-800 h-1.5 rounded-lg">
+                                
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-400">F 權重 (消費頻率 - Frequency)</span>
+                                    <span class="text-amber-600 dark:text-amber-400 font-mono">${systemState.rfmWeights.frequency}%</span>
+                                </div>
+                                <input type="range" min="10" max="80" value="${systemState.rfmWeights.frequency}" oninput="updateRFMWeights('frequency', this.value)" class="w-full accent-amber-500 bg-slate-200 dark:bg-slate-800 h-1.5 rounded-lg">
+
+                                <div class="flex justify-between font-bold">
+                                    <span class="text-slate-400">M 權重 (累計交易金額 - Monetary)</span>
+                                    <span class="text-amber-600 dark:text-amber-400 font-mono">${systemState.rfmWeights.monetary}%</span>
+                                </div>
+                                <input type="range" min="10" max="80" value="${systemState.rfmWeights.monetary}" oninput="updateRFMWeights('monetary', this.value)" class="w-full accent-amber-500 bg-slate-200 dark:bg-slate-800 h-1.5 rounded-lg">
+                            </div>
+
+                            <div class="h-28 relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-1">
+                                <canvas id="rfmChart"></canvas>
+                            </div>
+                        </div>
+                    `;
+                    setTimeout(renderRFMChart, 50); // 延遲渲染 Chart
+                    break;
+
+                case 'agent-shop':
+                case 'agent-marketing':
+                case 'agent-product':
+                case 'agent-inventory':
+                case 'agent-boss':
+                    const agentType = nodeId.replace('agent-', '');
+                    footInfo.innerText = `協同專家: ${nodeDataset[nodeId].title} 已連接大腦`;
+                    container.innerHTML = `
+                        <div class="space-y-3">
+                            <span class="text-[10px] font-bold text-blue-500 font-mono">⚡ AGENT STRATEGIC SCHEDULER</span>
+                            
+                            <div class="p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs space-y-2">
+                                <div class="flex items-center justify-between text-slate-400 font-bold">
+                                    <span>專家權限鎖定：</span>
+                                    <span class="text-emerald-500 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 決策通道就緒</span>
+                                </div>
+                                <div class="text-slate-500 leading-relaxed">
+                                    點擊下方按鈕，使該 Agent 串接 <span class="text-amber-500 font-semibold">[營運資料層]</span> 及 <span class="text-purple-500 font-semibold">[Hermes 大腦]</span> 歷史指標，動態起草並提交一項最新具體行動提案。
+                                </div>
+                            </div>
+
+                            <div id="agent-workspace-output" class="hidden p-3 bg-slate-900 text-[11px] leading-relaxed font-mono rounded-xl border border-slate-800 text-slate-300 whitespace-pre-line max-h-40 overflow-y-auto">
+                                <!-- AI 推理草案 -->
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="triggerAgentMindDraft('${agentType}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1 shadow-sm">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i> 自動起草行動提案
+                                </button>
+                                <button id="btn-submit-proposal" disabled onclick="submitProposalToGovernance('${agentType}')" class="bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                                    <i data-lucide="shield-check" class="w-4 h-4"></i> 提交至治理層 (E)
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'node-e':
+                    footInfo.innerText = '人工稽核鏈：100% 透明且安全';
+                    container.innerHTML = `
+                        <div class="space-y-3">
+                            <span class="text-[10px] font-bold text-stone-500 font-mono">⚖️ REAL-TIME RLHF DECISION AUDIT COCKPIT</span>
+                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+                                當 Agent 發出營運指令時，會暫時進入 **E層暫存區** 待審。管理者審閱決定採納或駁回後，系統會透過強化學習將決策權重即時回饋至大腦。
+                            </div>
+
+                            <!-- 審批隊列 -->
+                            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                ${renderGovernanceQueue()}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                default:
+                    // 技術棧或 MVP 展示
+                    container.innerHTML = `
+                        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
+                            <i data-lucide="cpu" class="w-8 h-8 text-slate-400 mx-auto animate-pulse"></i>
+                            <div class="text-xs font-bold text-slate-600 dark:text-slate-300">CATCH AI 底層基礎架構模組</div>
+                            <div class="text-[11px] text-slate-500">此模組為全自動高併發常駐進程，為餐飲決策神經網絡提供源源不絕的算力及資料支持。</div>
+                        </div>
+                    `;
+                    break;
+            }
+            lucide.createIcons();
+        }
+
+        // ==================== 微型模擬器邏輯代碼 ====================
+
+        // [OpenClaw] 執行 Pipeline 
+        function triggerETLPipeline() {
+            if (systemState.isPipelineRunning) return;
+            systemState.isPipelineRunning = true;
+            
+            const logEl = document.getElementById('virtual-terminal');
+            logEl.innerHTML = '';
+            
+            const steps = [
+                { text: '🤖 啟動 OpenClaw 自適應 ETL Pipeline...', color: 'text-blue-400' },
+                { text: '🔗 向 POS API、Cyberbiz 及 Oddle 同步取得昨日累計 5,230 筆非結構化原始交易...', color: 'text-slate-300' },
+                { text: '⚠️ 偵測到 CRM 會員表欄位增添，Codex 動態改寫引擎啟動...', color: 'text-amber-400' },
+                { text: '🔧 [Codex] 自動執行 SQL: ALTER TABLE members ADD COLUMN last_visit_date...', color: 'text-amber-300' },
+                { text: '🧹 去重與清洗：修正空字串及未補齊時間戳記 14 筆...', color: 'text-slate-400' },
+                { text: '⚡ 成功將清理轉換後資料沉澱至 [營運資料層 PostgreSQL]！', color: 'text-emerald-400 font-bold' },
+                { text: '✨ Pipeline 執行成功，用時 1.25s。全站 Schema 完成對齊。', color: 'text-emerald-500 font-bold' }
+            ];
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < steps.length) {
+                    const div = document.createElement('div');
+                    div.className = steps[index].color;
+                    div.innerHTML = `[${new Date().toLocaleTimeString()}] ${steps[index].text}`;
+                    logEl.appendChild(div);
+                    logEl.scrollTop = logEl.scrollHeight;
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    systemState.isPipelineRunning = false;
+                    showToast('自適應 ETL Pipeline 執行成功，全端資料庫已完成無縫對齊！', 'success');
+                }
+            }, 500);
+        }
+
+        function deployAPIPatch() {
+            const logEl = document.getElementById('virtual-terminal');
+            const div = document.createElement('div');
+            div.className = 'text-amber-400';
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] 🚀 正在自動部置 API Patch：修復 Oddle 訂單超時未回傳 JSON Bug...`;
+            logEl.appendChild(div);
+            logEl.scrollTop = logEl.scrollHeight;
+
+            setTimeout(() => {
+                const div2 = document.createElement('div');
+                div2.className = 'text-emerald-400 font-bold';
+                div2.innerHTML = `[${new Date().toLocaleTimeString()}] ✨ [SUCCESS] 修正檔部置成功，API 回傳正常率已回歸 100.0%！`;
+                logEl.appendChild(div2);
+                logEl.scrollTop = logEl.scrollHeight;
+                showToast('API 修正檔部置成功，通訊連通率已修復！', 'success');
+            }, 800);
+        }
+
+        // [Hermes] 營運診斷
+        function runHermesDiagnostic() {
+            const thoughtEl = document.getElementById('hermes-thought-flow');
+            thoughtEl.innerHTML = '';
+
+            const steps = [
+                { text: '🔍 調閱 [營運資料層] 連鎖門市過去 24 小時交易動能...', color: 'text-slate-400' },
+                { text: '⚠️ [發現異常] 台北大安店下午 2:00 至 4:00 交易流速陡降 34%，但該區客流維持高水位。', color: 'text-rose-400 font-bold' },
+                { text: '💡 [診斷原因] 讀取 OpenClaw 氣象：當地發生極端強降雨；讀取庫存：外送咖啡包材紙袋庫存趨近 0，外送平台暫時被迫手動下架。', color: 'text-amber-400' },
+                { text: '⚡ [調發調派] 指派任務：<br>&nbsp;&nbsp;➡️ [庫存 Agent] 立即從台中公益店調撥包材紙袋紙杯支援大安店。<br>&nbsp;&nbsp;➡️ [行銷 Agent] 針對大安店 2 公里內流失客，自動起草大雨天免運優惠推播。', color: 'text-blue-400' },
+                { text: '📱 [完成] Telegram 決策警報發出。等待人工稽核。', color: 'text-emerald-400 font-bold' }
+            ];
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < steps.length) {
+                    const div = document.createElement('div');
+                    div.className = steps[index].color;
+                    div.innerHTML = `[${new Date().toLocaleTimeString()}] ${steps[index].text}`;
+                    thoughtEl.appendChild(div);
+                    thoughtEl.scrollTop = thoughtEl.scrollHeight;
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    showToast('Hermes 大腦診斷完成，調配任務已派發至 E 層及通訊終端！', 'success');
+                }
+            }, 600);
+        }
+
+        // [A 層] 資料接入圖表
+        let ingestionChartInstance = null;
+        function renderIngestionChart() {
+            const ctx = document.getElementById('ingestionChart');
+            if (!ctx) return;
+            if (ingestionChartInstance) ingestionChartInstance.destroy();
+
+            ingestionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+                    datasets: [{
+                        label: 'API 流量流速 (KB/s)',
+                        data: [120, 150, 320, 480, 290, 180, 220, 310, 420],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(148,163,184,0.05)' }, ticks: { color: '#64748b', font: { size: 8 } } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 8 } } }
+                    }
+                }
+            });
+        }
+
+        function runNodeASync() {
+            if (systemState.isSyncing) return;
+            systemState.isSyncing = true;
+            renderSandboxTools('node-a'); // 刷新按鈕狀態
+            showToast('正向 POS、Cyberbiz、Oddle 請求最新交易串流...', 'info');
+
+            let count = 0;
+            const interval = setInterval(() => {
+                systemState.recordsIngested += Math.floor(Math.random() * 60) + 30;
+                const counter = document.getElementById('counter-ingested');
+                if (counter) counter.innerText = systemState.recordsIngested.toLocaleString();
+                
+                count++;
+                if (count >= 8) {
+                    clearInterval(interval);
+                    systemState.isSyncing = false;
+                    renderSandboxTools('node-a');
+                    showToast('昨日全通路數據已成功接入並清洗完畢！', 'success');
+                }
+            }, 250);
+        }
+
+        // [B 層] 數據庫瀏覽器
+        const databaseSchema = {
+            members: [
+                { id: 'M-9821', name: '王曉明', level: '黃金會員', rfm: 'R2 / F4 / M5', points: 2400 },
+                { id: 'M-4421', name: '李佩珊', level: '鑽石會員', rfm: 'R3 / F5 / M5', points: 8900 },
+                { id: 'M-3012', name: '張凱傑', level: '普通會員', rfm: 'R14 / F1 / M2', points: 150 },
+                { id: 'M-1120', name: '陳美玲', level: '黃金會員', rfm: 'R5 / F3 / M4', points: 1850 }
+            ],
+            transactions: [
+                { id: 'TX-10022', store: '台北大安店', amount: 350, items: '拿鐵咖啡*2, 貝果*1', channel: 'POS實體' },
+                { id: 'TX-10023', store: '台中公益店', amount: 890, items: '美式咖啡*5, 三明治*3', channel: 'Oddle外送' },
+                { id: 'TX-10024', store: '新北板橋店', amount: 120, items: '紅茶*1, 司康*1', channel: 'Cyberbiz電商' },
+                { id: 'TX-10025', store: '高雄大遠百', amount: 480, items: '冷萃咖啡*3, 起司塔*2', channel: 'POS實體' }
+            ],
+            inventory: [
+                { id: 'INV-01', name: '耶加雪菲原豆(kg)', stock: 45, status: '充足', update: '今日 08:00' },
+                { id: 'INV-02', name: '鮮乳 (大瓶)', stock: 12, status: '低水位', update: '今日 11:00' },
+                { id: 'INV-03', name: '外送紙杯 (中)', stock: 5, status: '嚴重不足', update: '今日 10:30' },
+                { id: 'INV-04', name: '巧克力淋醬 (罐)', stock: 8, status: '充足', update: '昨日 17:00' }
+            ]
+        };
+
+        function renderSchematicTable() {
+            const tab = systemState.selectedTable;
+            const dataList = databaseSchema[tab];
+            
+            // 搜尋過濾
+            const filtered = dataList.filter(row => {
+                if (!systemState.tableSearchQuery) return true;
+                return Object.values(row).some(v => v.toString().toLowerCase().includes(systemState.tableSearchQuery.toLowerCase()));
+            });
+
+            if (filtered.length === 0) {
+                return `<div class="p-6 text-center text-xs italic text-slate-400">查無對應結構化欄位</div>`;
+            }
+
+            return `
+                <table class="w-full text-left text-[11px] border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                            ${tab === 'members' ? `
+                                <th class="p-2 font-bold">ID</th>
+                                <th class="p-2 font-bold">姓名</th>
+                                <th class="p-2 font-bold">級別</th>
+                                <th class="p-2 font-bold">RFM特徵</th>
+                                <th class="p-2 font-bold text-right">剩餘點數</th>
+                            ` : tab === 'transactions' ? `
+                                <th class="p-2 font-bold">交易號</th>
+                                <th class="p-2 font-bold">店別</th>
+                                <th class="p-2 font-bold text-right">金額</th>
+                                <th class="p-2 font-bold">購買內容</th>
+                                <th class="p-2 font-bold">渠道</th>
+                            ` : `
+                                <th class="p-2 font-bold">料號</th>
+                                <th class="p-2 font-bold">物料名稱</th>
+                                <th class="p-2 font-bold text-right">庫存</th>
+                                <th class="p-2 font-bold">水位</th>
+                                <th class="p-2 font-bold">校對時間</th>
+                            `}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50 text-slate-600 dark:text-slate-300">
+                        ${filtered.map(row => {
+                            if (tab === 'members') {
+                                return `
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                                        <td class="p-2 font-mono">${row.id}</td>
+                                        <td class="p-2 font-bold">${row.name}</td>
+                                        <td class="p-2"><span class="bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-[9px] font-bold">${row.level}</span></td>
+                                        <td class="p-2 font-mono">${row.rfm}</td>
+                                        <td class="p-2 text-right font-mono font-bold text-amber-500">${row.points}</td>
+                                    </tr>
+                                `;
+                            } else if (tab === 'transactions') {
+                                return `
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                                        <td class="p-2 font-mono">${row.id}</td>
+                                        <td class="p-2">${row.store}</td>
+                                        <td class="p-2 text-right font-mono font-bold text-emerald-500">$${row.amount}</td>
+                                        <td class="p-2 truncate max-w-[120px] font-bold">${row.items}</td>
+                                        <td class="p-2 text-blue-500 font-bold">${row.channel}</td>
+                                    </tr>
+                                `;
+                            } else {
+                                const statusColor = row.status === '嚴重不足' ? 'text-rose-500 bg-rose-500/10' : row.status === '低水位' ? 'text-amber-500 bg-amber-500/10' : 'text-emerald-500 bg-emerald-500/10';
+                                return `
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                                        <td class="p-2 font-mono">${row.id}</td>
+                                        <td class="p-2 font-bold">${row.name}</td>
+                                        <td class="p-2 text-right font-mono font-bold">${row.stock}</td>
+                                        <td class="p-2"><span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${statusColor}">${row.status}</span></td>
+                                        <td class="p-2 text-slate-400 font-mono">${row.update}</td>
+                                    </tr>
+                                `;
+                            }
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function switchSandboxTable(tableName) {
+            systemState.selectedTable = tableName;
+            systemState.tableSearchQuery = '';
+            renderSandboxTools('node-b');
+        }
+
+        function searchSandboxTable(val) {
+            systemState.tableSearchQuery = val;
+            const container = document.querySelector('.max-h-44');
+            if (container) {
+                container.innerHTML = renderSchematicTable();
+            }
+        }
+
+        // [C 層] RFM 權重與圖表
+        function updateRFMWeights(type, val) {
+            systemState.rfmWeights[type] = parseInt(val);
+            
+            // 讓其餘兩者均分剩餘百分比，確保總和為 100%
+            const remaining = 100 - systemState.rfmWeights[type];
+            const otherTypes = Object.keys(systemState.rfmWeights).filter(k => k !== type);
+            const othersSum = systemState.rfmWeights[otherTypes[0]] + systemState.rfmWeights[otherTypes[1]];
+            
+            if (othersSum > 0) {
+                systemState.rfmWeights[otherTypes[0]] = Math.round((systemState.rfmWeights[otherTypes[0]] / othersSum) * remaining);
+                systemState.rfmWeights[otherTypes[1]] = 100 - systemState.rfmWeights[type] - systemState.rfmWeights[otherTypes[0]];
+            } else {
+                systemState.rfmWeights[otherTypes[0]] = Math.floor(remaining / 2);
+                systemState.rfmWeights[otherTypes[1]] = remaining - systemState.rfmWeights[otherTypes[0]];
+            }
+
+            renderSandboxTools('node-c');
+        }
+
+        let rfmChartInstance = null;
+        function renderRFMChart() {
+            const ctx = document.getElementById('rfmChart');
+            if (!ctx) return;
+            if (rfmChartInstance) rfmChartInstance.destroy();
+
+            // 依據調配的權重，動態產出一個擬真客群佔比分配
+            const wR = systemState.rfmWeights.recency;
+            const wF = systemState.rfmWeights.frequency;
+            const wM = systemState.rfmWeights.monetary;
+
+            const highVal = Math.floor(wM * 0.8 + wF * 0.3);
+            const loyal = Math.floor(wF * 1.2 + wR * 0.2);
+            const sleepy = Math.floor(wR * 1.6);
+            const potentials = Math.floor(wR * 0.4 + wM * 0.5);
+
+            rfmChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['核心VIP群', '忠實老客群', '沉睡流失群', '潛力新星群'],
+                    datasets: [{
+                        data: [highVal, loyal, sleepy, potentials],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'],
+                        borderRadius: 6,
+                        borderWidth: 0,
+                        barPercentage: 0.55
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(148,163,184,0.05)' }, ticks: { color: '#64748b', font: { size: 8 } } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 8 } } }
+                    }
+                }
+            });
+        }
+
+        // [Agent 層] 動態起草與提案
+        let draftCache = { text: '', proposalObj: null };
+
+        function triggerAgentMindDraft(agentType) {
+            const workspace = document.getElementById('agent-workspace-output');
+            const submitBtn = document.getElementById('btn-submit-proposal');
+            workspace.classList.remove('hidden');
+            workspace.innerHTML = `🤖 正在加載大腦神經元，調配 [${agentType}] 決策規則...`;
+
+            let text = '';
+            let proposalObj = null;
+            const id = 'REC-' + Math.floor(Math.random() * 900 + 100);
+
+            if (agentType === 'shop') {
+                text = `💡 [店長 Agent - 大安店人力短缺應變書]\n` +
+                       `📌 原因：系統偵測大安店下午 2點至 4點出餐平均延遲 5.4 分鐘，現場兼職員工人數短缺 1.5人。\n` +
+                       `📋 行動草案：\n` +
+                       `1. 發送手機 Telegram 加成津貼警報，緊急徵召大安店附近兼職人員下午支援。\n` +
+                       `2. OMO 點餐介面主動推行「自助結帳首杯減10元」，分流前台排隊負擔。`;
+                proposalObj = {
+                    id, time: new Date().toLocaleTimeString(), source: '店長 Agent',
+                    reason: '台北大安店下午尖峰出餐超時，人力吃緊。',
+                    advice: '緊急徵調兼職並引導自助點餐分流。',
+                    status: 'pending', result: '-'
+                };
+            } else if (agentType === 'marketing') {
+                text = `💡 [行銷 Agent - OMO 精準拉回 LINE 促銷文案]\n` +
+                       `📌 原因：篩選出 120 名常客會員已 14 天未進店 (R>=14)。\n` +
+                       `📋 行動草案：\n` +
+                       `1. 自動產生推播文案:「曉明，好久不見！烘焙師為您新烤了最愛的起司蛋糕...」\n` +
+                       `2. 發送「美式 + 起司蛋糕組合 85 折優惠券」（預估轉換率 21.2%，毛利受損小於 6%）。`;
+                proposalObj = {
+                    id, time: new Date().toLocaleTimeString(), source: '行銷 Agent',
+                    reason: '發現 120 名大安店常客會員進入沉睡流失危險期。',
+                    advice: '發送 LINE 老友專屬「美式+蛋糕組合 85折」喚醒券。',
+                    status: 'pending', result: '-'
+                };
+            } else if (agentType === 'product') {
+                text = `💡 [商品 Agent - 滯銷草莓塔下午茶自適應促銷]\n` +
+                       `📌 原因：草莓塔面臨到期報廢（在庫 14 個），今日美式咖啡單點率居高不下。\n` +
+                       `📋 行動草案：\n` +
+                       `1. 於 POS 收銀機首頁與外送介面推出「冷萃/美式咖啡搭草莓塔早鳥下午茶組合，限時價 $120（省$60）」\n` +
+                       `2. 預計可將草莓塔報廢率自 35% 壓低至 1.5% 內，認列損失轉為正向利潤。`;
+                proposalObj = {
+                    id, time: new Date().toLocaleTimeString(), source: '商品 Agent',
+                    reason: '草莓塔即期鮮食原料儲量過高，今夜將面臨報廢。',
+                    advice: '推出美式咖啡加購草莓塔下午茶限時促銷組合。',
+                    status: 'pending', result: '-'
+                };
+            } else if (agentType === 'inventory') {
+                text = `💡 [庫存 Agent - 連鎖包材智能配撥單]\n` +
+                       `📌 原因：台北大安店外送紙袋大面積耗盡（存量僅剩 5），週需求 200。\n` +
+                       `📋 行動草案：\n` +
+                       `1. 向周邊庫存充足的板橋中央店發起跨店調運指令：調拨 150 個紙袋支援。\n` +
+                       `2. 預計下午 4點由同城物流派送至大安店，完美保障外送通路暢通。`;
+                proposalObj = {
+                    id, time: new Date().toLocaleTimeString(), source: '庫存 Agent',
+                    reason: '大安店外送紙袋面臨斷貨。',
+                    advice: '從板橋中央店跨店配撥 150 個包材紙袋。',
+                    status: 'pending', result: '-'
+                };
+            } else if (agentType === 'boss') {
+                text = `💡 [老闆 Agent - 連鎖毛利率優化週建言]\n` +
+                       `📌 原因：分析本週損益，高雄店由於全場 100 元券發行過度，導致綜合毛利率低於全通路基準 4.2%。\n` +
+                       `📋 行動草案：\n` +
+                       `1. 暫停高雄店線上無門檻現金券發放，全線更改為「高利潤冷萃咖啡單品券」。\n` +
+                       `2. 下週進一步下調非咖啡烘焙類高耗損品的進貨率。`;
+                proposalObj = {
+                    id, time: new Date().toLocaleTimeString(), source: '老闆 Agent',
+                    reason: '高雄店營收達標，但折扣過高導致綜合毛利受損。',
+                    advice: '暫停高雄店通用無門檻折價券，全面更改為高利潤單品搭售。',
+                    status: 'pending', result: '-'
+                };
+            }
+
+            setTimeout(() => {
+                workspace.innerText = text;
+                submitBtn.disabled = false;
+                submitBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1 shadow-sm shadow-emerald-500/10";
+                draftCache.text = text;
+                draftCache.proposalObj = proposalObj;
+            }, 600);
+        }
+
+        function submitProposalToGovernance(agentType) {
+            if (!draftCache.proposalObj) return;
+
+            systemState.historicalAudits.unshift(draftCache.proposalObj);
+            showToast(`提案 ${draftCache.proposalObj.id} 已成功提交至治理與稽核層 (E)！`, 'success');
+            
+            // 重置按鈕狀態
+            const submitBtn = document.getElementById('btn-submit-proposal');
+            submitBtn.disabled = true;
+            submitBtn.className = "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1";
+            document.getElementById('agent-workspace-output').innerHTML = `✨ 提案已成功上報送審，大腦神經權重已準備對齊。`;
+            draftCache = { text: '', proposalObj: null };
+        }
+
+        // [E 層] 治理層審批隊列
+        function renderGovernanceQueue() {
+            return systemState.historicalAudits.map(audit => {
+                const statusClass = audit.status === 'approved' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : audit.status === 'rejected' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 animate-pulse';
+                const statusText = audit.status === 'approved' ? '已採納並執行' : audit.status === 'rejected' ? '已駁回' : '審查中 (Pending)';
+                
+                return `
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 rounded-xl text-xs space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-[10px] text-slate-400 font-bold">${audit.id} | ${audit.time}</span>
+                            <span class="border px-2 py-0.5 rounded text-[9px] font-bold ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                            <strong>[因果背景]</strong> ${audit.reason}
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-950 p-2.5 rounded text-[11px] border border-slate-200/50 dark:border-slate-800/50 text-slate-700 dark:text-slate-400">
+                            <span class="text-blue-500 font-black">🤖 AI 建議:</span> ${audit.advice}
+                        </div>
+                        ${audit.result !== '-' ? `
+                            <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                <span>[執行成效] ${audit.result}</span>
+                            </div>
+                        ` : ''}
+                        ${audit.status === 'pending' ? `
+                            <div class="flex justify-end gap-1.5 pt-1 border-t border-dashed border-slate-100 dark:border-slate-800/80">
+                                <button onclick="auditApprove('${audit.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-1 rounded-lg text-[10px] transition shadow-sm">
+                                    採納建議
+                                </button>
+                                <button onclick="auditReject('${audit.id}')" class="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-bold px-3 py-1 rounded-lg text-[10px] transition">
+                                    駁回
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function auditApprove(id) {
+            const audit = systemState.historicalAudits.find(a => a.id === id);
+            if (audit) {
+                audit.status = 'approved';
+                audit.result = '已自動生成執行碼套用，即時營運回報率提升 14.2%';
+                renderSandboxTools('node-e');
+                showToast(`決策提案 ${id} 已獲批准並成功執行！`, 'success');
+            }
+        }
+
+        function auditReject(id) {
+            const audit = systemState.historicalAudits.find(a => a.id === id);
+            if (audit) {
+                audit.status = 'rejected';
+                audit.result = '人工駁回：規則調整，已對其神經權重施加負向懲罰';
+                renderSandboxTools('node-e');
+                showToast(`決策提案 ${id} 已被人工駁回。`, 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

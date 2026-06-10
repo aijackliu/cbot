@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字與紫微斗數整合互動命盤</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&amp;family=Inter:wght@300;400;600&amp;display=swap');
+        
+        :root {
+            --primary: #c2410f;
+            --accent: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Serif TC', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a120b 0%, #3c2a1f 100%);
+            color: #f5f0e6;
+        }
+        
+        .glass {
+            background: rgba(60, 42, 31, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 240, 230, 0.15);
+        }
+        
+        .section-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f5f0e6;
+            letter-spacing: -.02em;
+        }
+        
+        .palace-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .palace-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+        }
+        
+        .star {
+            font-size: 0.75rem;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: rgba(245, 240, 230, 0.1);
+        }
+        
+        .nav-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .nav-tab.active {
+            background: #c2410f;
+            color: white;
+            box-shadow: 0 0 0 3px rgba(194, 65, 15, 0.3);
+        }
+        
+        .insight-card {
+            transition: transform 0.2s ease;
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-1px);
+        }
+        
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: #f59e0b;
+            border: 3px solid #1a120b;
+        }
+        
+        .data-table th {
+            font-weight: 600;
+            color: #d1c7b8;
+            font-size: 0.75rem;
+        }
+        
+        .modal {
+            animation: fadeInScale 0.2s ease forwards;
+        }
+        
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .pillar {
+            transition: all 0.2s;
+        }
+        
+        .pillar:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .life-aspect {
+            border-left: 4px solid #c2410f;
+        }
+        
+        #ziwei-palaces .palace-card.ring-2 {
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+    <div class="max-w-screen-xl mx-auto px-6 pt-8">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-8 gap-4">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-800 to-orange-900 flex items-center justify-center ring-1 ring-amber-700/50">
+                        <i class="fa-solid fa-yin-yang text-3xl text-amber-200"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-semibold tracking-tighter">八字 × 紫微斗數</h1>
+                        <p class="text-amber-200/80 text-sm mt-0.5">整合互動命盤分析</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-3">
+                <div class="glass px-4 py-2 rounded-3xl text-xs flex items-center gap-x-2">
+                    <div class="flex items-center gap-x-1.5">
+                        <i class="fa-solid fa-user text-amber-400"></i>
+                        <span class="font-medium">戊申 癸亥 己丑 癸酉</span>
+                    </div>
+                </div>
+                <a href="index.html" class="nav-home text-xs flex items-center gap-1.5 px-3 py-2 bg-[#3c2a1f] hover:bg-[#4a3729] border border-amber-800/40 rounded-2xl transition text-amber-200">
+                    <i class="fa-solid fa-home"></i>
+                    <span>首頁</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="mb-6 px-4 py-3 rounded-3xl bg-amber-900/20 border border-amber-800/40 text-xs text-amber-200/80">
+            <strong>免責聲明：</strong> 本分析僅供文化娛樂參考，非專業決策依據。命理為傳統文化研究，請結合個人實際情況理性看待。
+        </div>
+
+        <!-- Quick Info -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div class="glass p-4 rounded-3xl">
+                <div class="text-xs text-amber-200/60">日元 / 命主</div>
+                <div class="font-semibold text-xl mt-1">己土 / 巨門</div>
+                <div class="text-xs mt-2 text-amber-200/70">身主：天梁　五行局：金四局</div>
+            </div>
+            <div class="glass p-4 rounded-3xl">
+                <div class="text-xs text-amber-200/60">當前大運</div>
+                <div class="font-semibold text-xl mt-1">己巳 (59-69歲)</div>
+                <div class="text-xs mt-2">比肩 + 正印傷官劫財</div>
+            </div>
+            <div class="glass p-4 rounded-3xl">
+                <div class="text-xs text-amber-200/60">身宮位置</div>
+                <div class="font-semibold text-xl mt-1">遷移宮 (己未)</div>
+                <div class="text-xs mt-2 text-amber-200/70">天鉞 + 鈴星　利外出發展</div>
+            </div>
+            <div class="glass p-4 rounded-3xl">
+                <div class="text-xs text-amber-200/60">整體傾向</div>
+                <div class="font-semibold text-xl mt-1 text-amber-300">身弱財官旺</div>
+                <div class="text-xs mt-2">用神：火印扶身 → 土金生財</div>
+            </div>
+        </div>
+
+        <!-- Interactive Year Predictor -->
+        <div class="glass rounded-3xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <span class="section-header">互動限流預測</span>
+                    <span class="ml-3 text-xs text-amber-200/60">選擇年份查看八字流年 + 紫微流年疊宮綜合分析</span>
+                </div>
+                <div class="text-xs px-3 py-1 bg-white/5 rounded-full">2026-2035 範例</div>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mb-4" id="year-buttons">
+                <!-- Populated by JS -->
+            </div>
+            
+            <div id="year-detail" class="glass p-5 rounded-2xl text-sm hidden">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+
+        <!-- Side-by-Side Macro View -->
+        <div class="mb-8">
+            <span class="section-header mb-3 block px-1">並排宏觀視圖</span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                
+                <!-- BaZi Column -->
+                <div class="glass rounded-3xl p-5">
+                    <div class="flex items-center gap-x-2 mb-4">
+                        <i class="fa-solid fa-yin-yang text-amber-400"></i>
+                        <span class="font-semibold">八字命盤 (子平)</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-4 gap-2 mb-4">
+                        <div class="pillar bg-white/5 p-2 rounded-xl text-center">
+                            <div class="text-xs text-amber-200/60">年</div>
+                            <div class="font-bold text-lg">戊申</div>
+                            <div class="text-[10px]">劫財</div>
+                        </div>
+                        <div class="pillar bg-white/5 p-2 rounded-xl text-center">
+                            <div class="text-xs text-amber-200/60">月</div>
+                            <div class="font-bold text-lg">癸亥</div>
+                            <div class="text-[10px]">偏財</div>
+                        </div>
+                        <div class="pillar bg-white/5 p-2 rounded-xl text-center border border-amber-700">
+                            <div class="text-xs text-amber-200/60">日</div>
+                            <div class="font-bold text-lg">己丑</div>
+                            <div class="text-[10px]">日主</div>
+                        </div>
+                        <div class="pillar bg-white/5 p-2 rounded-xl text-center">
+                            <div class="text-xs text-amber-200/60">時</div>
+                            <div class="font-bold text-lg">癸酉</div>
+                            <div class="text-[10px]">偏財</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-xs space-y-1">
+                        <div><strong>五行：</strong>水40% 土33% 金23% 木5% 火0%</div>
+                        <div><strong>用神：</strong>火（扶身制水）→ 土（幫身）→ 金（食傷生財）</div>
+                        <div><strong>當前大運：</strong>己巳（比肩 + 正印傷官劫財）— 穩健轉型期</div>
+                    </div>
+                </div>
+                
+                <!-- Zi Wei Column -->
+                <div class="glass rounded-3xl p-5">
+                    <div class="flex items-center gap-x-2 mb-4">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span class="font-semibold">紫微斗數 (文墨天機)</span>
+                    </div>
+                    
+                    <div class="text-xs mb-3">
+                        <strong>命宮：</strong>乙丑 武曲（↑祿）+ 貪狼（生年祿 ↑權）<br>
+                        <strong>身宮：</strong>己未（遷移宮） 天鉞 + 鈴星<br>
+                        <strong>命主：</strong>巨門　身主：天梁
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-1 text-[10px]">
+                        <div class="bg-white/5 p-1.5 rounded">官祿：紫微七殺 + 祿存</div>
+                        <div class="bg-white/5 p-1.5 rounded">財帛：廉貞破軍</div>
+                        <div class="bg-white/5 p-1.5 rounded">夫妻：天府 + 火星</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 四化圖例 -->
+            <div class="flex justify-center gap-4 mt-2 text-[10px]">
+                <span style="color:#22c55e">━ 祿 (綠)</span>
+                <span style="color:#3b82f6">━ 權 (藍)</span>
+                <span style="color:#eab308">━ 科 (黃)</span>
+                <span style="color:#ef4444">━ 忌 (紅)</span>
+            </div>
+            <div class="text-[10px] text-amber-200/50 mt-1 text-center">虛線箭頭從中心指向接收四化的宮位。點擊宮位查看完整星曜與對應八字資訊。</div>
+        </div>
+
+        <!-- Life Aspects Combined -->
+        <div class="mb-8">
+            <span class="section-header mb-3 block px-1">人生面向綜合分析</span>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <div onclick="showAspectModal('career')" class="insight-card glass p-4 rounded-3xl cursor-pointer hover:border-amber-700 border border-transparent">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-briefcase text-amber-400"></i>
+                        <span class="font-semibold">事業</span>
+                    </div>
+                    <div class="text-xs text-amber-200/80 leading-relaxed">
+                        八字：武貪同宮 + 文昌文曲，宜技術/金融/管理。當前己巳大運利穩健轉型。<br>
+                        紫微：官祿紫微七殺 + 祿存，競爭中帶貴人。身宮遷移利外出發展。
+                    </div>
+                    <div class="mt-2 text-[10px] text-amber-300">建議：穩健經營，防小人（擎羊）</div>
+                </div>
+                
+                <div onclick="showAspectModal('wealth')" class="insight-card glass p-4 rounded-3xl cursor-pointer hover:border-amber-700 border border-transparent">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-coins text-amber-400"></i>
+                        <span class="font-semibold">財運</span>
+                    </div>
+                    <div class="text-xs text-amber-200/80 leading-relaxed">
+                        八字：偏財正財旺（水40%），武貪祿權飛入。身弱財旺，財來需付出。<br>
+                        紫微：財帛廉貞破軍 + 天才，創意生財但晚年防破耗。
+                    </div>
+                    <div class="mt-2 text-[10px] text-amber-300">建議：實業優先，忌高風險投機</div>
+                </div>
+                
+                <div onclick="showAspectModal('marriage')" class="insight-card glass p-4 rounded-3xl cursor-pointer hover:border-amber-700 border border-transparent">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-heart text-amber-400"></i>
+                        <span class="font-semibold">婚姻感情</span>
+                    </div>
+                    <div class="text-xs text-amber-200/80 leading-relaxed">
+                        八字：日支丑（比肩+偏財+食神），丑酉合金，配偶務實但固執。<br>
+                        紫微：夫妻天府 + 火星 + 孤辰，穩定中帶波動，晚年防孤獨。
+                    </div>
+                    <div class="mt-2 text-[10px] text-amber-300">建議：多溝通，紅鸞陷期慎感情</div>
+                </div>
+                
+                <div onclick="showAspectModal('health')" class="insight-card glass p-4 rounded-3xl cursor-pointer hover:border-amber-700 border border-transparent">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-heartbeat text-amber-400"></i>
+                        <span class="font-semibold">健康</span>
+                    </div>
+                    <div class="text-xs text-amber-200/80 leading-relaxed">
+                        八字：火0%最弱，注意心血管、眼睛、代謝。水旺注意腎泌尿。<br>
+                        紫微：疾厄地劫天馬 + 天使，奔波易勞損，防意外或慢性。
+                    </div>
+                    <div class="mt-2 text-[10px] text-amber-300">建議：規律作息，定期健檢</div>
+                </div>
+                
+                <div onclick="showAspectModal('family')" class="insight-card glass p-4 rounded-3xl cursor-pointer hover:border-amber-700 border border-transparent">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-users text-amber-400"></i>
+                        <span class="font-semibold">六親子女</span>
+                    </div>
+                    <div class="text-xs text-amber-200/80 leading-relaxed">
+                        八字：父母月柱偏財坐正官，長輩有助力但忌星影響。子女食神，1-2人宜。<br>
+                        紫微：父母太陽巨門 + 右弼科，長輩文書助力；子女截空天哭，緣薄晚得。
+                    </div>
+                    <div class="mt-2 text-[10px] text-amber-300">建議：多陪伴長輩與子女</div>
+                </div>
+                
+                <div onclick="showAspectModal('interpersonal')" class="insight-card glass p-4 rounded-3xl cursor-pointer hover:border-amber-700 border border-transparent">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-handshake text-amber-400"></i>
+                        <span class="font-semibold">人際關係</span>
+                    </div>
+                    <div class="text-xs text-amber-200/80 leading-relaxed">
+                        八字：兄弟天同太陰 + 左輔，早期和諧。中年交友擎羊需慎小人。<br>
+                        紫微：交友宮擎羊 + 天傷 + 災煞，競爭壓力大；遷移天鉞利貴人。
+                    </div>
+                    <div class="mt-2 text-[10px] text-amber-300">建議：低調為上，慎選合作</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 四化飛宮（重點強調） -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <span class="section-header">四化飛宮分析（重點）</span>
+                <span class="text-xs text-amber-200/60">文墨天機標記的生年四化與飛入方向 • 點擊宮位高亮對應四化</span>
+            </div>
+
+            <div class="glass p-5 rounded-3xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <!-- 祿 -->
+                    <div onclick="highlightSiHua('祿')" class="bg-emerald-900/20 border border-emerald-700/40 p-3 rounded-2xl cursor-pointer hover:border-emerald-500">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-emerald-400">祿</span>
+                            <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded">飛入命宮</span>
+                        </div>
+                        <div class="text-xs text-amber-100">武曲 ↑祿（向心自化）</div>
+                        <div class="text-[10px] text-amber-200/70 mt-1">事業、地位、名聲的正面加持。武曲帶祿飛入命宮，利於透過務實努力獲得資源與肯定。當前大運己巳比肩，可強化此祿的穩定力量。</div>
+                    </div>
+
+                    <!-- 權 -->
+                    <div onclick="highlightSiHua('權')" class="bg-blue-900/20 border border-blue-700/40 p-3 rounded-2xl cursor-pointer hover:border-blue-500">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-blue-400">權</span>
+                            <span class="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded">飛入命宮 + 兄弟宮</span>
+                        </div>
+                        <div class="text-xs text-amber-100">貪狼（生年祿 ↑權）、太陰（生年權 ↑權）</div>
+                        <div class="text-[10px] text-amber-200/70 mt-1">權力、掌控力、決策權。貪狼權飛入命宮強化事業主導力；太陰權飛入兄弟宮，利於與兄弟、夥伴或團隊的權力合作。注意權力過強可能帶來壓力或競爭。</div>
+                    </div>
+
+                    <!-- 忌 -->
+                    <div onclick="highlightSiHua('忌')" class="bg-rose-900/20 border border-rose-700/40 p-3 rounded-2xl cursor-pointer hover:border-rose-500">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-rose-400">忌</span>
+                            <span class="text-xs px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded">飛入父母宮 + 田宅宮 + 命宮</span>
+                        </div>
+                        <div class="text-xs text-amber-100">太陽 ↓忌 ↑祿、天機（生年忌 ↓權）、文曲 ↑忌</div>
+                        <div class="text-[10px] text-amber-200/70 mt-1">忌星飛入顯示壓力、阻礙或需付出代價的主題。父母宮忌影響長輩或早期教育；田宅宮忌可能帶來家宅或根基的變化壓力；命宮文曲忌則提醒文書、合約或溝通需小心。太陽雖帶忌但同時有↑祿，可轉化為正面助力。</div>
+                    </div>
+
+                    <!-- 科 -->
+                    <div onclick="highlightSiHua('科')" class="bg-yellow-900/20 border border-yellow-700/40 p-3 rounded-2xl cursor-pointer hover:border-yellow-500">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-yellow-400">科</span>
+                            <span class="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-300 rounded">飛入父母宮</span>
+                        </div>
+                        <div class="text-xs text-amber-100">右弼（生年科）</div>
+                        <div class="text-[10px] text-amber-200/70 mt-1">名聲、考試、文書、貴人助力。科星飛入父母宮，強化長輩支持或文書方面的正面發展。與忌星同宮，顯示需平衡壓力與機會。</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-white/10 text-xs text-amber-200/70">
+                    <strong>四化總結：</strong> 命宮同時擁有祿與權（武曲貪狼），事業與掌控力強，但忌星（文曲）飛入需防小細節或溝通問題。父母宮有忌+科，長輩助力與壓力並存。田宅忌權顯示根基需穩。整體四化偏向命宮與父母宮，建議重視事業規劃與家庭/長輩關係的平衡。
+                </div>
+            </div>
+        </div>
+
+        <!-- Original Interactive Grid (kept for details) -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <span class="section-header">紫微十二宮詳情 (點擊同上)</span>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="ziwei-palaces">
+                <!-- Populated by JS from data -->
+            </div>
+        </div>
+
+        <!-- Da Yun + Flow Year Timeline -->
+        <div class="glass rounded-3xl p-6 mb-8">
+            <span class="section-header mb-4 block">大運與前後5年關鍵事件</span>
+            
+            <div class="space-y-4 text-sm">
+                <div class="flex gap-4 items-start">
+                    <div class="w-20 text-amber-200/70 flex-shrink-0">當前大運</div>
+                    <div>
+                        <strong>己巳 (2026-2035，59-69歲)</strong><br>
+                        <span class="text-xs">比肩 + 正印傷官劫財。穩健轉型，利學習新技能。火印雖現仍弱，防小人與健康警訊。</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="text-xs text-amber-200/70 mb-2">2026-2030 前後5年關鍵事件（八字流年 + 紫微流年疊宮）</div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex gap-2"><span class="font-mono w-12 text-amber-300">2026</span> <span>丙午（正印）+ 交友流年59：人際/合作壓力，擎羊+天傷激活。兇中帶吉，影響中。注意：慎選伙伴，防小人。</span></div>
+                        <div class="flex gap-2"><span class="font-mono w-12 text-amber-300">2027</span> <span>丁未（偏印）+ 遷移流年60：外出機會或感情波動，天鉞+鈴星+紅鸞陷。吉中帶兇，影響中。建議：把握異地發展。</span></div>
+                        <div class="flex gap-2"><span class="font-mono w-12 text-amber-300">2028</span> <span>戊申（劫財）+ 疾厄流年61：健康或意外需注意，地劫+天馬+歲建。兇，影響中高。注意：健檢、防意外。</span></div>
+                        <div class="flex gap-2"><span class="font-mono w-12 text-amber-300">2029</span> <span>己酉（比肩）+ 財帛流年62：財運機會但破耗，廉貞破軍+天才。吉中帶兇，影響中。建議：穩健理財。</span></div>
+                        <div class="flex gap-2"><span class="font-mono w-12 text-amber-300">2030</span> <span>庚戌（傷官）+ 子女流年63：家庭或子女相關，截空+天哭+喪門。中性，影響中低。注意：多陪伴。</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- First 8 Da Xian Flow Year Summary -->
+        <div class="mb-8">
+            <span class="section-header mb-3 block px-1">前八個大限流年重點（每一年關注事件與注意事項）</span>
+            <div class="text-xs text-amber-200/60 mb-3 px-1">依紫微流年宮位 + 八字流年十神綜合（僅列出資料範圍內關鍵年份）</div>
+            
+            <div class="space-y-3 text-xs">
+                <!-- Will be populated by JS for brevity, or static summaries -->
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限1 (4~13歲，命宮)</strong>：流年6歲（命宮）— 學業家庭小貴人（武貪昌曲）。吉，影響低。注意：培養興趣。
+                </div>
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限2 (14~23歲，父母宮)</strong>：流年19歲（父母宮）— 長輩健康或意見衝突（太陽巨門↓忌）。兇，影響中高。注意：多溝通。
+                </div>
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限4 (34~43歲，田宅宮)</strong>：流年33歲（田宅宮）— 家宅或長輩變化（天機忌權+天梁祿）。中性，影響中。注意：房產規劃。
+                </div>
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限5 (44~53歲，官祿宮)</strong>：流年46歲（官祿宮）— 職場競爭或小波折（紫微七殺+劫煞）。兇，影響中高。注意：防官非。
+                </div>
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限6 (54~63歲，交友宮，當前)</strong>：流年59歲（交友宮）— 合作變故或小人是非（擎羊+天傷+災煞）。兇，影響中高。注意：慎選伙伴，降風險。
+                </div>
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限7 (64~73歲，遷移宮）</strong>：流年60歲（遷移宮）— 異地機會或感情調整（天鉞+鈴星+紅鸞陷）。中吉，影響中。建議：把握外出。
+                </div>
+                <div class="glass p-3 rounded-2xl">
+                    <strong>大限8 (74~83歲，疾厄宮）</strong>：流年61歲（疾厄宮）— 健康小警或意外（地劫+天馬+歲建）。兇，影響中高。注意：定期健檢。
+                </div>
+            </div>
+            <div class="text-[10px] text-amber-200/50 mt-2 px-1">其餘流年可依宮位星曜與四化類推。完整120年流年建議參考專業排盤軟體。</div>
+        </div>
+
+        <div class="text-center text-[10px] text-amber-200/50">
+            資料來源：用戶提供命盤 + 先前八字分析。所有內容僅供文化娛樂與研究參考。
+        </div>
+    </div>
+
+    <!-- Aspect Modal -->
+    <div id="aspect-modal" onclick="if (event.target.id === 'aspect-modal') hideModal()" class="hidden fixed inset-0 bg-black/70 z-[70] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="glass max-w-lg w-full rounded-3xl p-6 max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <div id="modal-title" class="font-semibold text-xl"></div>
+                <button onclick="hideModal()" class="text-amber-200/70 hover:text-white"><i class="fa-solid fa-times text-2xl"></i></button>
+            </div>
+            <div id="modal-body" class="text-sm leading-relaxed text-amber-100/90 space-y-3"></div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs text-amber-200/50">結合八字十神與紫微星曜飛化綜合判斷。</div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind config
+        function initTailwind() {
+            // CDN already handles
+        }
+        
+        // Sample data
+        const yearData = {
+            2026: { bazi: "丙午 正印 + 交友流年", ziwei: "交友宮流年59：擎羊+天傷+災煞", event: "人際/合作壓力，擎羊激活。兇中帶吉，影響中。", advice: "慎選伙伴，防小人與意外。" },
+            2027: { bazi: "丁未 偏印 + 遷移流年", ziwei: "遷移宮流年60：天鉞+鈴星+紅鸞陷", event: "外出機會或感情波動。吉中帶兇，影響中。", advice: "把握異地發展，多溝通。" },
+            2028: { bazi: "戊申 劫財 + 疾厄流年", ziwei: "疾厄宮流年61：地劫+天馬+歲建", event: "健康或意外需注意。兇，影響中高。", advice: "定期健檢，防勞損。" },
+            2029: { bazi: "己酉 比肩 + 財帛流年", ziwei: "財帛宮流年62：廉貞破軍+天才", event: "財運機會但破耗。吉中帶兇，影響中。", advice: "穩健理財，忌投機。" },
+            2030: { bazi: "庚戌 傷官 + 子女流年", ziwei: "子女宮流年63：截空+天哭+陰煞", event: "家庭或子女相關調整。中性，影響中低。", advice: "多陪伴，注意緣分。" }
+        };
+        
+        const ziweiPalacesData = [
+            { id: "brothers", name: "兄弟宮", palace: "甲子", stars: "天同(旺) 太陰(廟 ↑權)", note: "對應八字：兄弟助力，食傷生財象" },
+            { id: "ming", name: "命宮", palace: "乙丑", stars: "武曲(↑祿) 貪狼(生年祿 ↑權) 文昌 文曲(↑忌)", note: "對應八字：日主己土，武貪同宮財官格局" },
+            { id: "parents", name: "父母宮", palace: "甲寅", stars: "太陽(↓忌 ↑祿) 巨門(廟) 右弼(生年科)", note: "對應八字：父母長輩助力，太陽巨門文書象" },
+            { id: "fude", name: "福德宮", palace: "乙卯", stars: "天相(陷) 天官 天福 龍德", note: "對應八字：內心福德，中年後宜修身" },
+            { id: "tianzhai", name: "田宅宮", palace: "丙辰", stars: "天機(生年忌 ↓權) 天梁(↑祿) 陀羅", note: "對應八字：家宅變化，忌星飛入需注意" },
+            { id: "guanlu", name: "官祿宮", palace: "丁巳", stars: "紫微(旺) 七殺 祿存", note: "對應八字：事業貴人，紫微七殺管理格" },
+            { id: "jiaoyou", name: "交友宮", palace: "戊午", stars: "擎羊(陷) 天傷 天廚", note: "對應八字：當前大限，擎羊+天傷人際壓力" },
+            { id: "qianyi", name: "遷移宮(身宮)", palace: "己未", stars: "天鉞(旺) 鈴星(利) 紅鸞(陷) 寡宿", note: "對應八字：身宮外出利，天鉞貴人" },
+            { id: "ji", name: "疾厄宮", palace: "庚申", stars: "地劫(廟) 天馬(旺) 天使", note: "對應八字：健康奔波，地劫+天馬注意" },
+            { id: "caibo", name: "財帛宮", palace: "辛酉", stars: "廉貞 破軍 天姚 天才 咸池 破碎", note: "對應八字：財運波動，破軍+天才創意" },
+            { id: "zinv", name: "子女宮", palace: "壬戌", stars: "截空 天哭 陰煞", note: "對應八字：子女緣薄，截空影響" },
+            { id: "fuqi", name: "夫妻宮", palace: "癸亥", stars: "天府(得) 火星 封誥 孤辰(陷)", note: "對應八字：婚姻穩定但波動，天府格" }
+        ];
+        
+        const aspectDetails = {
+            career: {
+                title: "事業",
+                content: "八字武貪同宮 + 文昌文曲，宜技術、金融、管理或需口才策劃行業。當前己巳大運比肩+正印傷官劫財，利穩健轉型或學習新技能。<br><br>紫微官祿紫微七殺 + 祿存，競爭中帶貴人。身宮遷移利外出發展或異地事業。擎羊在交友大限，需防小人與合作壓力。<br><br>綜合建議：發揮文書與技術優勢，穩健經營，2026-2028慎選合作對象。"
+            },
+            wealth: {
+                title: "財運",
+                content: "八字偏財正財旺（水40%），武貪祿權飛入，財來需努力（戊癸合 + 己克癸）。身弱財旺，宜實業或固定資產，忌高風險。<br><br>紫微財帛廉貞破軍 + 天才天姚，創意生財但破耗風險高。晚年大限在此宮，防破軍破耗。<br><br>綜合建議：實業優先，2028 2029流年注意投資波動，保留現金流。"
+            },
+            marriage: {
+                title: "婚姻感情",
+                content: "八字日支丑（比肩+偏財+食神），丑酉半合金，配偶務實但較固執。申亥害，婚姻中偶有爭執或異地因素。<br><br>紫微夫妻天府得 + 火星利 + 孤辰陷，穩定中帶熱情與波動。紅鸞陷 + 寡宿，晚年防感情或孤獨感。<br><br>綜合建議：多溝通，2027 紅鸞陷期慎新感情。晚年多陪伴配偶。"
+            },
+            health: {
+                title: "健康",
+                content: "八字火0%最弱，易心血管、眼睛、代謝問題。水40%過旺注意泌尿、腎、血液。土金相，腸胃呼吸需保養。<br><br>紫微疾厄地劫 + 天馬 + 天使，奔波易勞損，防意外或慢性。火星少，炎症傾向。<br><br>綜合建議：規律作息、運動，定期健檢。2028 疾厄流年特別注意。"
+            },
+            family: {
+                title: "六親子女",
+                content: "八字父母月柱偏財坐正官，長輩有助力但忌星（太陽巨門↓忌）影響，宜多孝順。子女食神，1-2人宜，聰明但體質需注意。<br><br>紫微父母太陽巨門 + 右弼生年科，長輩文書或名聲助力；子女截空天哭 + 陰煞，緣分較薄或晚得。<br><br>綜合建議：多陪伴長輩與子女，子女教育多用心。"
+            },
+            interpersonal: {
+                title: "人際關係",
+                content: "八字兄弟天同太陰 + 左輔，早期和諧。中年交友擎羊 + 天傷 + 災煞，競爭或小人壓力大。<br><br>紫微交友宮擎羊 + 天傷 + 災煞，需慎選下屬與朋友；遷移天鉞 + 鈴星利貴人。<br><br>綜合建議：低調為上，2026-2028大限特別注意人際與合作。"
+            }
+        };
+        
+        function initYearButtons() {
+            const container = document.getElementById('year-buttons');
+            container.innerHTML = '';
+            
+            Object.keys(yearData).forEach(year => {
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-1.5 text-xs rounded-full border border-white/10 hover:bg-white/5 transition ${year === '2026' ? 'bg-amber-700 text-white border-amber-600' : ''}`;
+                btn.textContent = year;
+                btn.onclick = () => showYearDetail(year, btn);
+                container.appendChild(btn);
+            });
+            
+            // Show 2026 by default
+            setTimeout(() => {
+                const firstBtn = container.querySelector('button');
+                if (firstBtn) showYearDetail('2026', firstBtn);
+            }, 300);
+        }
+        
+        function showYearDetail(year, activeBtn) {
+            // Deactivate all
+            document.querySelectorAll('#year-buttons button').forEach(b => b.classList.remove('bg-amber-700', 'text-white', 'border-amber-600'));
+            activeBtn.classList.add('bg-amber-700', 'text-white', 'border-amber-600');
+            
+            const detail = document.getElementById('year-detail');
+            const data = yearData[year];
+            
+            detail.innerHTML = `
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="font-semibold text-lg">${year} 年</span>
+                    <span class="text-xs px-2 py-0.5 bg-amber-700/60 rounded">年齡約 ${parseInt(year) - 1968} 歲</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <div class="text-xs text-amber-200/60 mb-1">八字流年</div>
+                        <div>${data.bazi}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-amber-200/60 mb-1">紫微流年疊宮</div>
+                        <div>${data.ziwei}</div>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-white/10">
+                    <div class="text-xs text-amber-200/60 mb-1">綜合事件</div>
+                    <div class="text-amber-100">${data.event}</div>
+                    <div class="mt-2 text-xs text-emerald-300">建議：${data.advice}</div>
+                </div>
+            `;
+            detail.classList.remove('hidden');
+        }
+        
+        function renderZiweiPalaces() {
+            const container = document.getElementById('ziwei-palaces');
+            container.innerHTML = '';
+            
+            ziweiPalacesData.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = `palace-card glass p-3 rounded-2xl cursor-pointer border border-white/5 hover:border-amber-700`;
+                card.dataset.index = idx;
+                
+                // Add simple Si Hua badges if present in stars
+                let siHuaBadges = '';
+                if (p.stars.includes('祿')) siHuaBadges += '<span class="text-[9px] px-1 bg-emerald-500/20 text-emerald-300 rounded">祿</span> ';
+                if (p.stars.includes('權')) siHuaBadges += '<span class="text-[9px] px-1 bg-blue-500/20 text-blue-300 rounded">權</span> ';
+                if (p.stars.includes('忌')) siHuaBadges += '<span class="text-[9px] px-1 bg-rose-500/20 text-rose-300 rounded">忌</span> ';
+                if (p.stars.includes('科')) siHuaBadges += '<span class="text-[9px] px-1 bg-yellow-500/20 text-yellow-300 rounded">科</span> ';
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-medium">${p.name}</div>
+                            <div class="text-[10px] text-amber-200/60">${p.palace}</div>
+                        </div>
+                        <i class="fa-solid fa-star text-amber-400 text-xs mt-1"></i>
+                    </div>
+                    <div class="mt-2 text-xs leading-tight">${p.stars}</div>
+                    ${siHuaBadges ? `<div class="mt-1">${siHuaBadges}</div>` : ''}
+                    <div class="mt-2 text-[10px] text-amber-300/80">${p.note}</div>
+                `;
+                card.onclick = () => showPalaceModal(p);
+                container.appendChild(card);
+            });
+        }
+        
+        function showPalaceModal(palace) {
+            const modal = document.getElementById('aspect-modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            
+            title.innerHTML = `${palace.name} ${palace.palace}`;
+            body.innerHTML = `
+                <div class="mb-3">
+                    <div class="text-xs text-amber-200/60 mb-1">主星 / 輔星</div>
+                    <div class="font-medium">${palace.stars}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-amber-200/60 mb-1">對應八字十神 / 建議</div>
+                    <div>${palace.note}</div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-white/10 text-xs text-amber-200/50">
+                    點擊其他宮位可對比。飛宮四化可跨宮影響（如命宮四化飛應此宮）。
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function showPalaceModalById(index) {
+            const palace = ziweiPalacesData[index];
+            if (palace) showPalaceModal(palace);
+        }
+
+        function highlightSiHua(type) {
+            // Remove previous highlights
+            document.querySelectorAll('#ziwei-palaces .palace-card').forEach(el => {
+                el.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-[#1a120b]');
+                if (type === '祿') el.classList.remove('ring-emerald-400');
+                else if (type === '權') el.classList.remove('ring-blue-400');
+                else if (type === '忌') el.classList.remove('ring-rose-400');
+                else if (type === '科') el.classList.remove('ring-yellow-400');
+            });
+
+            let colorClass = '';
+            if (type === '祿') colorClass = 'ring-emerald-400';
+            else if (type === '權') colorClass = 'ring-blue-400';
+            else if (type === '忌') colorClass = 'ring-rose-400';
+            else if (type === '科') colorClass = 'ring-yellow-400';
+
+            // Highlight palaces that have this Si Hua based on original data
+            const targetPalaces = {
+                '祿': [1],      // 命宮 (武曲 ↑祿)
+                '權': [1, 0],   // 命宮 (貪狼), 兄弟宮 (太陰)
+                '忌': [2, 4, 1], // 父母 (太陽), 田宅 (天機), 命宮 (文曲)
+                '科': [2]       // 父母 (右弼)
+            };
+
+            if (targetPalaces[type]) {
+                targetPalaces[type].forEach(idx => {
+                    const cards = document.querySelectorAll('#ziwei-palaces .palace-card');
+                    if (cards[idx]) {
+                        cards[idx].classList.add('ring-2', 'ring-offset-2', 'ring-offset-[#1a120b]', colorClass);
+                    }
+                });
+            }
+
+            // Auto remove highlight after 4 seconds
+            setTimeout(() => {
+                document.querySelectorAll('#ziwei-palaces .palace-card').forEach(el => {
+                    el.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-[#1a120b]', 'ring-emerald-400', 'ring-blue-400', 'ring-rose-400', 'ring-yellow-400');
+                });
+            }, 4000);
+        }
+        
+        function showAspectModal(aspect) {
+            const modal = document.getElementById('aspect-modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            
+            const detail = aspectDetails[aspect];
+            title.textContent = detail.title;
+            body.innerHTML = detail.content;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function hideModal() {
+            const modal = document.getElementById('aspect-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+        
+        function initEverything() {
+            initTailwind();
+            initYearButtons();
+            renderZiweiPalaces();
+            
+            // Optional: auto show first year on load
+            console.log('%c[八字紫微整合] 互動網頁已就緒。所有內容僅供文化娛樂參考。', 'color:#854d0e');
+        }
+        
+        window.onload = initEverything;
+    </script>
+</body>
+</html>

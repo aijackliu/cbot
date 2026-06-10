@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股市 AI 洞察總覽｜2026-06-10</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap');
+        
+        :root {
+            --cyan: #00f0ff;
+            --green: #39ff14;
+            --red: #ff007f;
+            --gold: #ffaa00;
+        }
+        
+        body {
+            background: radial-gradient(circle at 50% 0%, #0a1735 0%, #060913 70%);
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        .glass {
+            background: rgba(13, 20, 38, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .section-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: -.025em;
+            color: #f1f5f9;
+        }
+        
+        .stock-row {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stock-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateX(2px);
+        }
+        
+        .change-up { color: #39ff14; }
+        .change-down { color: #ff007f; }
+        
+        .insight-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        .metric-value {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-weight: 600;
+        }
+        
+        .tab-btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .tab-btn.active {
+            background: #00f0ff;
+            color: #0f172a;
+            border-color: #00f0ff;
+            box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.2);
+        }
+        
+        .sentiment-badge {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.65rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .data-table th {
+            font-weight: 500;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .mini-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #00f0ff, #39ff14);
+            border-radius: 9999px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .analysis-pill {
+            font-size: 0.7rem;
+            padding: 1px 7px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.06);
+            color: #cbd5e1;
+        }
+        
+        .focus-insight {
+            border-left: 3px solid #00f0ff;
+        }
+        
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .bar-row {
+            transition: all 0.15s ease;
+        }
+        .bar-row:hover {
+            background: rgba(255,255,255,0.04);
+            transform: translateX(1px);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+    <div class="max-w-7xl mx-auto px-6 pt-8">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-8 gap-4">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-400 flex items-center justify-center shadow-inner">
+                        <i class="fa-solid fa-chart-line text-slate-950 text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-semibold tracking-tighter">股市 AI 洞察總覽</h1>
+                        <p class="text-slate-400 text-sm mt-0.5">多國市場 • 技術面 • 2026-06-10</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-4 text-sm">
+                <a href="index.html" class="nav-home text-xs flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-3xl transition text-slate-200">
+                    <i class="fa-solid fa-home"></i>
+                    <span>首頁</span>
+                </a>
+                <div class="glass px-4 py-2 rounded-3xl flex items-center gap-x-2 text-xs">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-slate-300">資料來源：</span>
+                    <span class="font-medium text-white">yfinance + Qwen3.6 (Ollama)</span>
+                </div>
+                <div onclick="window.location.reload()" 
+                     class="cursor-pointer flex items-center gap-x-2 px-3 py-1.5 text-xs rounded-3xl border border-white/10 hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-sync text-cyan-400"></i>
+                    <span>重新整理</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executive KPIs -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="glass rounded-3xl p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-xs text-slate-400 tracking-widest">總標的數</div>
+                        <div class="text-4xl font-semibold tabular-nums mt-1">18</div>
+                    </div>
+                    <i class="fa-solid fa-layer-group text-3xl text-slate-500 mt-1"></i>
+                </div>
+                <div class="mt-3 text-xs">
+                    <span class="text-emerald-400">1 強勢</span> • 
+                    <span class="text-rose-400">14 下跌</span>
+                </div>
+            </div>
+            
+            <div class="glass rounded-3xl p-5">
+                <div class="text-xs text-slate-400 tracking-widest">市場平均漲跌</div>
+                <div class="flex items-baseline gap-x-2 mt-1">
+                    <div class="text-4xl font-semibold tabular-nums text-rose-400">-3.8%</div>
+                </div>
+                <div class="flex items-center gap-x-2 mt-2 text-xs">
+                    <div class="flex-1 bg-white/10 rounded h-1.5 overflow-hidden">
+                        <div class="mini-bar w-[38%]" style="width: 38%; background: linear-gradient(to right, #ff007f, #ffaa00);"></div>
+                    </div>
+                    <span class="font-mono text-[10px] text-slate-400">偏空</span>
+                </div>
+            </div>
+            
+            <div class="glass rounded-3xl p-5 border border-emerald-500/20">
+                <div class="text-xs text-emerald-400 tracking-widest">最大漲幅</div>
+                <div class="mt-1">
+                    <span class="text-3xl font-semibold tabular-nums text-emerald-400">+10.0%</span>
+                    <div class="text-sm font-medium mt-0.5">海悅 2348.TW</div>
+                </div>
+                <div class="mt-2 text-xs px-2 py-0.5 bg-emerald-500/10 text-emerald-400 inline-block rounded">多頭突破</div>
+            </div>
+            
+            <div class="glass rounded-3xl p-5 border border-rose-500/20">
+                <div class="text-xs text-rose-400 tracking-widest">最大跌幅</div>
+                <div class="mt-1">
+                    <span class="text-3xl font-semibold tabular-nums text-rose-400">-9.78%</span>
+                    <div class="text-sm font-medium mt-0.5">群創 3481.TW</div>
+                </div>
+                <div class="mt-2 text-xs px-2 py-0.5 bg-rose-500/10 text-rose-400 inline-block rounded">空頭加速</div>
+            </div>
+        </div>
+
+        <!-- 漲跌幅長條圖視覺化 -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <div>
+                    <span class="section-header">漲跌幅長條圖視覺化</span>
+                    <span class="ml-3 text-xs text-slate-400">依漲跌幅排序 • 點擊長條查看詳情</span>
+                </div>
+                <div class="text-[10px] text-slate-400 hidden md:block">比例尺：以最大絕對值為滿寬</div>
+            </div>
+            
+            <div id="bar-chart" 
+                 class="glass rounded-3xl p-5 space-y-[7px] max-h-[320px] overflow-y-auto custom-scroll">
+                <!-- JS 動態渲染長條 -->
+            </div>
+            
+            <div class="flex justify-between text-[10px] text-slate-500 mt-1.5 px-1">
+                <div>最大跌幅方向 ←</div>
+                <div>漲跌幅 %</div>
+                <div>最大漲幅方向 →</div>
+            </div>
+        </div>
+
+        <!-- 宏觀視圖 Macro View (並排) -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <span class="section-header">宏觀視圖 Macro View</span>
+                <span class="text-xs text-slate-400">流動性 + 衍生性商品與法人動態</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                <!-- 左欄: 宏觀流動性儀表板 -->
+                <div class="glass rounded-3xl p-3" id="liquidity-dashboard">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <div>
+                    <span class="section-header">宏觀流動性儀表板</span>
+                    <span class="ml-3 sentiment-badge bg-yellow-500/10 text-yellow-400">
+                        <i class="fa-solid fa-exclamation-triangle mr-1"></i> 
+                        黃色警戒
+                    </span>
+                </div>
+                <div class="text-xs text-slate-400">2026-06-10 • 部分系列已恢復（原執行 FAIL 但已寫入 json）</div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4" id="liquidity-metrics">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Liquidity Stress Gauge -->
+            <div class="glass rounded-3xl p-4 mb-4">
+                <div class="flex justify-between items-center mb-2 text-xs">
+                    <span class="text-emerald-400">寬鬆</span>
+                    <span class="font-medium">流動性壓力指數</span>
+                    <span class="text-rose-400">收緊</span>
+                </div>
+                <div class="relative h-3 bg-gradient-to-r from-emerald-400 via-yellow-400 to-rose-400 rounded-full">
+                    <div id="stress-marker" 
+                         class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-yellow-500 rounded-full shadow flex items-center justify-center"
+                         style="left: 55%;">
+                        <div class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                    <div>SOFR 穩定 / HY OAS 未闊</div>
+                    <div class="font-medium text-yellow-400">目前位置：黃</div>
+                    <div>RRP 極低（支撐）</div>
+                </div>
+            </div>
+
+            <!-- Judgment & Details -->
+            <div class="glass rounded-3xl p-5">
+                <div class="grid md:grid-cols-5 gap-4 text-sm">
+                    <!-- Judgment -->
+                    <div class="md:col-span-3">
+                        <div class="font-semibold mb-1.5 flex items-center gap-2">
+                            判斷摘要
+                            <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded">中性偏警戒</span>
+                        </div>
+                        <div class="text-slate-300 leading-snug">
+                            SOFR 與 HY OAS 未見明顯流動性抽水。MOVE 約 77（中等波動）。US2Y-JP2Y 約 2.72、RRP 極低（0.577）顯示淨流動性有支撐。
+                            但先前多項缺值使判讀曾不完整，現在資料較完整，仍保守視為<strong class="text-yellow-300">中性偏警戒（黃）</strong>。
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics Summary -->
+                    <div class="md:col-span-2">
+                        <div class="font-semibold mb-1.5">關鍵數值</div>
+                        <div class="space-y-1 text-xs">
+                            <div class="flex justify-between"><span>SOFR</span><span class="font-mono">3.63</span></div>
+                            <div class="flex justify-between"><span>HY OAS</span><span class="font-mono">2.75</span></div>
+                            <div class="flex justify-between"><span>MOVE</span><span class="font-mono text-emerald-400">77.03 ✓</span></div>
+                            <div class="flex justify-between"><span>US2Y-JP2Y</span><span class="font-mono text-emerald-400">2.72 ✓</span></div>
+                            <div class="flex justify-between"><span>RRP</span><span class="font-mono text-emerald-400">0.577 (極低) ✓</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing & Observation -->
+                <div class="mt-4 pt-4 border-t border-white/10 grid md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <div class="font-medium mb-1 text-slate-300">缺失項（已大幅改善）</div>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">MOVE ✓</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">USDJPY ✓</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">US2Y ✓</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">RRP ✓</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">US2Y-JP2Y ✓</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">Net Liq ✓</span>
+                        </div>
+                        <div class="mt-1 text-[10px] text-slate-400">原執行 FAIL，但 json 已寫入可用數據。</div>
+                    </div>
+                    <div>
+                        <div class="font-medium mb-1 text-rose-300">觀察點（升級紅色條件）</div>
+                        <div class="text-slate-300 leading-snug">
+                            若 HY OAS 明顯走闊（&gt;3.0）、SOFR 上行，或 MOVE／US2Y／RRP 恢復後顯示利差惡化與淨流動性下滑，警戒應升級至<strong class="text-rose-400">紅</strong>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>  <!-- 結束左欄流動性 -->
+
+            <!-- 右欄: 衍生性商品與法人動態分析 -->
+                <div class="glass rounded-3xl p-3">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <div>
+                    <span class="section-header">衍生性商品與法人動態分析</span>
+                    <span class="ml-3 text-xs px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 font-medium">2026-06-10 • 偏空</span>
+                </div>
+                <div class="text-xs text-slate-400">來源：TWSE / TAIFEX / TPEx</div>
+            </div>
+
+            <!-- Facts: Key Market Levels -->
+            <div class="glass rounded-3xl p-5 mb-4">
+                <div class="font-semibold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-cyan-400"></i>
+                    <span>事實 Fact</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <!-- Index & Futures -->
+                    <div>
+                        <div class="text-xs text-slate-400 mb-1">加權指數 / 台指期法人未平倉</div>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-baseline">
+                                <span>加權指數</span>
+                                <span class="font-mono text-lg font-semibold tabular-nums">43,225.54 <span class="text-rose-400 text-sm">-3.31%</span></span>
+                            </div>
+                            <div class="pl-4 text-xs space-y-0.5 text-slate-300">
+                                <div>外資淨額 <span class="font-mono text-rose-400">-61,949 口</span></div>
+                                <div>投信淨額 <span class="font-mono text-emerald-400">+54,186 口</span></div>
+                                <div>自營商淨額 <span class="font-mono">+4,853 口</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Options -->
+                    <div>
+                        <div class="text-xs text-slate-400 mb-1">台指選擇權 P/C Ratio & 法人</div>
+                        <div class="grid grid-cols-2 gap-x-4 text-xs">
+                            <div>
+                                <div>成交量 P/C <span class="font-mono font-semibold">107.93%</span></div>
+                                <div>未平倉量 P/C <span class="font-mono font-semibold text-rose-400">166.01%</span></div>
+                            </div>
+                            <div class="text-slate-300">
+                                <div>外資買權差 <span class="font-mono">+2,935 口</span></div>
+                                <div>外資賣權差 <span class="font-mono text-rose-400">+6,363 口</span></div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-[10px] text-rose-300">未平倉 P/C 升至 166% → 防守情緒升高</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Stocks -->
+            <div class="glass rounded-3xl p-5 mb-4">
+                <div class="font-semibold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-building text-cyan-400"></i>
+                    <span>重點個股 Fact</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="text-left text-slate-400 border-b border-white/10">
+                                <th class="py-1 pr-3">代碼</th>
+                                <th class="py-1 pr-3">名稱</th>
+                                <th class="py-1 pr-3 text-right">收盤</th>
+                                <th class="py-1 pr-3 text-right">漲跌</th>
+                                <th class="py-1 pr-3 text-right">三大法人</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-200">
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-1 pr-3 font-mono">2330.TW</td>
+                                <td class="py-1 pr-3">台積電</td>
+                                <td class="py-1 pr-3 text-right font-mono">2,255</td>
+                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-50 (-2.17%)</td>
+                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-13,601,933</td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-1 pr-3 font-mono">2303.TW</td>
+                                <td class="py-1 pr-3">聯電</td>
+                                <td class="py-1 pr-3 text-right font-mono">118.50</td>
+                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-9.00</td>
+                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-55,474,228</td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-1 pr-3 font-mono">5347.TWO</td>
+                                <td class="py-1 pr-3">世界先進</td>
+                                <td class="py-1 pr-3 text-right font-mono">152.50</td>
+                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-8.50</td>
+                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-1,861,389</td>
+                            </tr>
+                            <tr class="hover:bg-white/5">
+                                <td class="py-1 pr-3 font-mono">2014.TW</td>
+                                <td class="py-1 pr-3">中鴻</td>
+                                <td class="py-1 pr-3 text-right font-mono">17.50</td>
+                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-0.20</td>
+                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-3,281,070</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-2 text-[10px] text-slate-400">法人資料為 06-09，股價為 06-10 收盤。世界先進外資 +6.7M 但投信賣壓更大。</div>
+            </div>
+
+            <!-- Inference & Action -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- Inference -->
+                <div class="glass rounded-3xl p-5 border-l-4 border-rose-400">
+                    <div class="font-semibold mb-2 text-rose-300 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>推論 Inference</span>
+                    </div>
+                    <ul class="text-sm space-y-1.5 text-slate-300">
+                        <li>• 大盤明顯偏空，外資台指期淨空單維持 6.19 萬口，避險部位未鬆動。</li>
+                        <li>• 未平倉 P/C Ratio 升至 166.01%，防守情緒升高，下檔保護增加。</li>
+                        <li>• 半導體權值股承壓，台積電、聯電現貨走弱 + 法人偏賣方，短線不利追多。</li>
+                        <li>• 世界先進外資承接但投信賣壓更大，籌碼分歧。</li>
+                    </ul>
+                </div>
+
+                <!-- Action -->
+                <div class="glass rounded-3xl p-5 border-l-4 border-yellow-400">
+                    <div class="font-semibold mb-2 text-yellow-300 flex items-center gap-2">
+                        <i class="fa-solid fa-exclamation-circle"></i>
+                        <span>建議 Action</span>
+                    </div>
+                    <ul class="text-sm space-y-1.5 text-slate-300">
+                        <li>• <strong>指數部位</strong>：先輕倉，外資期貨淨空未收斂前不要重押多單。</li>
+                        <li>• <strong>台積電 (2330)</strong>：等止跌、重新站回關鍵價位再分批承接。</li>
+                        <li>• <strong>聯電 (2303)</strong>：只適合短打，不適合抄底重倉。</li>
+                        <li>• <strong>世界先進 (5347)</strong>：先看投信賣壓是否收斂，籌碼改善再加碼。</li>
+                        <li>• <strong>中鴻 (2014)</strong>：先觀察，等法人賣壓縮小與價量止穩。</li>
+                        <li>• <strong>風控</strong>：半導體持股若偏重，先降槓桿、留現金。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-3 text-[10px] text-slate-400 px-1">
+                風險聲明：本文不構成投資建議。資料來源 TWSE / TAIFEX / TPEx。
+            </div>
+            </div>  <!-- 結束右欄內容 -->
+
+            </div>  <!-- 結束 grid 並排宏觀視圖 -->
+        </div>
+
+        <!-- Sentiment Overview -->
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <span class="section-header">整體市場情緒</span>
+                    <span class="ml-3 sentiment-badge bg-rose-500/10 text-rose-400">
+                        <i class="fa-solid fa-arrow-trend-down mr-1"></i> 
+                        偏空修正
+                    </span>
+                </div>
+                <div class="text-xs text-slate-400">18 檔標的 • 2026-06-10</div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-5 text-sm">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-x-2 text-xs uppercase tracking-wider text-slate-400">
+                        <span>核心共識</span>
+                    </div>
+                    <div class="text-slate-200 leading-snug">
+                        大部分半導體股自 6 月初高點回檔，短期均線空頭排列。量價背離明顯：跌日放量、反彈縮量。市場情緒由追高轉為觀望。
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-x-2 text-xs uppercase tracking-wider text-slate-400">
+                        <span>主要風險</span>
+                    </div>
+                    <ul class="space-y-1.5 text-sm text-slate-300">
+                        <li class="flex gap-x-2"><i class="fa-solid fa-exclamation-triangle text-rose-400 mt-0.5 fa-sm"></i> 失守關鍵支撐可能加速下殺</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-exclamation-triangle text-rose-400 mt-0.5 fa-sm"></i> 半導體族群集體承壓</li>
+                        <li class="flex gap-x-2"><i class="fa-solid fa-exclamation-triangle text-rose-400 mt-0.5 fa-sm"></i> 量能未見明顯止跌訊號</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-x-2 text-xs uppercase tracking-wider text-slate-400">
+                        <span>操作重點</span>
+                    </div>
+                    <div class="text-sm">
+                        <div class="bg-white/5 rounded-2xl p-3 text-xs leading-relaxed">
+                            <strong class="text-cyan-300">優先策略：</strong> 觀望為主。於關鍵支撐位（如台積電 2230、NVDA 205）附近觀察量縮止跌或放量反彈確認訊號再進場。嚴格執行停損。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters + Search -->
+        <div class="flex flex-col md:flex-row gap-3 mb-4 items-center">
+            <div class="flex items-center gap-x-2 flex-wrap" id="market-tabs">
+                <button onclick="filterByMarket('all')" class="tab-btn active px-5 py-1.5 text-sm" data-market="all">全部</button>
+                <button onclick="filterByMarket('tw')" class="tab-btn px-5 py-1.5 text-sm" data-market="tw"><span class="mr-1">🇹🇼</span>台股</button>
+                <button onclick="filterByMarket('ks')" class="tab-btn px-5 py-1.5 text-sm" data-market="ks"><span class="mr-1">🇰🇷</span>韓股</button>
+                <button onclick="filterByMarket('us')" class="tab-btn px-5 py-1.5 text-sm" data-market="us"><span class="mr-1">🇺🇸</span>美股</button>
+            </div>
+            
+            <div class="flex-1"></div>
+            
+            <div class="relative w-full md:w-72">
+                <input id="search-input" 
+                       onkeyup="filterTable()" 
+                       type="text" 
+                       placeholder="搜尋股票代碼或名稱..." 
+                       class="w-full bg-white/5 border border-white/10 focus:border-cyan-400/60 transition-colors text-sm placeholder:text-slate-400 pl-10 py-2 rounded-3xl outline-none">
+                <i class="fa-solid fa-search absolute left-4 top-3 text-slate-400 text-sm"></i>
+            </div>
+            
+            <button onclick="resetFilters()" 
+                    class="px-4 py-2 text-xs rounded-3xl border border-white/10 hover:bg-white/5 flex items-center gap-x-2 text-slate-300">
+                <i class="fa-solid fa-undo"></i>
+                <span>重置</span>
+            </button>
+        </div>
+
+        <!-- Main Table -->
+        <div class="glass rounded-3xl overflow-hidden mb-8">
+            <table class="w-full data-table text-sm">
+                <thead>
+                    <tr class="border-b border-white/10">
+                        <th class="text-left py-3.5 px-6 font-medium w-36 cursor-pointer" onclick="sortTable(0)">標的 <i class="fa-solid fa-sort ml-1 text-xs"></i></th>
+                        <th class="text-right py-3.5 px-4 font-medium w-20 cursor-pointer" onclick="sortTable(1)">最新價</th>
+                        <th class="text-right py-3.5 px-4 font-medium w-20 cursor-pointer" onclick="sortTable(2)">漲跌幅</th>
+                        <th class="text-left py-3.5 px-4 font-medium hidden md:table-cell">市場</th>
+                        <th class="text-left py-3.5 px-4 font-medium w-24">關鍵支撐</th>
+                        <th class="text-left py-3.5 px-4 font-medium hidden lg:table-cell">短期看法</th>
+                        <th class="text-left py-3.5 px-6 font-medium w-64">洞察摘要</th>
+                        <th class="w-8"></th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body" class="divide-y divide-white/5 text-slate-200">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Key Insights -->
+        <div class="mb-8">
+            <div class="flex items-center gap-x-3 mb-4">
+                <span class="section-header">核心洞察（AI 共識）</span>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <!-- Insight 1 -->
+                <div class="glass p-5 rounded-3xl insight-card">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <i class="fa-solid fa-chart-line text-cyan-400"></i>
+                        <span class="font-semibold">技術面趨勢</span>
+                    </div>
+                    <div class="text-sm text-slate-300 leading-relaxed">
+                        15 檔以上標的跌破短期均線，空頭排列為主。台股半導體族群集體回檔，韓國記憶體雙雄同步重挫。僅海悅呈現明顯多頭突破結構。
+                    </div>
+                    <div class="mt-3 text-[10px] text-cyan-300">多數支撐位已成重要觀察點</div>
+                </div>
+                
+                <div class="glass p-5 rounded-3xl insight-card">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <i class="fa-solid fa-chart-bar text-amber-400"></i>
+                        <span class="font-semibold">量價關係</span>
+                    </div>
+                    <div class="text-sm text-slate-300 leading-relaxed">
+                        典型「獲利了結」特徵：大跌日成交量明顯放大（恐慌出脫），反彈日量能普遍萎縮。量價背離顯示買盤信心不足，空方暫時主導。
+                    </div>
+                    <div class="mt-3 text-[10px] text-amber-300">等待「縮量止跌 + 放量長紅」轉強訊號</div>
+                </div>
+                
+                <div class="glass p-5 rounded-3xl insight-card">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <i class="fa-solid fa-lightbulb text-emerald-400"></i>
+                        <span class="font-semibold">操作共識</span>
+                    </div>
+                    <div class="text-sm text-slate-300 leading-relaxed">
+                        模型一致建議「觀望優先」。適合在支撐區輕倉試多，並嚴格設定停損。突破壓力位前不建議追高。區間震盪操作為主。
+                    </div>
+                    <div class="mt-3 text-[10px] text-emerald-300">風險控管重於進場時機</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Recommendations -->
+        <div class="glass rounded-3xl p-6">
+            <div class="flex items-center gap-x-3 mb-4">
+                <span class="section-header">立即行動建議</span>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+                <div>
+                    <div class="font-medium mb-2 text-emerald-300 flex items-center gap-x-2">
+                        <i class="fa-solid fa-check-circle"></i> 
+                        <span>可考慮關注的機會</span>
+                    </div>
+                    <ul class="space-y-1.5 text-slate-300">
+                        <li class="flex gap-x-2"><span class="text-emerald-400 font-mono text-xs mt-0.5">•</span> 海悅（2348）回測 72-73 支撐可觀察多單</li>
+                        <li class="flex gap-x-2"><span class="text-emerald-400 font-mono text-xs mt-0.5">•</span> 台積電 2230 / 0050 100 元整數關卡</li>
+                        <li class="flex gap-x-2"><span class="text-emerald-400 font-mono text-xs mt-0.5">•</span> NVDA 205 美元前低區間（美股相對抗跌）</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="font-medium mb-2 text-rose-300 flex items-center gap-x-2">
+                        <i class="fa-solid fa-exclamation-circle"></i> 
+                        <span>需嚴格控管的風險</span>
+                    </div>
+                    <ul class="space-y-1.5 text-slate-300">
+                        <li class="flex gap-x-2"><span class="text-rose-400 font-mono text-xs mt-0.5">•</span> 群創 44 元、聯發科 4100 若失守可能加速下殺</li>
+                        <li class="flex gap-x-2"><span class="text-rose-400 font-mono text-xs mt-0.5">•</span> 避免追高任何尚未確認止跌的半導體股</li>
+                        <li class="flex gap-x-2"><span class="text-rose-400 font-mono text-xs mt-0.5">•</span> 短期以資金控管與停損優先於進場</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-5 border-t border-white/10 text-xs text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
+                <div><strong class="text-slate-300">資料更新：</strong> 2026-06-10 20:51</div>
+                <div><strong class="text-slate-300">模型：</strong> Qwen3.6-35B-A3B-MXFP4_MOE (Ollama)</div>
+                <div class="text-cyan-300 cursor-pointer hover:underline" onclick="showRawData()">查看原始分析結構</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" onclick="if (event.target.id === 'detail-modal') hideModal()" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="glass max-w-2xl w-full rounded-3xl overflow-hidden max-h-[85vh] flex flex-col">
+            <div class="p-5 border-b border-white/10 flex justify-between items-center">
+                <div id="modal-header" class="font-semibold text-xl"></div>
+                <button onclick="hideModal()" class="text-slate-400 hover:text-white px-2 py-1"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            
+            <div id="modal-body" class="p-6 overflow-y-auto text-sm leading-relaxed text-slate-300 flex-1 space-y-6">
+                <!-- Dynamic content -->
+            </div>
+            
+            <div class="p-4 border-t border-white/10 bg-black/20 text-xs flex justify-end gap-x-3">
+                <button onclick="hideModal()" class="px-5 py-2 rounded-2xl text-xs border border-white/10 hover:bg-white/5">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Compact data - focused on insights
+        const stocksData = [
+            { code: "2330.TW", name: "台積電", price: 2255, pct: -2.17, market: "tw", support: "2230", view: "偏空", insight: "自 2440 高點回檔，跌破短期均線。量縮價跌，空方主導。", advice: "觀望，守穩 2230 再考慮。停損 2220。" },
+            { code: "2317.TW", name: "鴻海", price: 263, pct: -5.23, market: "tw", support: "257.5", view: "高檔回檔", insight: "自 314 高點連續修正，量能萎縮。健康量縮修正。", advice: "258-262 分批佈局，停損 255。" },
+            { code: "2454.TW", name: "聯發科", price: 4155, pct: -7.15, market: "tw", support: "4130", view: "空頭震盪", insight: "高檔回落，空頭動能強。放量下跌反映獲利了結。", advice: "觀望，嚴守 4100 停損。" },
+            { code: "0050.TW", name: "元大台灣50", price: 100.25, pct: -3.14, market: "tw", support: "100", view: "偏弱震盪", insight: "逼近 100 元整數關卡，放量賣壓後量能收斂。", advice: "100 元附近觀察支撐有效性。" },
+            { code: "2348.TW", name: "海悅", price: 78.10, pct: 10.0, market: "tw", support: "72-73", view: "多頭突破", insight: "跳空突破整理區，均線多頭排列。唯一強勢股。", advice: "持股逢高減碼；新進等回測確認。" },
+            { code: "3450.TW", name: "聯鈞", price: 472, pct: -6.9, market: "tw", support: "460-470", view: "震盪築底", insight: "急跌後反彈遇壓，低量殺盤。", advice: "守穩 470 輕倉，跌破 460 停損。" },
+            { code: "8234.TWO", name: "新漢", price: 63.40, pct: -4.8, market: "tw", support: "62.3", view: "修正空頭", insight: "自 75.9 回落，量縮反彈動能弱。", advice: "站穩 66.6 再考慮進場。" },
+            { code: "2303.TW", name: "聯電", price: 118.5, pct: -7.06, market: "tw", support: "119-122", view: "震盪下行", insight: "自 143.5 高點回落，高量籌碼鬆動，假突破。", advice: "不宜接刀，站穩 122 再看。" },
+            { code: "2344.TW", name: "華邦電", price: 149, pct: -4.79, market: "tw", support: "146", view: "空頭", insight: "量縮回檔，屬良性修正。均線仍有壓制。", advice: "146 附近量價轉強可輕倉。" },
+            { code: "3481.TW", name: "群創", price: 44.30, pct: -9.78, market: "tw", support: "40-42", view: "偏空", insight: "急跌破前波支撐，低量殺盤後反彈無力。", advice: "反彈 48-49 減碼；等 40-42 放量止跌。" },
+            { code: "00981A.TW", name: "主動統一台股增長", price: 29.89, pct: -4.29, market: "tw", support: "29.75", view: "震盪", insight: "區間震盪，賣壓沉重，量價背離。", advice: "29.8 分批，停損 29.5。" },
+            { code: "005930.KS", name: "三星電子", price: 302500, pct: -6.06, market: "ks", support: "295000", view: "高檔修正", insight: "自 360k 高點急跌，賣壓沉重。", advice: "觀望，支撐位輕倉試多。" },
+            { code: "000660.KS", name: "SK海力士", price: 2048000, pct: -7.54, market: "ks", support: "190-200萬", view: "高檔震盪", insight: "昨日大漲後回落，短期震盪機率高。", advice: "低接高殺，嚴守停損。" },
+            { code: "NVDA", name: "輝達", price: 208.19, pct: -0.22, market: "us", support: "204-205", view: "修正格局", insight: "232 高點回調，量縮價跌。", advice: "觀望，守穩 205 再考慮。" },
+            { code: "GOOGL", name: "谷歌", price: 364.26, pct: 0.26, market: "us", support: "360", view: "盤整", insight: "高點後轉空，量縮盤整。", advice: "360 附近輕倉試多，嚴格停損。" },
+            { code: "INTC", name: "英特爾", price: 107.92, pct: -2.13, market: "us", support: "98-104", view: "震盪修復", insight: "V型反轉後遇壓，量能活躍多空交戰。", advice: "高拋低吸，停損 103。" },
+            { code: "MU", name: "美光", price: 935.89, pct: -1.41, market: "us", support: "915", view: "震盪", insight: "急漲深調，量能活躍。", advice: "回測 915 量縮可輕倉。" },
+            { code: "^TWII", name: "台指期", price: 43225.54, pct: -0.64, market: "tw", support: "42376", view: "修正", insight: "自 46552 回檔，量縮賣壓衰竭。", advice: "守穩 43000 有望反彈。" }
+        ];
+        
+        let currentFilter = 'all';
+        let currentSort = { col: 2, dir: 'asc' }; // default sort by change
+        
+        function formatPrice(val) {
+            if (val > 1000) return val.toLocaleString();
+            return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        
+        function getChangeClass(pct) {
+            if (pct > 0) return 'change-up';
+            if (pct < 0) return 'change-down';
+            return 'text-slate-400';
+        }
+        
+        function renderTable(filteredData) {
+            const tbody = document.getElementById('data-table-body');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(stock => {
+                const row = document.createElement('tr');
+                row.className = `stock-row border-b border-white/5 cursor-pointer`;
+                
+                const pctHtml = `<span class="${getChangeClass(stock.pct)} font-semibold tabular-nums">${stock.pct > 0 ? '+' : ''}${stock.pct}%</span>`;
+                
+                row.innerHTML = `
+                    <td class="py-3.5 px-6">
+                        <div class="font-semibold">${stock.name}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${stock.code}</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-right font-mono text-sm tabular-nums">${formatPrice(stock.price)}</td>
+                    <td class="py-3.5 px-4 text-right">${pctHtml}</td>
+                    <td class="py-3.5 px-4 text-xs hidden md:table-cell">
+                        <span class="px-2 py-px text-[10px] rounded bg-white/5">${stock.market.toUpperCase()}</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-mono text-xs text-slate-400">${stock.support}</td>
+                    <td class="py-3.5 px-4 hidden lg:table-cell">
+                        <span class="analysis-pill">${stock.view}</span>
+                    </td>
+                    <td class="py-3.5 px-6 text-xs text-slate-300 pr-2">
+                        ${stock.insight}
+                    </td>
+                    <td class="px-3 text-slate-400">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </td>
+                `;
+                
+                row.onclick = () => showStockDetail(stock);
+                tbody.appendChild(row);
+            });
+        }
+        
+        function filterByMarket(market) {
+            currentFilter = market;
+            
+            // Update active tab
+            document.querySelectorAll('#market-tabs button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.market === market) btn.classList.add('active');
+            });
+            
+            filterTable();
+        }
+        
+        function filterTable() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            let filtered = stocksData;
+            
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(s => s.market === currentFilter);
+            }
+            
+            if (searchTerm) {
+                filtered = filtered.filter(s => 
+                    s.code.toLowerCase().includes(searchTerm) || 
+                    s.name.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // apply current sort
+            filtered = sortData(filtered, currentSort.col, currentSort.dir);
+            
+            renderTable(filtered);
+            renderBarChart(filtered);   // 同步更新長條圖
+        }
+        
+        function sortTable(col) {
+            // col: 0=name, 1=price, 2=pct
+            if (currentSort.col === col) {
+                currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.col = col;
+                currentSort.dir = (col === 2) ? 'asc' : 'desc'; // default pct descending (biggest moves)
+            }
+            
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            let filtered = stocksData;
+            
+            if (currentFilter !== 'all') filtered = filtered.filter(s => s.market === currentFilter);
+            if (searchTerm) filtered = filtered.filter(s => s.code.toLowerCase().includes(searchTerm) || s.name.toLowerCase().includes(searchTerm));
+            
+            filtered = sortData(filtered, currentSort.col, currentSort.dir);
+            renderTable(filtered);
+        }
+        
+        function sortData(data, col, dir) {
+            return [...data].sort((a, b) => {
+                let valA, valB;
+                if (col === 0) { valA = a.name; valB = b.name; }
+                else if (col === 1) { valA = a.price; valB = b.price; }
+                else { valA = a.pct; valB = b.pct; }
+                
+                if (valA < valB) return dir === 'asc' ? -1 : 1;
+                if (valA > valB) return dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+        
+        function filterByPerformance(type) {
+            // Quick helper - can be called from buttons if needed
+            const tbody = document.getElementById('data-table-body');
+            let filtered = stocksData;
+            
+            if (currentFilter !== 'all') filtered = filtered.filter(s => s.market === currentFilter);
+            
+            if (type === 'gainers') filtered = filtered.filter(s => s.pct > 0);
+            else if (type === 'losers') filtered = filtered.filter(s => s.pct < -3);
+            
+            renderTable(filtered);
+            renderBarChart(filtered);
+        }
+        
+        function resetFilters() {
+            currentFilter = 'all';
+            document.getElementById('search-input').value = '';
+            document.querySelectorAll('#market-tabs button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#market-tabs button[data-market="all"]').classList.add('active');
+            const sorted = [...stocksData].sort((a, b) => b.pct - a.pct);
+            renderTable(sorted);
+            renderBarChart(sorted);
+        }
+        
+        function showStockDetail(stock) {
+            const modal = document.getElementById('detail-modal');
+            const header = document.getElementById('modal-header');
+            const body = document.getElementById('modal-body');
+            
+            const pctColor = stock.pct >= 0 ? 'text-emerald-400' : 'text-rose-400';
+            const pctSign = stock.pct >= 0 ? '+' : '';
+            
+            header.innerHTML = `
+                <div>
+                    <span class="font-semibold text-2xl">${stock.name}</span> 
+                    <span class="font-mono text-sm text-slate-400 ml-2">${stock.code}</span>
+                    <span class="ml-3 text-sm ${pctColor} font-semibold tabular-nums">${pctSign}${stock.pct}%</span>
+                </div>
+            `;
+            
+            // Build detailed but concise view
+            body.innerHTML = `
+                <div class="flex gap-4 items-end">
+                    <div>
+                        <div class="text-xs text-slate-400">最新價</div>
+                        <div class="text-4xl font-semibold tabular-nums font-mono">${formatPrice(stock.price)}</div>
+                    </div>
+                    <div class="text-sm pb-1">
+                        <span class="px-3 py-1 text-xs rounded-full ${stock.market === 'tw' ? 'bg-red-900/40 text-red-300' : stock.market === 'ks' ? 'bg-emerald-900/40 text-emerald-300' : 'bg-blue-900/40 text-blue-300'}">${stock.market.toUpperCase()}</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <div class="bg-black/30 rounded-2xl p-3">
+                        <div class="text-xs text-slate-400">關鍵支撐</div>
+                        <div class="font-mono text-lg">${stock.support}</div>
+                    </div>
+                    <div class="bg-black/30 rounded-2xl p-3">
+                        <div class="text-xs text-slate-400">短期看法</div>
+                        <div class="font-medium">${stock.view}</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-400 mb-1.5">洞察摘要</div>
+                    <div class="text-slate-200">${stock.insight}</div>
+                </div>
+                
+                <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-400 mb-1.5">AI 操作建議</div>
+                    <div class="text-emerald-300 bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-2xl">${stock.advice}</div>
+                </div>
+                
+                <div class="pt-3 text-xs border-t border-white/10 text-slate-400">
+                    原始分析來自 yfinance + 大模型結構化輸出（技術指標、量價關係、短期預測）。
+                    <br>此為濃縮洞察版。完整原始分析請參考原始 HTML 檔案。
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function hideModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+        
+        function showRawData() {
+            alert("原始完整分析已濃縮於本頁面表格與彈窗中。\n\n如需查看每檔原始 3 段式 AI 分析文字，請開啟 yfinance_ai_analysis.html 檔案。\n\n本總結版已聚焦市場共識與可執行洞察。");
+        }
+        
+        // 宏觀流動性數據（靜態補全）
+        const liquidityData = {
+            lastUpdated: "2026-06-10",
+            status: "FAIL (但已寫入 memory/market-liquidity.json)",
+            sofr: { value: 3.63, status: "穩定", color: "emerald" },
+            hyOas: { value: 2.75, status: "未闊", color: "emerald" },
+            move: { value: 77.03, status: "中等波動", color: "yellow" },
+            us2yJp2y: { value: 2.72, status: "已計算", color: "emerald" },
+            rrp: { value: 0.577, status: "極低（耗盡）", color: "emerald", note: "支撐流動性" },
+            netLiquidity: { value: "寬鬆", status: "RRP 極低", color: "emerald" },
+            overall: { level: "黃", judgment: "中性偏警戒", color: "yellow" },
+            missingBefore: ["MOVE", "USDJPY", "US2Y", "RRP", "US2Y-JP2Y", "Net Liquidity Approx"],
+            observation: "若 HY OAS 明顯走闊（>3.0）、SOFR 上行，或 MOVE／US2Y／RRP 恢復後顯示利差惡化與淨流動性下滑，警戒應升級至紅。"
+        };
+
+        // 渲染宏觀流動性儀表板卡片
+        function renderLiquidityDashboard() {
+            const container = document.getElementById('liquidity-metrics');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const metrics = [
+                { key: 'sofr', label: 'SOFR', value: liquidityData.sofr.value, status: liquidityData.sofr.status, color: liquidityData.sofr.color },
+                { key: 'hyOas', label: 'HY OAS', value: liquidityData.hyOas.value, status: liquidityData.hyOas.status, color: liquidityData.hyOas.color },
+                { key: 'move', label: 'MOVE', value: liquidityData.move.value, status: liquidityData.move.status, color: liquidityData.move.color },
+                { key: 'us2yJp2y', label: 'US2Y-JP2Y', value: liquidityData.us2yJp2y.value, status: liquidityData.us2yJp2y.status, color: liquidityData.us2yJp2y.color },
+                { key: 'rrp', label: 'RRP', value: liquidityData.rrp.value, status: liquidityData.rrp.status, color: liquidityData.rrp.color, note: liquidityData.rrp.note },
+                { key: 'netLiquidity', label: 'Net Liquidity', value: liquidityData.netLiquidity.value, status: liquidityData.netLiquidity.status, color: liquidityData.netLiquidity.color }
+            ];
+
+            metrics.forEach(m => {
+                const card = document.createElement('div');
+                card.className = `glass p-3 rounded-2xl cursor-pointer transition hover:scale-[1.01] border border-white/5`;
+                card.innerHTML = `
+                    <div class="text-xs text-slate-400 mb-0.5">${m.label}</div>
+                    <div class="font-mono text-2xl font-semibold tabular-nums">${m.value}</div>
+                    <div class="flex items-center gap-1 mt-1">
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-${m.color}-500/10 text-${m.color}-400">${m.status}</span>
+                        ${m.note ? `<span class="text-[9px] text-emerald-400">${m.note}</span>` : ''}
+                    </div>
+                `;
+                card.onclick = () => {
+                    // 簡單互動：點擊高亮壓力指數並顯示提示
+                    const gauge = document.getElementById('stress-marker');
+                    if (gauge) {
+                        gauge.style.transition = 'left 0.4s ease';
+                        gauge.style.left = m.key.includes('rrp') || m.key.includes('net') ? '25%' : '55%';
+                    }
+                    const msg = `${m.label}: ${m.value} (${m.status})`;
+                    // 用現有 toast 風格顯示
+                    showToast(msg + (m.note ? ` — ${m.note}` : ''));
+                };
+                container.appendChild(card);
+            });
+
+            // 初始將 marker 放在黃色區域
+            const marker = document.getElementById('stress-marker');
+            if (marker) marker.style.left = '55%';
+        }
+
+        function showToast(msg) {
+            let toast = document.getElementById('temp-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'temp-toast';
+                toast.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 glass px-4 py-2 rounded-3xl text-sm shadow z-50';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.4s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2200);
+        }
+
+        // 簡單漲跌幅長條圖視覺化（純 CSS + JS，無外部依賴）
+        function renderBarChart(data) {
+            const container = document.getElementById('bar-chart');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="text-center py-6 text-slate-400 text-sm">無資料</div>';
+                return;
+            }
+            
+            // 依漲跌幅由高到低排序
+            const sorted = [...data].sort((a, b) => b.pct - a.pct);
+            
+            // 找出最大絕對值用來正規化寬度（讓 +10% 與 -10% 長度相當）
+            const maxAbs = Math.max(...sorted.map(s => Math.abs(s.pct)));
+            const safeMax = maxAbs || 10;
+            
+            sorted.forEach(stock => {
+                const absPct = Math.abs(stock.pct);
+                // 最小寬度避免太細，最大 100%
+                const barWidth = Math.max(4, Math.min(100, (absPct / safeMax) * 100));
+                
+                const isUp = stock.pct >= 0;
+                const barColor = isUp ? 'bg-emerald-400' : 'bg-rose-400';
+                const valueColor = isUp ? 'text-emerald-400' : 'text-rose-400';
+                const valueText = `${stock.pct > 0 ? '+' : ''}${stock.pct}%`;
+                
+                const row = document.createElement('div');
+                row.className = `bar-row flex items-center gap-3 px-1 py-[3px] rounded-xl group cursor-pointer hover:bg-white/5`;
+                
+                row.innerHTML = `
+                    <div class="w-24 md:w-28 flex-shrink-0 text-sm">
+                        <div class="font-medium leading-tight">${stock.name}</div>
+                        <div class="text-[10px] text-slate-400 font-mono tracking-tighter">${stock.code}</div>
+                    </div>
+                    
+                    <div class="flex-1 relative h-[17px] bg-white/5 rounded-full overflow-hidden">
+                        <div class="${barColor} h-full transition-all duration-500 ease-out rounded-full" 
+                             style="width: ${barWidth}%"></div>
+                    </div>
+                    
+                    <div class="w-[66px] text-right font-mono text-sm font-semibold ${valueColor} tabular-nums">
+                        ${valueText}
+                    </div>
+                `;
+                
+                // 點擊長條開啟該股票的 Modal 詳情（與表格點擊一致）
+                row.onclick = () => showStockDetail(stock);
+                
+                // 滑鼠懸停顯示更多資訊
+                row.title = `${stock.name} (${stock.code})：${valueText} | 關鍵支撐 ${stock.support} | ${stock.view}`;
+                
+                container.appendChild(row);
+            });
+        }
+        
+        function initTable() {
+            // initial render - sorted by pct descending (biggest drops first)
+            const sorted = [...stocksData].sort((a, b) => b.pct - a.pct);
+            renderTable(sorted);
+            renderBarChart(sorted);
+            renderLiquidityDashboard();  // 新增：宏觀流動性儀表板
+            
+            // default tab active
+            document.querySelector('#market-tabs button[data-market="all"]').classList.add('active');
+            
+            // keyboard support
+            document.getElementById('search-input').addEventListener('focus', () => {
+                document.getElementById('search-input').select();
+            });
+            
+            // Bonus: allow typing / to focus search
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    document.getElementById('search-input').focus();
+                }
+            });
+            
+            // Show a quick tip once
+            setTimeout(() => {
+                const tip = document.createElement('div');
+                tip.className = 'fixed bottom-4 right-4 text-[10px] bg-black/70 text-slate-300 px-3 py-1 rounded-3xl flex items-center gap-x-2 border border-white/10';
+                tip.innerHTML = `<span>點擊表格列、長條或流動性卡片可查看詳情</span>`;
+                document.body.appendChild(tip);
+                setTimeout(() => tip.remove(), 4800);
+            }, 5200);
+        }
+        
+        // Tailwind script
+        function initTailwind() {
+            // Already using CDN script
+        }
+        
+        // Boot
+        window.onload = function() {
+            initTailwind();
+            initTable();
+            
+            // Make sure first tab is visibly active
+            const allTab = document.querySelector('#market-tabs button[data-market="all"]');
+            if (allTab) allTab.classList.add('active');
+        }
+    </script>
+</body>
+</html>
