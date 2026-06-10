@@ -53,7 +53,7 @@
             <div class="flex items-center gap-x-3 text-xs">
                 <div class="px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 flex items-center gap-x-2">
                     <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
-                    <span></span>
+                    <span>獨立頁面 · 易維護</span>
                 </div>
             </div>
         </div>
@@ -63,8 +63,72 @@
         <!-- Intro -->
         <div class="max-w-2xl mb-10">
             <div class="text-3xl font-semibold tracking-tight mb-3">選擇一個領域開始</div>
-            <p class="text-slate-400"><br>
-            </p>
+            <p class="text-slate-400">跨領域 AI 系統互動示範。點擊卡片進入完整獨立頁面體驗。</p>
+        </div>
+
+        <!-- Hero Illustration -->
+        <div class="mb-12 flex justify-center">
+            <svg width="640" height="92" viewBox="0 0 640 92" class="opacity-90" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#3b82f6"/>
+                        <stop offset="33%" stop-color="#10b981"/>
+                        <stop offset="66%" stop-color="#06b6d4"/>
+                        <stop offset="100%" stop-color="#f59e0b"/>
+                    </linearGradient>
+                    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <!-- Central AI hub node -->
+                <circle cx="320" cy="46" r="18" fill="#1e2937" stroke="#64748b" stroke-width="2"/>
+                <circle cx="320" cy="46" r="10" fill="#64748b" opacity="0.3"/>
+                <text x="320" y="50" text-anchor="middle" fill="#e2e8f0" font-size="11" font-family="Inter, system-ui" font-weight="600">AI</text>
+
+                <!-- Four domain nodes with connecting lines -->
+                <!-- Retail (left) -->
+                <line x1="140" y1="46" x2="302" y2="46" stroke="#3b82f6" stroke-width="2.5" opacity="0.5"/>
+                <circle cx="130" cy="46" r="22" fill="#1e2937" stroke="#3b82f6" stroke-width="2.5"/>
+                <g>
+                    <rect x="115" y="36" width="30" height="20" rx="3" fill="#3b82f6" opacity="0.15"/>
+                    <path d="M120 42 L135 42 M120 48 L130 48" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="138" cy="45" r="2" fill="#3b82f6"/>
+                </g>
+
+                <!-- Restaurant -->
+                <line x1="220" y1="22" x2="305" y2="38" stroke="#10b981" stroke-width="2.5" opacity="0.5"/>
+                <circle cx="210" cy="18" r="22" fill="#1e2937" stroke="#10b981" stroke-width="2.5"/>
+                <g>
+                    <path d="M200 12 Q210 8 218 14" fill="none" stroke="#34d399" stroke-width="2"/>
+                    <circle cx="200" cy="22" r="3" fill="#10b981"/>
+                    <circle cx="215" cy="22" r="3" fill="#10b981"/>
+                    <rect x="198" y="26" width="22" height="3" rx="1" fill="#10b981" opacity="0.6"/>
+                </g>
+
+                <!-- Finance -->
+                <line x1="420" y1="22" x2="335" y2="38" stroke="#06b6d4" stroke-width="2.5" opacity="0.5"/>
+                <circle cx="430" cy="18" r="22" fill="#1e2937" stroke="#06b6d4" stroke-width="2.5"/>
+                <g>
+                    <rect x="418" y="10" width="24" height="14" rx="2" fill="#06b6d4" opacity="0.15"/>
+                    <path d="M422 15 L430 21 L438 13" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+
+                <!-- Destiny (right) -->
+                <line x1="500" y1="46" x2="338" y2="46" stroke="#f59e0b" stroke-width="2.5" opacity="0.5"/>
+                <circle cx="510" cy="46" r="22" fill="#1e2937" stroke="#f59e0b" stroke-width="2.5"/>
+                <g>
+                    <circle cx="502" cy="40" r="5" fill="#f59e0b" opacity="0.3"/>
+                    <path d="M508 38 L516 38 M508 44 L514 44" stroke="#fbbf24" stroke-width="1.5"/>
+                    <circle cx="518" cy="52" r="3" fill="#f59e0b" opacity="0.5"/>
+                </g>
+
+                <!-- Subtle connection accents -->
+                <circle cx="320" cy="46" r="28" fill="none" stroke="#64748b" stroke-width="1" opacity="0.2"/>
+            </svg>
         </div>
 
         <!-- Module Cards -->
@@ -72,10 +136,19 @@
             
             <!-- Retail -->
             <a href="ai.html" class="module-card group block glass rounded-3xl p-6 border border-slate-700 hover:border-blue-500/60">
-                <div class="flex items-start justify-between">
-                    <div class="w-12 h-12 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-400 mb-6">
-                        <i class="fa-solid fa-store text-3xl"></i>
-                    </div>
+                <div class="flex items-start justify-between mb-6">
+                    <!-- Custom illustration -->
+                    <svg width="56" height="56" viewBox="0 0 56 56" class="flex-shrink-0">
+                        <rect x="6" y="8" width="44" height="36" rx="4" fill="#1e40af" opacity="0.2"/>
+                        <rect x="6" y="8" width="44" height="36" rx="4" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                        <!-- Architecture nodes -->
+                        <circle cx="18" cy="20" r="5" fill="#3b82f6" opacity="0.8"/>
+                        <circle cx="38" cy="20" r="5" fill="#60a5fa"/>
+                        <circle cx="28" cy="38" r="5" fill="#3b82f6"/>
+                        <line x1="18" y1="25" x2="28" y2="33" stroke="#60a5fa" stroke-width="1.5"/>
+                        <line x1="38" y1="25" x2="28" y2="33" stroke="#60a5fa" stroke-width="1.5"/>
+                        <rect x="13" y="46" width="30" height="4" rx="1" fill="#3b82f6" opacity="0.5"/>
+                    </svg>
                     <div class="text-blue-400/70 group-hover:translate-x-0.5 transition">
                         <i class="fa-solid fa-arrow-right text-xl"></i>
                     </div>
@@ -89,10 +162,18 @@
 
             <!-- Restaurant -->
             <a href="ai1.html" class="module-card group block glass rounded-3xl p-6 border border-slate-700 hover:border-emerald-500/60">
-                <div class="flex items-start justify-between">
-                    <div class="w-12 h-12 bg-emerald-600/20 rounded-2xl flex items-center justify-center text-emerald-400 mb-6">
-                        <i class="fa-solid fa-utensils text-3xl"></i>
-                    </div>
+                <div class="flex items-start justify-between mb-6">
+                    <!-- Custom illustration -->
+                    <svg width="56" height="56" viewBox="0 0 56 56" class="flex-shrink-0">
+                        <rect x="8" y="10" width="40" height="32" rx="3" fill="#166534" opacity="0.25"/>
+                        <rect x="8" y="10" width="40" height="32" rx="3" fill="none" stroke="#10b981" stroke-width="2"/>
+                        <!-- Layered system (A-E) -->
+                        <rect x="14" y="16" width="28" height="4" rx="1" fill="#10b981" opacity="0.7"/>
+                        <rect x="14" y="23" width="28" height="4" rx="1" fill="#34d399" opacity="0.6"/>
+                        <rect x="14" y="30" width="28" height="4" rx="1" fill="#10b981" opacity="0.5"/>
+                        <circle cx="42" cy="42" r="6" fill="#166534" opacity="0.4"/>
+                        <path d="M39 40 L45 40 M42 37 L42 45" stroke="#10b981" stroke-width="1.5"/>
+                    </svg>
                     <div class="text-emerald-400/70 group-hover:translate-x-0.5 transition">
                         <i class="fa-solid fa-arrow-right text-xl"></i>
                     </div>
@@ -106,10 +187,18 @@
 
             <!-- Finance -->
             <a href="yfinance_ai_insights.html" class="module-card group block glass rounded-3xl p-6 border border-slate-700 hover:border-cyan-500/60">
-                <div class="flex items-start justify-between">
-                    <div class="w-12 h-12 bg-cyan-600/20 rounded-2xl flex items-center justify-center text-cyan-400 mb-6">
-                        <i class="fa-solid fa-chart-line text-3xl"></i>
-                    </div>
+                <div class="flex items-start justify-between mb-6">
+                    <!-- Custom illustration -->
+                    <svg width="56" height="56" viewBox="0 0 56 56" class="flex-shrink-0">
+                        <rect x="6" y="12" width="44" height="30" rx="3" fill="#164e63" opacity="0.25"/>
+                        <rect x="6" y="12" width="44" height="30" rx="3" fill="none" stroke="#06b6d4" stroke-width="2"/>
+                        <!-- Bar chart -->
+                        <rect x="14" y="32" width="6" height="8" fill="#67e8f9"/>
+                        <rect x="24" y="26" width="6" height="14" fill="#22d3ee"/>
+                        <rect x="34" y="20" width="6" height="20" fill="#06b6d4"/>
+                        <!-- Trend line -->
+                        <path d="M17 35 L27 28 L37 22" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
                     <div class="text-cyan-400/70 group-hover:translate-x-0.5 transition">
                         <i class="fa-solid fa-arrow-right text-xl"></i>
                     </div>
@@ -123,10 +212,21 @@
 
             <!-- Destiny -->
             <a href="bazi_ziwei_integrated.html" class="module-card group block glass rounded-3xl p-6 border border-slate-700 hover:border-amber-500/60">
-                <div class="flex items-start justify-between">
-                    <div class="w-12 h-12 bg-amber-600/20 rounded-2xl flex items-center justify-center text-amber-400 mb-6">
-                        <i class="fa-solid fa-yin-yang text-3xl"></i>
-                    </div>
+                <div class="flex items-start justify-between mb-6">
+                    <!-- Custom illustration -->
+                    <svg width="56" height="56" viewBox="0 0 56 56" class="flex-shrink-0">
+                        <circle cx="28" cy="28" r="20" fill="#451a03" opacity="0.3"/>
+                        <circle cx="28" cy="28" r="20" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
+                        <!-- Yin Yang stylized -->
+                        <path d="M28 10 A18 18 0 0 1 28 46 A9 9 0 0 1 28 28 A9 9 0 0 0 28 10" fill="#f59e0b" opacity="0.75"/>
+                        <path d="M28 10 A18 18 0 0 0 28 46 A9 9 0 0 0 28 28 A9 9 0 0 1 28 10" fill="#854d0e" opacity="0.9"/>
+                        <circle cx="28" cy="20" r="3.5" fill="#451a03"/>
+                        <circle cx="28" cy="36" r="3.5" fill="#fcd34d"/>
+                        <!-- Flying stars / Si Hua accents -->
+                        <circle cx="18" cy="18" r="2" fill="#f59e0b"/>
+                        <circle cx="39" cy="18" r="1.8" fill="#fcd34d"/>
+                        <circle cx="17" cy="38" r="1.5" fill="#f59e0b"/>
+                    </svg>
                     <div class="text-amber-400/70 group-hover:translate-x-0.5 transition">
                         <i class="fa-solid fa-arrow-right text-xl"></i>
                     </div>
@@ -144,12 +244,22 @@
         <div class="mt-12 text-center">
             <div class="inline-flex items-center gap-x-2 text-xs text-slate-500 bg-slate-900 border border-slate-800 px-4 py-2 rounded-3xl">
                 <i class="fa-solid fa-info-circle"></i>
-                <span></span>
+                <span>每個模組為獨立完整頁面，可單獨更新與部署</span>
             </div>
         </div>
 
+        <!-- Bottom decorative illustration -->
+        <div class="mt-8 flex justify-center">
+            <svg width="280" height="28" viewBox="0 0 280 28" class="opacity-40">
+                <path d="M20 14 Q70 4 140 14 Q210 24 260 14" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="140" cy="14" r="3" fill="#64748b" opacity="0.5"/>
+                <circle cx="70" cy="8" r="1.5" fill="#3b82f6"/>
+                <circle cx="210" cy="20" r="1.5" fill="#f59e0b"/>
+            </svg>
+        </div>
+
         <!-- Optional: link to old consolidated version -->
-        <div class="mt-6 text-center text-[10px]">
+        <div class="mt-4 text-center text-[10px]">
             <a href="ai_consolidated_interactive.html" class="text-slate-500 hover:text-slate-400 underline">整合版</a>
         </div>
     </div>
