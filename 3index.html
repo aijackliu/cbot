@@ -236,97 +236,6 @@
             </div>
         </div>
 
-        <!-- 宏觀流動性儀表板 -->
-        <div class="mb-8" id="liquidity-dashboard">
-            <div class="flex items-center justify-between mb-3 px-1">
-                <div>
-                    <span class="section-header">宏觀流動性儀表板</span>
-                    <span class="ml-3 sentiment-badge bg-yellow-500/10 text-yellow-400">
-                        <i class="fa-solid fa-exclamation-triangle mr-1"></i> 
-                        黃色警戒
-                    </span>
-                </div>
-                <div class="text-xs text-slate-400">2026-06-10 • 部分系列已恢復（原執行 FAIL 但已寫入 json）</div>
-            </div>
-
-            <!-- Metrics Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4" id="liquidity-metrics">
-                <!-- Populated by JS -->
-            </div>
-
-            <!-- Liquidity Stress Gauge -->
-            <div class="glass rounded-3xl p-4 mb-4">
-                <div class="flex justify-between items-center mb-2 text-xs">
-                    <span class="text-emerald-400">寬鬆</span>
-                    <span class="font-medium">流動性壓力指數</span>
-                    <span class="text-rose-400">收緊</span>
-                </div>
-                <div class="relative h-3 bg-gradient-to-r from-emerald-400 via-yellow-400 to-rose-400 rounded-full">
-                    <div id="stress-marker" 
-                         class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-yellow-500 rounded-full shadow flex items-center justify-center"
-                         style="left: 55%;">
-                        <div class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
-                    </div>
-                </div>
-                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
-                    <div>SOFR 穩定 / HY OAS 未闊</div>
-                    <div class="font-medium text-yellow-400">目前位置：黃</div>
-                    <div>RRP 極低（支撐）</div>
-                </div>
-            </div>
-
-            <!-- Judgment & Details -->
-            <div class="glass rounded-3xl p-5">
-                <div class="grid md:grid-cols-5 gap-4 text-sm">
-                    <!-- Judgment -->
-                    <div class="md:col-span-3">
-                        <div class="font-semibold mb-1.5 flex items-center gap-2">
-                            判斷摘要
-                            <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded">中性偏警戒</span>
-                        </div>
-                        <div class="text-slate-300 leading-snug">
-                            SOFR 與 HY OAS 未見明顯流動性抽水。MOVE 約 77（中等波動）。US2Y-JP2Y 約 2.72、RRP 極低（0.577）顯示淨流動性有支撐。
-                            但先前多項缺值使判讀曾不完整，現在資料較完整，仍保守視為<strong class="text-yellow-300">中性偏警戒（黃）</strong>。
-                        </div>
-                    </div>
-
-                    <!-- Key Metrics Summary -->
-                    <div class="md:col-span-2">
-                        <div class="font-semibold mb-1.5">關鍵數值</div>
-                        <div class="space-y-1 text-xs">
-                            <div class="flex justify-between"><span>SOFR</span><span class="font-mono">3.63</span></div>
-                            <div class="flex justify-between"><span>HY OAS</span><span class="font-mono">2.75</span></div>
-                            <div class="flex justify-between"><span>MOVE</span><span class="font-mono text-emerald-400">77.03 ✓</span></div>
-                            <div class="flex justify-between"><span>US2Y-JP2Y</span><span class="font-mono text-emerald-400">2.72 ✓</span></div>
-                            <div class="flex justify-between"><span>RRP</span><span class="font-mono text-emerald-400">0.577 (極低) ✓</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Missing & Observation -->
-                <div class="mt-4 pt-4 border-t border-white/10 grid md:grid-cols-2 gap-4 text-xs">
-                    <div>
-                        <div class="font-medium mb-1 text-slate-300">缺失項（已大幅改善）</div>
-                        <div class="flex flex-wrap gap-1">
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">MOVE ✓</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">USDJPY ✓</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">US2Y ✓</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">RRP ✓</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">US2Y-JP2Y ✓</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px]">Net Liq ✓</span>
-                        </div>
-                        <div class="mt-1 text-[10px] text-slate-400">原執行 FAIL，但 json 已寫入可用數據。</div>
-                    </div>
-                    <div>
-                        <div class="font-medium mb-1 text-rose-300">觀察點（升級紅色條件）</div>
-                        <div class="text-slate-300 leading-snug">
-                            若 HY OAS 明顯走闊（&gt;3.0）、SOFR 上行，或 MOVE／US2Y／RRP 恢復後顯示利差惡化與淨流動性下滑，警戒應升級至<strong class="text-rose-400">紅</strong>。
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Sentiment Overview -->
         <div class="glass rounded-3xl p-6 mb-8">
             <div class="flex items-center justify-between mb-4">
@@ -754,83 +663,6 @@
             alert("原始完整分析已濃縮於本頁面表格與彈窗中。\n\n如需查看每檔原始 3 段式 AI 分析文字，請開啟 yfinance_ai_analysis.html 檔案。\n\n本總結版已聚焦市場共識與可執行洞察。");
         }
         
-        // 宏觀流動性數據（靜態補全）
-        const liquidityData = {
-            lastUpdated: "2026-06-10",
-            status: "FAIL (但已寫入 memory/market-liquidity.json)",
-            sofr: { value: 3.63, status: "穩定", color: "emerald" },
-            hyOas: { value: 2.75, status: "未闊", color: "emerald" },
-            move: { value: 77.03, status: "中等波動", color: "yellow" },
-            us2yJp2y: { value: 2.72, status: "已計算", color: "emerald" },
-            rrp: { value: 0.577, status: "極低（耗盡）", color: "emerald", note: "支撐流動性" },
-            netLiquidity: { value: "寬鬆", status: "RRP 極低", color: "emerald" },
-            overall: { level: "黃", judgment: "中性偏警戒", color: "yellow" },
-            missingBefore: ["MOVE", "USDJPY", "US2Y", "RRP", "US2Y-JP2Y", "Net Liquidity Approx"],
-            observation: "若 HY OAS 明顯走闊（>3.0）、SOFR 上行，或 MOVE／US2Y／RRP 恢復後顯示利差惡化與淨流動性下滑，警戒應升級至紅。"
-        };
-
-        // 渲染宏觀流動性儀表板卡片
-        function renderLiquidityDashboard() {
-            const container = document.getElementById('liquidity-metrics');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const metrics = [
-                { key: 'sofr', label: 'SOFR', value: liquidityData.sofr.value, status: liquidityData.sofr.status, color: liquidityData.sofr.color },
-                { key: 'hyOas', label: 'HY OAS', value: liquidityData.hyOas.value, status: liquidityData.hyOas.status, color: liquidityData.hyOas.color },
-                { key: 'move', label: 'MOVE', value: liquidityData.move.value, status: liquidityData.move.status, color: liquidityData.move.color },
-                { key: 'us2yJp2y', label: 'US2Y-JP2Y', value: liquidityData.us2yJp2y.value, status: liquidityData.us2yJp2y.status, color: liquidityData.us2yJp2y.color },
-                { key: 'rrp', label: 'RRP', value: liquidityData.rrp.value, status: liquidityData.rrp.status, color: liquidityData.rrp.color, note: liquidityData.rrp.note },
-                { key: 'netLiquidity', label: 'Net Liquidity', value: liquidityData.netLiquidity.value, status: liquidityData.netLiquidity.status, color: liquidityData.netLiquidity.color }
-            ];
-
-            metrics.forEach(m => {
-                const card = document.createElement('div');
-                card.className = `glass p-3 rounded-2xl cursor-pointer transition hover:scale-[1.01] border border-white/5`;
-                card.innerHTML = `
-                    <div class="text-xs text-slate-400 mb-0.5">${m.label}</div>
-                    <div class="font-mono text-2xl font-semibold tabular-nums">${m.value}</div>
-                    <div class="flex items-center gap-1 mt-1">
-                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-${m.color}-500/10 text-${m.color}-400">${m.status}</span>
-                        ${m.note ? `<span class="text-[9px] text-emerald-400">${m.note}</span>` : ''}
-                    </div>
-                `;
-                card.onclick = () => {
-                    // 簡單互動：點擊高亮壓力指數並顯示提示
-                    const gauge = document.getElementById('stress-marker');
-                    if (gauge) {
-                        gauge.style.transition = 'left 0.4s ease';
-                        gauge.style.left = m.key.includes('rrp') || m.key.includes('net') ? '25%' : '55%';
-                    }
-                    const msg = `${m.label}: ${m.value} (${m.status})`;
-                    // 用現有 toast 風格顯示
-                    showToast(msg + (m.note ? ` — ${m.note}` : ''));
-                };
-                container.appendChild(card);
-            });
-
-            // 初始將 marker 放在黃色區域
-            const marker = document.getElementById('stress-marker');
-            if (marker) marker.style.left = '55%';
-        }
-
-        function showToast(msg) {
-            let toast = document.getElementById('temp-toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'temp-toast';
-                toast.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 glass px-4 py-2 rounded-3xl text-sm shadow z-50';
-                document.body.appendChild(toast);
-            }
-            toast.textContent = msg;
-            toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.transition = 'opacity 0.4s';
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 2200);
-        }
-
         // 簡單漲跌幅長條圖視覺化（純 CSS + JS，無外部依賴）
         function renderBarChart(data) {
             const container = document.getElementById('bar-chart');
@@ -892,8 +724,7 @@
             // initial render - sorted by pct descending (biggest drops first)
             const sorted = [...stocksData].sort((a, b) => b.pct - a.pct);
             renderTable(sorted);
-            renderBarChart(sorted);
-            renderLiquidityDashboard();  // 新增：宏觀流動性儀表板
+            renderBarChart(sorted);   // 新增：渲染長條圖
             
             // default tab active
             document.querySelector('#market-tabs button[data-market="all"]').classList.add('active');
@@ -915,7 +746,7 @@
             setTimeout(() => {
                 const tip = document.createElement('div');
                 tip.className = 'fixed bottom-4 right-4 text-[10px] bg-black/70 text-slate-300 px-3 py-1 rounded-3xl flex items-center gap-x-2 border border-white/10';
-                tip.innerHTML = `<span>點擊表格列、長條或流動性卡片可查看詳情</span>`;
+                tip.innerHTML = `<span>點擊表格列或長條圖可查看詳細洞察</span>`;
                 document.body.appendChild(tip);
                 setTimeout(() => tip.remove(), 4800);
             }, 5200);
