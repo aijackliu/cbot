@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多國股市 AI 技術分析報告</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #060913;
+            --bg-card: rgba(13, 20, 38, 0.45);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --color-cyan: #00f0ff;
+            --color-green: #39ff14;
+            --color-red: #ff007f;
+            --color-gold: #ffaa00;
+            --shadow-glow: 0 8px 32px 0 rgba(0, 240, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #0a1735 0%, var(--bg-main) 70%);
+            color: var(--text-primary);
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            padding: 3rem 2.5rem;
+            overflow-y: scroll;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+        }
+
+        .title-section h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: linear-gradient(to right, #ffffff 40%, var(--color-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+        }
+
+        .title-section p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.6rem;
+        }
+
+        .meta-info {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .meta-info span {
+            color: var(--color-cyan);
+            font-weight: 600;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.6rem;
+            border-radius: 30px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--color-cyan);
+            border-color: var(--color-cyan);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Grid layout */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card glass effect */
+        .stock-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-glow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-cyan), transparent);
+            opacity: 0.5;
+        }
+
+        .stock-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 240, 255, 0.2);
+            box-shadow: 0 12px 40px 0 rgba(0, 240, 255, 0.1);
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+        }
+
+        .stock-info h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stock-info .code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .market-tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.04);
+            display: inline-block;
+        }
+
+        .market-tag.tw { border: 1px solid rgba(255, 100, 100, 0.25); color: #ff9e9e; }
+        .market-tag.us { border: 1px solid rgba(100, 150, 255, 0.25); color: #9ec3ff; }
+        .market-tag.ks { border: 1px solid rgba(100, 255, 150, 0.25); color: #9effc3; }
+
+        /* Price Section */
+        .price-section {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .change-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .change-tag.up {
+            background: rgba(57, 255, 20, 0.08);
+            color: var(--color-green);
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+        }
+
+        .change-tag.down {
+            background: rgba(255, 0, 127, 0.08);
+            color: var(--color-red);
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.15);
+        }
+
+        .change-tag.flat {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+        }
+
+        /* AI Analysis Block */
+        .analysis-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            flex-grow: 1;
+        }
+
+        .analysis-block {
+            background: rgba(255, 255, 255, 0.01);
+            border-left: 3px solid var(--color-cyan);
+            padding: 0.8rem 1.1rem;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s;
+        }
+
+        .analysis-block:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .analysis-block.tech { border-left-color: var(--color-cyan); }
+        .analysis-block.volume { border-left-color: var(--color-gold); }
+        .analysis-block.advice { border-left-color: var(--color-green); }
+
+        .analysis-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.45rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .analysis-title svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .analysis-block.tech .analysis-title svg { color: var(--color-cyan); }
+        .analysis-block.volume .analysis-title svg { color: var(--color-gold); }
+        .analysis-block.advice .analysis-title svg { color: var(--color-green); }
+
+        .analysis-content {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            text-align: justify;
+        }
+
+        .analysis-content strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: var(--color-red);
+            font-size: 0.85rem;
+            padding: 1rem;
+            background: rgba(255, 0, 127, 0.04);
+            border: 1px solid rgba(255, 0, 127, 0.08);
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-section">
+                <h1>股市 AI 技術分析報告</h1>
+                <p>結合 Yahoo Finance 即時行情與大模型技術面走勢預測的純靜態面板</p>
+            </div>
+            <div class="meta-info">
+                報告生成時間: <span id="last-updated-time">載入中...</span><br>
+                模型: <span>Qwen3.6-35B-A3B-MXFP4_MOE (Ollama)</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterMarket('all')">全部</button>
+            <button class="tab-btn" onclick="filterMarket('tw')">🇹🇼 台灣股市</button>
+            <button class="tab-btn" onclick="filterMarket('ks')">🇰🇷 韓國股市</button>
+            <button class="tab-btn" onclick="filterMarket('us')">🇺🇸 美國股市</button>
+        </div>
+
+        <div class="stock-grid" id="stock-grid">
+            <!-- 數據卡片將由 JavaScript 動態渲染 -->
+        </div>
+    </div>
+
+    <script>
+        // 內嵌的靜態資料庫，由後端同步生成
+        const reportData = {
+  "last_updated": "2026-06-10 20:51:44",
+  "stocks": {
+    "2330.TW": {
+      "code": "2330.TW",
+      "success": true,
+      "current_price": 2255.0,
+      "prev_close": 2305.0,
+      "pct_chg": -2.17,
+      "analysis": "**1. 技術指標與價格趨勢分析**\n股價自6/3高點2440元後轉弱回檔，目前2255元已跌破短期均線。趨勢偏空，下方關鍵支撐位於2230元（6/8低點），上方壓力區為2300-2320元。均線呈空頭排列，反彈動能不足。\n\n**2. 量價關係分析**\n6/8大跌時成交量放大至4,472萬張，顯示籌碼出脫壓力重；隨後反彈量能萎縮至3,325萬張，買盤跟風意願低。量縮價跌格局明確，反映市場情緒轉趨保守，空方主導盤面。\n\n**3. 短期走勢預測與操作建議**\n預期短期將測試2230元支撐，若守穩有望企穩反彈，否則續探2200元。建議觀望為主，待股價站回2300元且量能放大再考慮佈局。進場設停損於2220元，目標價2320元，嚴守紀律避開追高風險。",
+      "error": ""
+    },
+    "2317.TW": {
+      "code": "2317.TW",
+      "success": true,
+      "current_price": 263.0,
+      "prev_close": 277.5,
+      "pct_chg": -5.23,
+      "analysis": "**1. 技術指標與價格趨勢分析**\n股價自6/3高點314元後連續修正，目前263元已跌破短期均線。關鍵支撐位於257.5元（6/8低點），壓力在277.5元（昨日收盤）與300元。技術面呈高檔震盪後回檔格局。\n\n**2. 量價關係分析**\n前期拉抬伴隨天量（6/3達2.8億股），回檔過程成交量顯著萎縮（6/9僅7,179萬股），屬健康量縮修正。市場情緒由追高轉為觀望，賣壓未見失控，主力出貨跡象不明顯。\n\n**3. 短期走勢預測與操作建議**\n短期將測試260元支撐，若守穩有望反彈至275-280元。建議於258-262元區間分批佈局，停損設於255元；反彈至277元以上遇阻則短線獲利了結，嚴守紀律。",
+      "error": ""
+    },
+    "2454.TW": {
+      "code": "2454.TW",
+      "success": true,
+      "current_price": 4155.0,
+      "prev_close": 4475.0,
+      "pct_chg": -7.15,
+      "analysis": "**1. 技術指標與價格趨勢分析**\n股價自高點4690回落，現價4155跌破昨日收盤4475，空頭動能顯現。短期均線轉空，下方支撐看4130與3935，壓力位設於4300及4475。若失守4100，恐下探前低。\n\n**2. 量價關係分析**\n06/08放量下跌（1435萬手）反映獲利了結；06/09反彈近10%量能持平，屬超跌反彈。現價4155若伴隨縮量，顯示買盤承接不足，市場情緒轉為觀望。\n\n**3. 短期走勢預測與操作建議**\n短期偏空震盪，預計於4100-4300區間整理。建議觀望，若股價站穩4300且量增可短線佈局；若跌破4100應嚴格停損。嚴守紀律，避免追高。",
+      "error": ""
+    },
+    "0050.TW": {
+      "code": "0050.TW",
+      "success": true,
+      "current_price": 100.25,
+      "prev_close": 103.5,
+      "pct_chg": -3.14,
+      "analysis": "**1. 技術指標與價格趨勢分析**：股價自高點107.60回檔，跌破短期均線呈偏弱震盪。關鍵支撐位於100元整數關口及前低101.3元，壓力在昨日收盤103.5元與105元區間。若失守100元，恐下探98元。\n\n**2. 量價關係分析**：6/8成交量暴增至3.2億股伴隨大跌，屬明顯放量賣壓，反映獲利了結與恐慌。隨後量能收斂，市場進入觀望。目前最新價100.25元逼近支撐，需觀察是否出現縮量止跌訊號。\n\n**3. 短期走勢預測與操作建議**：短期預計於100-103.5元區間整理。建議於100元附近觀察支撐有效性，若放量跌破則暫避；若反彈帶量站穩103.5元上方，可短線佈局。嚴守停損，不宜追高。",
+      "error": ""
+    },
+    "005930.KS": {
+      "code": "005930.KS",
+      "success": true,
+      "current_price": 302500.0,
+      "prev_close": 322000.0,
+      "pct_chg": -6.06,
+      "analysis": "**1. 技術指標與價格趨勢分析**：股價自6/2高點360,500元急跌，現回測292,500元支撐。短期均線轉空，322,000元轉為壓力，295,000元為關鍵支撐。目前處於高檔震盪修正階段。\n\n**2. 量價關係分析**：漲勢伴隨放量，但下跌時量能未顯著萎縮，顯示獲利了結賣壓沉重。反彈日量能溫和，市場情緒偏向觀望與多空拉鋸。\n\n**3. 短期走勢預測與操作建議**：預計短期將圍繞300,000元整數關卡震盪。若跌破295,000元，可能下探280,000元；反之放量站穩322,000元則有望修復。建議觀望為主，短線宜於支撐位輕倉試多，嚴設停損，避免追高。",
+      "error": ""
+    },
+    "000660.KS": {
+      "code": "000660.KS",
+      "success": true,
+      "current_price": 2048000.0,
+      "prev_close": 2215000.0,
+      "pct_chg": -7.54,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價走勢呈急漲後回檔，昨日大漲15.91%至221.5萬，今日回落至204.8萬。短期均線由空轉多，但220萬至240萬區間形成強阻力，下方190萬至200萬為關鍵支撐。\n\n2. **量價關係分析**：前期下跌伴隨放量，反映恐慌賣壓；昨日反彈量能溫和，顯示追高動能不足。今日價跌量縮屬技術性回檔，市場情緒轉為觀望。\n\n3. **短期走勢預測與操作建議**：短期高檔震盪機率大，預計回測200萬關卡。若守穩且量能萎縮，可逢低佈局；若跌破190萬則轉弱，建議觀望或停損。操作宜採低接高殺，嚴守停損紀律。",
+      "error": ""
+    },
+    "NVDA": {
+      "code": "NVDA",
+      "success": true,
+      "current_price": 208.19000244140625,
+      "prev_close": 208.63999938964844,
+      "pct_chg": -0.22,
+      "analysis": "**1. 技術指標與價格趨勢分析**\nNVDA自232高點回調，目前於205-215區間震盪，價格已跌破短期均線，短線呈修正格局。關鍵支撐位於204-205（前低），壓力區在214-215與220-224。\n\n**2. 量價關係分析**\n06/05大跌伴隨2.19億股天量，獲利了結賣壓沉重；06/08反彈量能縮至1.38億，買盤跟風不足，量價背離顯示空方仍占優。\n\n**3. 短期走勢預測與操作建議**\n短線偏空，預計將測試205支撐。若守穩可反彈至214，若跌破則下看200。建議以觀望為主，保守者待量價同步轉強後再佈局；短線交易者宜設停損於204下方，避免追高。",
+      "error": ""
+    },
+    "GOOGL": {
+      "code": "GOOGL",
+      "success": true,
+      "current_price": 364.260009765625,
+      "prev_close": 363.30999755859375,
+      "pct_chg": 0.26,
+      "analysis": "**1. 技術指標與價格趨勢分析**\n股價自5月底高點393.64美元見頂後轉空，連續跌破短期均線，目前於360-363美元區間盤整。360美元為關鍵支撐，370-373美元為短期壓力。均線呈空頭排列，反彈動能偏弱。\n\n**2. 量價關係分析**\n6月2日至4日下跌與反彈期間成交量顯著放大（逾5000萬股），顯示空方拋壓沉重。近期量能萎縮至2700萬股，反映市場觀望情緒濃厚，缺乏明確方向，屬典型的「量縮盤整」。\n\n**3. 短期走勢預測與操作建議**\n短期預計維持360-370美元區間震盪。若跌破360美元，可能下探350美元；若放量突破373美元則轉強。建議以觀望為主，保守者可於360美元附近輕倉試多，嚴格設定停損；突破壓力位前不宜追高。",
+      "error": ""
+    },
+    "INTC": {
+      "code": "INTC",
+      "success": true,
+      "current_price": 107.91999816894531,
+      "prev_close": 110.2699966430664,
+      "pct_chg": -2.13,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價自5月底123美元急跌至6月5日98美元後反彈至110美元，呈V型反轉。短期均線由空轉多，現價107.92美元略低於前日收盤，顯示反彈遇壓。關鍵支撐位於98-104美元，壓力區在113-118美元。\n\n2. **量價關係分析**：6月5日暴跌伴隨1.45億股天量，反映恐慌賣壓；6月8日反彈亦放量至1.37億股，顯示資金積極承接。近期量價配合緊密，高換手率代表多空交戰白熱化，市場情緒偏向短線投機。\n\n3. **短期走勢預測與操作建議**：短期以震盪修復為主。若守住104美元支撐，有望挑戰113美元；若失守則回測98美元。建議採高拋低吸策略，嚴設停損於103美元下方，避免追高，密切留意半導體產業動向。",
+      "error": ""
+    },
+    "MU": {
+      "code": "MU",
+      "success": true,
+      "current_price": 935.8900146484375,
+      "prev_close": 949.280029296875,
+      "pct_chg": -1.41,
+      "analysis": "**1. 技術指標與價格趨勢分析**：MU近期呈急漲深調格局。股價自820拉升至1089高點後，6/5急跌至864，隨後反彈至949。短期均線於950-960形成壓力，支撐看915（6/8低點）及864。現價935處於盤整。\n\n**2. 量價關係分析**：6/5暴跌伴隨7725萬股天量，顯現恐慌出脫與主力承接；6/8反彈放量5410萬股，確認買盤回補。量能活躍反映市場情緒高波動，資金博弈激烈。\n\n**3. 短期走勢預測與操作建議**：短期料於915-960震盪。若放量突破960，有望挑戰千關；若跌破915，恐回測864。建議觀望，回測915附近且量縮可輕倉佈局，突破960再追多，嚴設停損。",
+      "error": ""
+    },
+    "^TWII": {
+      "code": "^TWII",
+      "success": true,
+      "current_price": 43225.5390625,
+      "prev_close": 43502.78125,
+      "pct_chg": -0.64,
+      "analysis": "**1. 技術指標與價格趨勢分析**：指數自6/3高點46,552回檔，目前收於43,225，短期均線轉空，呈修正格局。關鍵支撐位於42,376（6/8低點）與43,000整數關卡；壓力則在43,500（昨日收盤）及44,800。\n\n**2. 量價關係分析**：上漲階段量能溫和放大，但6/8大跌時成交量縮至646萬，顯示賣壓逐步衰竭，市場情緒轉為觀望，屬健康回檔特徵。\n\n**3. 短期走勢預測與操作建議**：短期將於42,500至43,500區間震盪。若守穩43,000且量能回升，有望反彈測試44,000；建議採區間操作，跌破42,300則停損，突破43,800可短線進場。",
+      "error": ""
+    },
+    "2348.TW": {
+      "code": "2348.TW",
+      "success": true,
+      "current_price": 78.0999984741211,
+      "prev_close": 71.0,
+      "pct_chg": 10.0,
+      "analysis": "**1. 技術指標與價格趨勢分析**\n股價自68元區間震盪上行，最新價78.10元跳空突破近期整理區。短期均線呈多頭排列，支撐位位於72-73元，壓力位為前高79.9元及80元整數關卡，整體趨勢已轉為多頭。\n\n**2. 量價關係分析**\n06/03與06/04明顯放量，但06/04長上影線伴隨巨量，顯示79元上方獲利賣壓沉重。近期回檔缩量，最新跳空上漲若量能持續放大，屬健康突破；若量縮則需防範假突破。\n\n**3. 短期走勢預測與操作建議**\n短期有望挑戰80元壓力，若帶量站穩則看高一线。建議持股者逢高減碼，未持股者等待回測73元支撐確認後再佈局，嚴設停損於70元，避免追高風險。",
+      "error": ""
+    },
+    "3450.TW": {
+      "code": "3450.TW",
+      "success": true,
+      "current_price": 472.0,
+      "prev_close": 507.0,
+      "pct_chg": -6.9,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價近期波動劇烈，06/08急跌至461後於06/09強勁反彈至507，現價472屬回檔修正。短線均線呈空頭排列，關鍵支撐位於460-470區間，壓力位為507-520。整體處於震盪築底階段。\n\n2. **量價關係分析**：06/08下跌時量能僅595萬，屬低量殺盤，顯示賣壓未全面爆發；06/09反彈量能652萬，未能顯著放大，反映買盤信心不足。現價回檔若無量能配合，短期難言反轉。\n\n3. **短期走勢預測與操作建議**：預估短線將於460-500區間震盪整理。建議觀望為主，若股價守穩470且量能溫和放大，可輕倉佈局；跌破460則嚴格停損。目標價設於500，不宜追高。",
+      "error": ""
+    },
+    "8234.TWO": {
+      "code": "8234.TWO",
+      "success": true,
+      "current_price": 63.400001525878906,
+      "prev_close": 66.5999984741211,
+      "pct_chg": -4.8,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價自6/1高點75.9元回調，短期均線空頭排列。現價63.4元跌破昨日收盤66.6元，下檔支撐62.3元，上檔壓力66.6元與70元，整體處於修正空頭格局。\n\n2. **量價關係分析**：6/1放量上漲後，6/8大跌伴隨量能溫和放大，賣壓顯現。6/9反彈僅77萬口屬縮量，買盤動能不足。最新價反映市場情緒偏空，資金觀望。\n\n3. **短期走勢預測與操作建議**：短期續探62.3元支撐，若跌破則下看68元前低。建議觀望為主，待股價站穩66.6元且量能放大再考慮短線進場；持有者若跌破62元應嚴格停損，避免深套。",
+      "error": ""
+    },
+    "2303.TW": {
+      "code": "2303.TW",
+      "success": true,
+      "current_price": 118.5,
+      "prev_close": 127.5,
+      "pct_chg": -7.06,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價自143.5高點連續回落，短期均線呈空頭排列，趨勢轉弱。127.5為關鍵壓力，118.5為最新價，下方119至122區間為支撐，若跌破恐測試110。\n2. **量價關係分析**：下跌伴隨高量（日均逾3.5億股），籌碼鬆動。6/9雖反彈5.37%且量增，但最新價急跌至118.5，屬假突破，市場情緒偏空，短線賣壓沉重。\n3. **短期走勢預測與操作建議**：預期短線震盪下行。建議觀望，不宜接刀。若站穩122且量能溫和放大可短線進場；反彈至127-130遇壓，宜逢高減碼或停損。",
+      "error": ""
+    },
+    "2344.TW": {
+      "code": "2344.TW",
+      "success": true,
+      "current_price": 149.0,
+      "prev_close": 156.5,
+      "pct_chg": -4.79,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價自6/3高點193元後轉入修正，目前149元已跌破短線均線，呈空頭格局。關鍵支撐位於6/8低點146元，壓力則在156.5與160元區間。短線需觀察能否於146元築底反轉，均線系統仍具壓制作用。\n\n2. **量價關係分析**：下跌過程成交量顯著萎縮，反映追殺賣壓有限，屬良性回檔。惟最新價低於昨日收盤156.5元，顯示空方再度試探，市場情緒轉為觀望。需等待放量長紅確認買盤進場，量縮價穩方為轉強訊號。\n\n3. **短期走勢預測與操作建議**：短線預計於146～155元區間震盪整理。建議於146元附近觀察支撐有效性，若出現量價轉強可輕倉佈局多單，停損設於144元；若跌破146元則暫不進場，等待160元上方突破確認後再順勢操作。",
+      "error": ""
+    },
+    "3481.TW": {
+      "code": "3481.TW",
+      "success": true,
+      "current_price": 44.29999923706055,
+      "prev_close": 49.099998474121094,
+      "pct_chg": -9.78,
+      "analysis": "**1. 技術指標與價格趨勢分析**：股價自6月初高點60.5元急跌，現價44.30元已跌破前波支撐區（46.6-48.3元）。短期均線呈空頭排列，下行趨勢明確。上方壓力位於昨日收盤49.10元及50元關卡，下方支撐暫看40-42元區間。\n\n**2. 量價關係分析**：前期漲勢伴隨高量，但下跌過程量能顯著萎縮，顯示追高意願不足。6/8跌停僅8.5萬張屬低量殺盤；6/9反彈量能微增卻未能守住漲幅，市場情緒轉為觀望與獲利了結，量價背離確認賣壓沉重。\n\n**3. 短期走勢預測與操作建議**：短期偏空，股價恐續探44元下方。建議現貨持有者逢反彈至48-49元區間減碼控險；空手者宜等待股價於40-42元區間出現放量止跌訊號後再行佈局，嚴守停損紀律，避免接刀。",
+      "error": ""
+    },
+    "00981A.TW": {
+      "code": "00981A.TW",
+      "success": true,
+      "current_price": 29.889999389648438,
+      "prev_close": 31.229999542236328,
+      "pct_chg": -4.29,
+      "analysis": "1. **技術指標與價格趨勢分析**：股價於30至32元區間震盪，06/08急跌至29.89元後，06/09反彈至31.23元，但最新價回落顯示短線動能轉弱。均線呈空頭排列，支撐位看29.75元，壓力位為31.50至32.00元。\n2. **量價關係分析**：下跌日（06/08）成交量達4.04億股，賣壓沉重；反彈日（06/09）量縮至2.31億股，買盤跟風意願不足，量價背離暗示多頭反攻力道有限，市場情緒偏謹慎。\n3. **短期走勢預測與操作建議**：預判股價將回測29.80元支撐，若守穩有望反彈至31元；若跌破則下看29元。建議觀望為主，避免追高；可於29.80元附近分批佈局，停損設於29.50元，停利目標31.00元。",
+      "error": ""
+    }
+  }
+};
+
+        const STOCK_NAMES = {
+            "2330.TW": "台積電",
+            "2317.TW": "鴻海",
+            "2454.TW": "聯發科",
+            "0050.TW": "元大台灣50",
+            "005930.KS": "三星電子",
+            "000660.KS": "SK海力士",
+            "NVDA": "輝達",
+            "GOOGL": "谷歌",
+            "INTC": "英特爾",
+            "MU": "美光",
+            "^TWII": "台指期(大盤)",
+            "2348.TW": "海悅",
+            "3450.TW": "聯鈞",
+            "8234.TWO": "新漢",
+            "2303.TW": "聯電",
+            "2344.TW": "華邦電",
+            "3481.TW": "群創",
+            "00981A.TW": "元大日本龍頭"
+        };
+
+        let currentFilter = 'all';
+
+        // 輔助獲取市場類型
+        function getMarketClass(code) {
+            if (code.endsWith('.TW') || code.endsWith('.TWO')) return 'tw';
+            if (code.endsWith('.KS')) return 'ks';
+            return 'us';
+        }
+
+        function getMarketName(code) {
+            const market = getMarketClass(code);
+            if (market === 'tw') return '台股';
+            if (market === 'ks') return '韓股';
+            return '美股';
+        }
+
+        // Markdown 簡單格式化（將 ** 替換成 strong，替換換行符號）
+        function formatMarkdown(text) {
+            if (!text) return "";
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // 解析 AI 分析內容以分段展示
+        function parseAnalysis(analysisText) {
+            let tech = "暫無趨勢分析";
+            let volume = "暫無量價分析";
+            let advice = "暫無操作建議";
+
+            if (!analysisText || analysisText.startsWith("AI 分析失敗")) {
+                return { tech: analysisText || "無數據", volume: analysisText || "無數據", advice: analysisText || "無數據" };
+            }
+
+            // 尋找各個分點段落，考慮換行符與可選冒號，並支援 **1. 標題 格式
+            const regexes = [
+                /(?:^|[\r\n])(?:\*\*)?(?:1[\.、]|Part\s*1|技術指標)[^\r\n]*?[\：\:]?([\s\S]*?)(?=(?:^|[\r\n])(?:\*\*)?(?:2[\.、]|Part\s*2|量價關係|$))/i,
+                /(?:^|[\r\n])(?:\*\*)?(?:2[\.、]|Part\s*2|量價關係)[^\r\n]*?[\：\:]?([\s\S]*?)(?=(?:^|[\r\n])(?:\*\*)?(?:3[\.、]|Part\s*3|短期預測|短期走勢|建議|$))/i,
+                /(?:^|[\r\n])(?:\*\*)?(?:3[\.、]|Part\s*3|短期預測|短期走勢|建議)[^\r\n]*?[\：\:]?([\s\S]*)/i
+            ];
+
+            const m1 = analysisText.match(regexes[0]);
+            const m2 = analysisText.match(regexes[1]);
+            const m3 = analysisText.match(regexes[2]);
+
+            if (m1) tech = m1[1].replace(/[\#\*]/g, '').trim();
+            if (m2) volume = m2[1].replace(/[\#\*]/g, '').trim();
+            if (m3) advice = m3[1].replace(/[\#\*]/g, '').trim();
+
+            // 如果正則失敗，直接使用備份段落劃分
+            if (tech === "暫無趨勢分析" && volume === "暫無量價分析") {
+                const parts = analysisText.split(/(?:^|[\r\n])(?:\*\*)?(?:2[\.、]|3[\.、])(?:\*\*)?/);
+                if (parts.length >= 1) tech = parts[0].replace(/^(?:\*\*)?1[\.、]/, '').replace(/[\#\*]/g, '').trim();
+                if (parts.length >= 2) volume = parts[1].replace(/[\#\*]/g, '').trim();
+                if (parts.length >= 3) advice = parts[2].replace(/[\#\*]/g, '').trim();
+            }
+
+            return { 
+                tech: formatMarkdown(tech), 
+                volume: formatMarkdown(volume), 
+                advice: formatMarkdown(advice) 
+            };
+        }
+
+        // 篩選市場
+        function filterMarket(market) {
+            currentFilter = market;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderGrid();
+        }
+
+        // 渲染卡片
+        function renderGrid() {
+            const grid = document.getElementById('stock-grid');
+            grid.innerHTML = '';
+
+            const stocks = reportData.stocks;
+
+            Object.keys(stocks).forEach(code => {
+                const stock = stocks[code];
+                const market = getMarketClass(code);
+                const name = STOCK_NAMES[code] || code;
+
+                // 篩選過濾
+                if (currentFilter !== 'all' && currentFilter !== market) return;
+
+                const card = document.createElement('div');
+                card.className = `stock-card`;
+
+                const changeClass = stock.pct_chg > 0 ? 'up' : (stock.pct_chg < 0 ? 'down' : 'flat');
+                const changeSign = stock.pct_chg > 0 ? '+' : '';
+                const parsed = parseAnalysis(stock.analysis);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-header">
+                            <div class="stock-info">
+                                <h2>${name} <span class="market-tag ${market}">${getMarketName(code)}</span></h2>
+                                <div class="code">${code}</div>
+                            </div>
+                        </div>
+
+                        <div class="price-section">
+                            <div class="price">${stock.current_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="change-tag ${changeClass}">
+                                ${stock.pct_chg !== undefined ? `${changeSign}${stock.pct_chg.toFixed(2)}%` : '-'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-container">
+                        ${stock.success ? `
+                            <div class="analysis-block tech">
+                                <div class="analysis-title">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941"></path></svg>
+                                    技術分析與價格趨勢
+                                </div>
+                                <div class="analysis-content">${parsed.tech}</div>
+                            </div>
+                            <div class="analysis-block volume">
+                                <div class="analysis-title">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"></path></svg>
+                                    量價關係與市場情緒
+                                </div>
+                                <div class="analysis-content">${parsed.volume}</div>
+                            </div>
+                            <div class="analysis-block advice">
+                                <div class="analysis-title">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                                    短期預測與操作建議
+                                </div>
+                                <div class="analysis-content">${parsed.advice}</div>
+                            </div>
+                        ` : `
+                            <div class="error-message">
+                                📊 分析載入失敗：${stock.error || '未知錯誤'}
+                            </div>
+                        `}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // 初始化
+        document.getElementById('last-updated-time').innerText = reportData.last_updated;
+        renderGrid();
+    </script>
+</body>
+</html>
