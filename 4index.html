@@ -236,16 +236,8 @@
             </div>
         </div>
 
-        <!-- 宏觀視圖 Macro View (並排) -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between mb-3 px-1">
-                <span class="section-header">宏觀視圖 Macro View</span>
-                <span class="text-xs text-slate-400">流動性 + 衍生性商品與法人動態</span>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-                <!-- 左欄: 宏觀流動性儀表板 -->
-                <div class="glass rounded-3xl p-3" id="liquidity-dashboard">
+        <!-- 宏觀流動性儀表板 -->
+        <div class="mb-8" id="liquidity-dashboard">
             <div class="flex items-center justify-between mb-3 px-1">
                 <div>
                     <span class="section-header">宏觀流動性儀表板</span>
@@ -333,152 +325,10 @@
                     </div>
                 </div>
             </div>
-            </div>  <!-- 結束左欄流動性 -->
-
-            <!-- 右欄: 衍生性商品與法人動態分析 -->
-                <div class="glass rounded-3xl p-3">
-            <div class="flex items-center justify-between mb-3 px-1">
-                <div>
-                    <span class="section-header">衍生性商品與法人動態分析</span>
-                    <span class="ml-3 text-xs px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 font-medium">2026-06-10 • 偏空</span>
-                </div>
-                <div class="text-xs text-slate-400">來源：TWSE / TAIFEX / TPEx</div>
-            </div>
-
-            <!-- Facts: Key Market Levels -->
-            <div class="glass rounded-3xl p-5 mb-4">
-                <div class="font-semibold mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line text-cyan-400"></i>
-                    <span>事實 Fact</span>
-                </div>
-                <div class="grid md:grid-cols-2 gap-4 text-sm">
-                    <!-- Index & Futures -->
-                    <div>
-                        <div class="text-xs text-slate-400 mb-1">加權指數 / 台指期法人未平倉</div>
-                        <div class="space-y-1.5">
-                            <div class="flex justify-between items-baseline">
-                                <span>加權指數</span>
-                                <span class="font-mono text-lg font-semibold tabular-nums">43,225.54 <span class="text-rose-400 text-sm">-3.31%</span></span>
-                            </div>
-                            <div class="pl-4 text-xs space-y-0.5 text-slate-300">
-                                <div>外資淨額 <span class="font-mono text-rose-400">-61,949 口</span></div>
-                                <div>投信淨額 <span class="font-mono text-emerald-400">+54,186 口</span></div>
-                                <div>自營商淨額 <span class="font-mono">+4,853 口</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Options -->
-                    <div>
-                        <div class="text-xs text-slate-400 mb-1">台指選擇權 P/C Ratio & 法人</div>
-                        <div class="grid grid-cols-2 gap-x-4 text-xs">
-                            <div>
-                                <div>成交量 P/C <span class="font-mono font-semibold">107.93%</span></div>
-                                <div>未平倉量 P/C <span class="font-mono font-semibold text-rose-400">166.01%</span></div>
-                            </div>
-                            <div class="text-slate-300">
-                                <div>外資買權差 <span class="font-mono">+2,935 口</span></div>
-                                <div>外資賣權差 <span class="font-mono text-rose-400">+6,363 口</span></div>
-                            </div>
-                        </div>
-                        <div class="mt-2 text-[10px] text-rose-300">未平倉 P/C 升至 166% → 防守情緒升高</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Key Stocks -->
-            <div class="glass rounded-3xl p-5 mb-4">
-                <div class="font-semibold mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-building text-cyan-400"></i>
-                    <span>重點個股 Fact</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs">
-                        <thead>
-                            <tr class="text-left text-slate-400 border-b border-white/10">
-                                <th class="py-1 pr-3">代碼</th>
-                                <th class="py-1 pr-3">名稱</th>
-                                <th class="py-1 pr-3 text-right">收盤</th>
-                                <th class="py-1 pr-3 text-right">漲跌</th>
-                                <th class="py-1 pr-3 text-right">三大法人</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-slate-200">
-                            <tr class="border-b border-white/5 hover:bg-white/5">
-                                <td class="py-1 pr-3 font-mono">2330.TW</td>
-                                <td class="py-1 pr-3">台積電</td>
-                                <td class="py-1 pr-3 text-right font-mono">2,255</td>
-                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-50 (-2.17%)</td>
-                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-13,601,933</td>
-                            </tr>
-                            <tr class="border-b border-white/5 hover:bg-white/5">
-                                <td class="py-1 pr-3 font-mono">2303.TW</td>
-                                <td class="py-1 pr-3">聯電</td>
-                                <td class="py-1 pr-3 text-right font-mono">118.50</td>
-                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-9.00</td>
-                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-55,474,228</td>
-                            </tr>
-                            <tr class="border-b border-white/5 hover:bg-white/5">
-                                <td class="py-1 pr-3 font-mono">5347.TWO</td>
-                                <td class="py-1 pr-3">世界先進</td>
-                                <td class="py-1 pr-3 text-right font-mono">152.50</td>
-                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-8.50</td>
-                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-1,861,389</td>
-                            </tr>
-                            <tr class="hover:bg-white/5">
-                                <td class="py-1 pr-3 font-mono">2014.TW</td>
-                                <td class="py-1 pr-3">中鴻</td>
-                                <td class="py-1 pr-3 text-right font-mono">17.50</td>
-                                <td class="py-1 pr-3 text-right text-rose-400 font-medium">-0.20</td>
-                                <td class="py-1 pr-3 text-right font-mono text-rose-400">-3,281,070</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-2 text-[10px] text-slate-400">法人資料為 06-09，股價為 06-10 收盤。世界先進外資 +6.7M 但投信賣壓更大。</div>
-            </div>
-
-            <!-- Inference & Action -->
-            <div class="grid md:grid-cols-2 gap-4">
-                <!-- Inference -->
-                <div class="glass rounded-3xl p-5 border-l-4 border-rose-400">
-                    <div class="font-semibold mb-2 text-rose-300 flex items-center gap-2">
-                        <i class="fa-solid fa-lightbulb"></i>
-                        <span>推論 Inference</span>
-                    </div>
-                    <ul class="text-sm space-y-1.5 text-slate-300">
-                        <li>• 大盤明顯偏空，外資台指期淨空單維持 6.19 萬口，避險部位未鬆動。</li>
-                        <li>• 未平倉 P/C Ratio 升至 166.01%，防守情緒升高，下檔保護增加。</li>
-                        <li>• 半導體權值股承壓，台積電、聯電現貨走弱 + 法人偏賣方，短線不利追多。</li>
-                        <li>• 世界先進外資承接但投信賣壓更大，籌碼分歧。</li>
-                    </ul>
-                </div>
-
-                <!-- Action -->
-                <div class="glass rounded-3xl p-5 border-l-4 border-yellow-400">
-                    <div class="font-semibold mb-2 text-yellow-300 flex items-center gap-2">
-                        <i class="fa-solid fa-exclamation-circle"></i>
-                        <span>建議 Action</span>
-                    </div>
-                    <ul class="text-sm space-y-1.5 text-slate-300">
-                        <li>• <strong>指數部位</strong>：先輕倉，外資期貨淨空未收斂前不要重押多單。</li>
-                        <li>• <strong>台積電 (2330)</strong>：等止跌、重新站回關鍵價位再分批承接。</li>
-                        <li>• <strong>聯電 (2303)</strong>：只適合短打，不適合抄底重倉。</li>
-                        <li>• <strong>世界先進 (5347)</strong>：先看投信賣壓是否收斂，籌碼改善再加碼。</li>
-                        <li>• <strong>中鴻 (2014)</strong>：先觀察，等法人賣壓縮小與價量止穩。</li>
-                        <li>• <strong>風控</strong>：半導體持股若偏重，先降槓桿、留現金。</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="mt-3 text-[10px] text-slate-400 px-1">
-                風險聲明：本文不構成投資建議。資料來源 TWSE / TAIFEX / TPEx。
-            </div>
-            </div>  <!-- 結束右欄內容 -->
-
-            </div>  <!-- 結束 grid 並排宏觀視圖 -->
         </div>
 
         <!-- Sentiment Overview -->
+        <div class="glass rounded-3xl p-6 mb-8">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <span class="section-header">整體市場情緒</span>
