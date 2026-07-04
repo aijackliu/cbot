@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球股市數據 | 智能Web終端</title>
+    
+    <!-- Tailwind CSS 用於現代化排版與樣式 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js 用於渲染 K 線與走勢數據 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome 字型圖示 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts 引入 Inter 與 Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            overflow: hidden; /* 提供應用程式般的使用體驗 */
+        }
+        
+        /* 自訂捲軸樣式 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* 磨砂玻璃質感面板 */
+        .glass-panel { 
+            background: rgba(30, 41, 59, 0.4); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        
+        /* 大盤走馬燈動畫 */
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            background-color: #020617;
+            border-bottom: 1px solid #1e293b;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 30s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+        .ticker-content:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col font-sans">
+
+    <!-- 頁首導覽列 -->
+    <header class="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md flex items-center justify-between px-4 lg:px-6 z-40 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                <i class="fa-solid fa-cubes text-sm"></i>
+            </div>
+            <div class="flex flex-col">
+                <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent leading-tight">全球股市數據終端</h1>
+                <span class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">GSD AI Web Terminal</span>
+            </div>
+        </div>
+        
+        <!-- 搜尋列 -->
+        <div class="flex items-center gap-4 w-full max-w-xs lg:max-w-md ml-4">
+            <div class="relative w-full">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="搜尋代碼 (如 2330.TW, MSFT, MU, 000660.KS)..." 
+                       class="w-full bg-slate-800/60 border border-slate-700 text-sm rounded-full py-2 pl-9 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+            </div>
+        </div>
+        
+        <div class="hidden lg:flex items-center gap-3 ml-4">
+            <div class="text-right leading-tight">
+                <div id="dataStatus" class="text-[10px] text-slate-400">即時資料準備中</div>
+                <div id="lastUpdated" class="text-[10px] text-slate-500">--</div>
+            </div>
+            <button id="refreshBtn" class="text-slate-300 hover:text-white transition flex items-center gap-2 text-sm bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 hover:border-slate-500">
+                <i class="fa-solid fa-rotate-right text-sm"></i>
+                <span class="font-medium">更新</span>
+            </button>
+            <a href="https://github.com/simonlin1212/global-stock-data" target="_blank" class="text-slate-400 hover:text-white transition flex items-center gap-2 text-sm bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 hover:border-slate-500">
+                <i class="fa-brands fa-github text-lg"></i>
+                <span class="font-medium">原始開源倉庫</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 全球指數跑馬燈 -->
+    <div class="ticker-wrap h-8 flex items-center shrink-0">
+        <div id="marquee-content" class="ticker-content text-xs text-slate-300">
+            <!-- 由 JavaScript 動態填入 -->
+        </div>
+    </div>
+
+    <!-- 主要版面 -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- 左側側邊欄: 7層架構與自選股 -->
+        <aside class="w-64 border-r border-slate-800 bg-slate-850/50 hidden md:flex flex-col shrink-0">
+            <div class="p-4 border-b border-slate-800/50">
+                <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">7 層系統架構</h2>
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 text-blue-400 bg-blue-500/10 px-3 py-2 rounded-lg transition border border-blue-500/20">
+                        <i class="fa-solid fa-layer-group w-4 text-center"></i>
+                        <span class="font-semibold text-sm">行情與個股層</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 px-3 py-2 rounded-lg transition">
+                        <i class="fa-solid fa-chart-line w-4 text-center"></i>
+                        <span class="font-medium text-sm">K 線技術分析</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 px-3 py-2 rounded-lg transition">
+                        <i class="fa-solid fa-water w-4 text-center"></i>
+                        <span class="font-medium text-sm">主力資金流向</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 px-3 py-2 rounded-lg transition">
+                        <i class="fa-solid fa-file-invoice-dollar w-4 text-center"></i>
+                        <span class="font-medium text-sm">財務基本面</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 px-3 py-2 rounded-lg transition">
+                        <i class="fa-solid fa-newspaper w-4 text-center"></i>
+                        <span class="font-medium text-sm">即時新聞解讀</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- 自選股快速存取 -->
+            <div class="p-4 flex-1 overflow-y-auto">
+                <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">自選股快速切換</h2>
+                <ul id="watchlist" class="space-y-1">
+                    <!-- 由 JavaScript 動態填入 -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 主內容顯示區 -->
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gradient-to-b from-slate-900 to-slate-950 relative" id="mainScrollArea">
+            
+            <!-- 載入中遮罩 -->
+            <div id="loader" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden rounded-xl mx-4 my-4">
+                <div class="w-10 h-10 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+                <p class="text-slate-300 font-medium animate-pulse text-sm">正在載入多市場跨維度數據層...</p>
+            </div>
+
+            <div class="max-w-7xl mx-auto">
+                <!-- 個股報價資訊 -->
+                <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 glass-panel p-6 rounded-2xl">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h2 id="stockName" class="text-2xl lg:text-3xl font-bold text-white tracking-tight">載入中...</h2>
+                            <span id="stockTicker" class="text-sm lg:text-base text-blue-400 font-bold px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">--</span>
+                            <span id="stockExchange" class="text-[10px] lg:text-xs text-slate-400 border border-slate-700 px-1.5 py-0.5 rounded font-medium tracking-wide">--</span>
+                        </div>
+                        <p id="companyProfile" class="text-xs text-slate-400 mb-4 max-w-3xl line-clamp-2 leading-relaxed">
+                            正在讀取公司概要與業務板塊資訊...
+                        </p>
+                        <div class="flex items-baseline gap-3">
+                            <span id="currentPrice" class="text-4xl lg:text-5xl font-black text-white tabular-nums">0.00</span>
+                            <span id="priceCurrency" class="text-sm text-slate-400 font-medium">USD</span>
+                            <div id="priceChangeContainer" class="flex items-center gap-1.5 text-lg font-bold ml-2 px-2.5 py-1 rounded-lg">
+                                <i id="priceIcon" class="fa-solid fa-minus text-sm"></i>
+                                <span id="priceChange" class="tabular-nums">0.00</span>
+                                <span id="priceChangePct" class="tabular-nums text-sm bg-black/20 px-1.5 py-0.5 rounded">(0.00%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-6">
+                    
+                    <!-- K 線圖表層 -->
+                    <div class="col-span-12 xl:col-span-8 flex flex-col gap-6">
+                        <div class="glass-panel rounded-2xl p-5 flex flex-col min-h-[400px]">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-area text-blue-400"></i> K 線走勢圖層 (近 3 個月)
+                                </h3>
+                                <div class="flex gap-2">
+                                    <span class="text-[10px] px-2 py-1 bg-slate-800 rounded border border-slate-700 text-slate-400">日 K 線 (1D)</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 relative w-full h-[350px]">
+                                <canvas id="mainChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 關鍵財務數據 -->
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h3 class="text-sm font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-file-invoice-dollar text-indigo-400"></i> 基本面財務指標
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p class="text-xs text-slate-400 mb-1">昨收價</p>
+                                    <p id="statPrevClose" class="text-base font-bold text-white tabular-nums">0.00</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p class="text-xs text-slate-400 mb-1">開盤價</p>
+                                    <p id="statOpen" class="text-base font-bold text-white tabular-nums">0.00</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p class="text-xs text-slate-400 mb-1">今日最高</p>
+                                    <p id="statHigh" class="text-base font-bold text-white tabular-nums">0.00</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p class="text-xs text-slate-400 mb-1">今日最低</p>
+                                    <p id="statLow" class="text-base font-bold text-white tabular-nums">0.00</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p id="finPELabel" class="text-xs text-slate-400 mb-1">本益比 (PE TTM)</p>
+                                    <p id="finPE" class="text-base font-bold text-white tabular-nums">--</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p id="finEPSLabel" class="text-xs text-slate-400 mb-1">每股盈餘 (EPS TTM)</p>
+                                    <p id="finEPS" class="text-base font-bold text-white tabular-nums">--</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p id="statVolumeLabel" class="text-xs text-slate-400 mb-1">今日成交量</p>
+                                    <p id="statVolume" class="text-base font-bold text-white tabular-nums">0</p>
+                                </div>
+                                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                                    <p class="text-xs text-slate-400 mb-1">總市值</p>
+                                    <p id="finMarketCap" class="text-base font-bold text-white tabular-nums">--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 xl:col-span-4 flex flex-col gap-6">
+                        
+                        <!-- 資金流向監控 -->
+                        <div class="glass-panel rounded-2xl p-5">
+                            <h3 class="text-sm font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-water text-cyan-400"></i> 當日資金流向監控
+                            </h3>
+                            <div class="flex flex-col items-center justify-center py-4 bg-slate-800/30 rounded-xl border border-slate-700/30 mb-4">
+                                <p class="text-xs text-slate-400 mb-1">主力資金淨流入</p>
+                                <p id="netFlow" class="text-3xl font-black tabular-nums">0.00 M</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">大單買入量</span>
+                                        <span id="mainInflow" class="text-green-400 font-bold tabular-nums">0.00 M</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden flex">
+                                        <div id="inflowBar" class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">大單賣出量</span>
+                                        <span id="mainOutflow" class="text-red-400 font-bold tabular-nums">0.00 M</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden flex flex-row-reverse">
+                                        <div id="outflowBar" class="bg-red-500 h-2 rounded-full transition-all duration-1000" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 新聞與 AI 解讀 -->
+                        <div class="glass-panel rounded-2xl p-5 flex-1 flex flex-col">
+                            <h3 class="text-sm font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-newspaper text-purple-400"></i> 即時資訊與 AI 解讀
+                            </h3>
+                            <div id="newsFeed" class="flex-1 space-y-1 overflow-y-auto pr-2 -mr-2">
+                                <!-- 由 JavaScript 動態填入 -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 頁尾 -->
+            <footer class="mt-12 text-center text-slate-500 text-xs pb-4 border-t border-slate-800/50 pt-4">
+                資料來源：Yahoo Finance Chart / Quote API。API 失敗時不再顯示假行情，避免誤判。
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // -- 即時資料配置 --
+        // 純靜態 HTML 在瀏覽器端會遇到 Yahoo Finance CORS 限制，因此採用多組公開 CORS Proxy 備援。
+        // 正式上線建議改成自己的 Cloudflare Worker / Vercel API Proxy，避免免費 Proxy 流量不穩。
+        const AUTO_REFRESH_MS = 60 * 1000;
+        const WATCHLIST = ['2330.TW', '2303.TW', 'MU', '000660.KS', 'AAPL', 'MSFT'];
+        const INDEX_SYMBOLS = [
+            { name: '台灣加權 (TWII)', symbol: '^TWII' },
+            { name: '道瓊指數 (DJI)', symbol: '^DJI' },
+            { name: '納斯達克 (IXIC)', symbol: '^IXIC' },
+            { name: '標普 500 (S&P 500)', symbol: '^GSPC' },
+            { name: '恒生指數 (HSI)', symbol: '^HSI' },
+            { name: '日經指數 (NIKKEI)', symbol: '^N225' },
+            { name: '南韓綜合 (KOSPI)', symbol: '^KS11' }
+        ];
+
+        const COMPANY_PROFILES = {
+            '2330.TW': '台灣積體電路製造股份有限公司 (台積電) 是全球最大的晶圓代工半導體製造廠，總部位於台灣新竹科學園區。主要提供先進與成熟製程，客戶涵蓋蘋果、輝達與超微等全球科技巨擘。',
+            '2303.TW': '聯華電子 (聯電) 是台灣第一家半導體晶圓代工廠。專注於提供高品質與多元化製程服務，致力於非揮發性記憶體、高壓、混合訊號及特殊製程的開發與製造。',
+            'MU': '美光科技 (Micron Technology, Inc.) 是全球領先的半導體記憶體與儲存解決方案製造商，其產品廣泛應用於行動裝置、資料中心與汽車電子的 DRAM、NAND 閃存模組。',
+            '000660.KS': 'SK海力士 (SK Hynix Inc.) 總部位於韓國，為全球第二大記憶體晶片商，也是高性能高頻寬記憶體 (HBM) 市場的主要領導廠商之一。',
+            'AAPL': '蘋果公司 (Apple Inc.) 主要設計、製造並銷售智慧型手機、個人電腦、平板電腦、穿戴式裝置及配件，並提供多樣化的雲端與數位串流訂閱服務。',
+            'MSFT': '微軟公司 (Microsoft Corporation) 為全球軟體與雲端技術巨擘，提供 Azure 雲端平台、Windows 作業系統、Office 生產力套件與人工智慧解決方案。'
+        };
+
+        const COMPANY_NAMES = {
+            'AAPL': '蘋果公司 (Apple Inc.)',
+            'MSFT': '微軟 (Microsoft Corp.)',
+            '2330.TW': '台積電 (TSMC)',
+            '2303.TW': '聯電 (UMC)',
+            'MU': '美光科技 (Micron)',
+            '000660.KS': 'SK海力士 (SK Hynix)'
+        };
+
+        let currentChart = null;
+        let currentTicker = '2330.TW';
+        let refreshTimer = null;
+
+        function yahooChartUrl(ticker, range = '3mo', interval = '1d') {
+            return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&range=${range}`;
+        }
+
+        function yahooQuoteUrl(ticker) {
+            return `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(ticker)}`;
+        }
+
+        function proxyCandidates(targetUrl) {
+            return [
+                targetUrl,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+            ];
+        }
+
+        async function fetchJsonWithFallback(targetUrl) {
+            let lastError = null;
+            for (const url of proxyCandidates(targetUrl)) {
+                try {
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const data = await res.json();
+                    if (!data) throw new Error('Empty response');
+                    return data;
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+            throw lastError || new Error('所有資料端點均無回應');
+        }
+
+        function getCompanyName(ticker, meta = {}, quote = {}) {
+            return COMPANY_NAMES[ticker] || quote.longName || quote.shortName || meta.longName || meta.shortName || `${ticker} 股份有限公司`;
+        }
+
+        function getLatestValid(values) {
+            if (!Array.isArray(values)) return null;
+            for (let i = values.length - 1; i >= 0; i--) {
+                if (values[i] !== null && values[i] !== undefined && !Number.isNaN(values[i])) return values[i];
+            }
+            return null;
+        }
+
+        function parseYahooData(ticker, chartJson, quoteJson) {
+            const result = chartJson?.chart?.result?.[0];
+            if (!result) throw new Error('Yahoo Chart 無有效資料');
+
+            const meta = result.meta || {};
+            const timestamps = result.timestamp || [];
+            const quotes = result.indicators?.quote?.[0] || {};
+            const quote = quoteJson?.quoteResponse?.result?.[0] || {};
+
+            const closes = quotes.close || [];
+            const opens = quotes.open || [];
+            const highs = quotes.high || [];
+            const lows = quotes.low || [];
+            const volumes = quotes.volume || [];
+
+            const currentPrice = quote.regularMarketPrice ?? meta.regularMarketPrice ?? getLatestValid(closes) ?? 0;
+            const prevClose = quote.regularMarketPreviousClose ?? meta.chartPreviousClose ?? closes[closes.length - 2] ?? currentPrice;
+            const change = quote.regularMarketChange ?? (currentPrice - prevClose);
+            const changePercent = quote.regularMarketChangePercent ?? (prevClose ? (change / prevClose) * 100 : 0);
+            const latestMarketTime = quote.regularMarketTime ? new Date(quote.regularMarketTime * 1000) : (meta.regularMarketTime ? new Date(meta.regularMarketTime * 1000) : new Date());
+
+            return {
+                ticker: meta.symbol || ticker,
+                name: getCompanyName(ticker, meta, quote),
+                currency: quote.currency || meta.currency || guessCurrency(ticker),
+                exchange: quote.fullExchangeName || meta.exchangeName || guessExchange(ticker),
+                currentPrice,
+                change,
+                changePercent,
+                timestamps: timestamps.map(t => {
+                    const d = new Date(t * 1000);
+                    return `${d.getMonth() + 1}/${d.getDate()}`;
+                }),
+                closes,
+                volumes,
+                high: quote.regularMarketDayHigh ?? getLatestValid(highs) ?? currentPrice,
+                low: quote.regularMarketDayLow ?? getLatestValid(lows) ?? currentPrice,
+                open: quote.regularMarketOpen ?? getLatestValid(opens) ?? prevClose,
+                prevClose,
+                volume: quote.regularMarketVolume ?? getLatestValid(volumes) ?? 0,
+                pe: quote.trailingPE ?? null,
+                eps: quote.epsTrailingTwelveMonths ?? null,
+                marketCap: quote.marketCap ?? null,
+                latestMarketTime
+            };
+        }
+
+        function guessCurrency(ticker) {
+            if (ticker.endsWith('.TW')) return 'TWD';
+            if (ticker.endsWith('.KS')) return 'KRW';
+            if (ticker.endsWith('.HK')) return 'HKD';
+            if (ticker.endsWith('.SS') || ticker.endsWith('.SZ')) return 'CNY';
+            return 'USD';
+        }
+
+        function guessExchange(ticker) {
+            if (ticker.endsWith('.TW')) return '台灣證券交易所';
+            if (ticker.endsWith('.KS')) return '韓國交易所';
+            if (ticker.endsWith('.HK')) return '香港交易所';
+            if (ticker.endsWith('.SS')) return '上海證券交易所';
+            if (ticker.endsWith('.SZ')) return '深圳證券交易所';
+            return 'NASDAQ / NYSE';
+        }
+
+        async function fetchYahooData(ticker) {
+            const [chartResult, quoteResult] = await Promise.allSettled([
+                fetchJsonWithFallback(yahooChartUrl(ticker)),
+                fetchJsonWithFallback(yahooQuoteUrl(ticker))
+            ]);
+
+            if (chartResult.status !== 'fulfilled') {
+                throw chartResult.reason || new Error('行情資料讀取失敗');
+            }
+
+            const quoteJson = quoteResult.status === 'fulfilled' ? quoteResult.value : null;
+            return parseYahooData(ticker, chartResult.value, quoteJson);
+        }
+
+        function setStatus(message, tone = 'neutral') {
+            const el = document.getElementById('dataStatus');
+            if (!el) return;
+            const toneClass = tone === 'ok' ? 'text-green-400' : tone === 'error' ? 'text-red-400' : 'text-slate-400';
+            el.className = `text-[10px] ${toneClass}`;
+            el.innerText = message;
+        }
+
+        function setLastUpdated(date = new Date()) {
+            const el = document.getElementById('lastUpdated');
+            if (!el) return;
+            el.innerText = `最後更新：${date.toLocaleString('zh-TW', { hour12: false })}`;
+        }
+
+        function initChart(labels, data, ticker) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            const cleanData = data.map((v, i, arr) => v === null || v === undefined ? (i > 0 ? arr[i - 1] : 0) : v);
+            const firstValid = cleanData.find(v => v > 0) || 0;
+            const lastValid = cleanData[cleanData.length - 1] || 0;
+            const isPositive = lastValid >= firstValid;
+            const lineColor = isPositive ? '#34d399' : '#f87171';
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, isPositive ? 'rgba(52, 211, 153, 0.4)' : 'rgba(248, 113, 113, 0.4)');
+            gradient.addColorStop(1, isPositive ? 'rgba(52, 211, 153, 0.0)' : 'rgba(248, 113, 113, 0.0)');
+
+            Chart.defaults.color = '#64748b';
+            Chart.defaults.font.family = 'Inter, Noto Sans TC';
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: `${ticker} 收盤價`,
+                        data: cleanData,
+                        borderColor: lineColor,
+                        backgroundColor: gradient,
+                        borderWidth: 2.5,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: lineColor,
+                        pointHoverBorderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: context => ` 收盤價: ${Number(context.parsed.y).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.3)', drawBorder: false }, ticks: { maxTicksLimit: 8, font: { size: 10 } } },
+                        y: { grid: { color: 'rgba(51, 65, 85, 0.3)', drawBorder: false }, ticks: { font: { size: 11 }, callback: value => Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 }) } }
+                    },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                }
+            });
+        }
+
+        function updateDOM(data) {
+            document.getElementById('stockName').innerText = data.name;
+            document.getElementById('stockTicker').innerText = data.ticker;
+            document.getElementById('stockExchange').innerText = data.exchange;
+            document.getElementById('companyProfile').innerText = COMPANY_PROFILES[data.ticker] || `目前顯示 ${data.exchange} 的即時行情資料。公司概要可再串接 profile API 或內部資料庫補足。`;
+            document.getElementById('currentPrice').innerText = Number(data.currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('priceCurrency').innerText = data.currency;
+
+            const isPos = data.change >= 0;
+            const sign = isPos ? '+' : '';
+            document.getElementById('priceChange').innerText = `${sign}${Number(data.change).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            document.getElementById('priceChangePct').innerText = `(${sign}${Number(data.changePercent).toFixed(2)}%)`;
+            document.getElementById('priceChangeContainer').className = `flex items-center gap-1.5 text-lg font-bold ml-2 px-2.5 py-1 rounded-lg ${isPos ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`;
+            document.getElementById('priceIcon').className = `fa-solid fa-arrow-${isPos ? 'up' : 'down'} text-sm`;
+
+            document.getElementById('statPrevClose').innerText = Number(data.prevClose).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('statOpen').innerText = Number(data.open).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('statHigh').innerText = Number(data.high).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('statLow').innerText = Number(data.low).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('statVolumeLabel').innerText = '今日成交量';
+            document.getElementById('statVolume').innerText = formatNumber(data.volume);
+            document.getElementById('finPE').innerText = data.pe ? Number(data.pe).toFixed(2) : '--';
+            document.getElementById('finEPSLabel').innerText = '每股盈餘 (EPS TTM)';
+            document.getElementById('finEPS').innerText = data.eps ? Number(data.eps).toFixed(2) : '--';
+            document.getElementById('finMarketCap').innerText = data.marketCap ? formatNumber(data.marketCap) : '--';
+
+            initChart(data.timestamps, data.closes, data.ticker);
+            renderFlowData(data);
+            renderNewsLayer(data);
+            setLastUpdated(data.latestMarketTime || new Date());
+        }
+
+        function formatNumber(num) {
+            const n = Number(num);
+            if (!Number.isFinite(n)) return '--';
+            if (Math.abs(n) >= 1e12) return (n / 1e12).toFixed(2) + ' T';
+            if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + ' B';
+            if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + ' M';
+            if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(2) + ' K';
+            return n.toLocaleString();
+        }
+
+        function renderFlowData(data) {
+            // Yahoo 免費行情不提供真正主力大單資料。此區改成「量價動能估算」，避免標示成真實主力籌碼。
+            const priceMomentum = Math.abs(Number(data.changePercent || 0));
+            const volumeScore = Math.min(100, Math.max(5, Math.log10(Math.max(Number(data.volume || 1), 1)) * 8));
+            const isPositive = data.change >= 0;
+            const score = Math.min(100, Math.round((priceMomentum * 8) + volumeScore));
+            const buyScore = isPositive ? score : Math.max(5, 100 - score);
+            const sellScore = isPositive ? Math.max(5, 100 - score) : score;
+
+            const netEl = document.getElementById('netFlow');
+            netEl.innerText = `${isPositive ? '+' : '-'}${score} 動能分`;
+            netEl.className = `text-3xl font-black tabular-nums ${isPositive ? 'text-green-400' : 'text-red-400'}`;
+            document.getElementById('mainInflow').innerText = `${buyScore} / 100`;
+            document.getElementById('mainOutflow').innerText = `${sellScore} / 100`;
+            document.getElementById('inflowBar').style.width = `${buyScore}%`;
+            document.getElementById('outflowBar').style.width = `${sellScore}%`;
+        }
+
+        function renderNewsLayer(data) {
+            const feed = document.getElementById('newsFeed');
+            const isPos = data.change >= 0;
+            const signText = isPos ? '上漲' : '下跌';
+            const dateText = (data.latestMarketTime || new Date()).toLocaleString('zh-TW', { hour12: false });
+            const news = [
+                `[即時行情] ${data.name} (${data.ticker}) 最新價 ${Number(data.currentPrice).toLocaleString()} ${data.currency}，較前收 ${signText} ${Math.abs(Number(data.changePercent)).toFixed(2)}%。`,
+                `[量價觀察] 今日成交量約 ${formatNumber(data.volume)}，日內高低區間為 ${Number(data.low).toLocaleString()} ～ ${Number(data.high).toLocaleString()}。`,
+                `[基本面欄位] PE：${data.pe ? Number(data.pe).toFixed(2) : '--'}，EPS TTM：${data.eps ? Number(data.eps).toFixed(2) : '--'}，市值：${data.marketCap ? formatNumber(data.marketCap) : '--'}。`,
+                `[資料時間] Yahoo Finance 最新行情時間：${dateText}。此區為行情解讀，不等同新聞來源。`
+            ];
+
+            feed.innerHTML = news.map((n, i) => `
+                <div class="py-3 border-b border-slate-700/30 hover:bg-slate-800/50 transition px-3 rounded-lg cursor-pointer group">
+                    <p class="text-xs text-slate-300 group-hover:text-blue-400 transition leading-relaxed">${n}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${i === 0 ? '最新' : '即時欄位'}</p>
+                        <span class="text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">行情解讀層</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadStock(ticker, showLoader = true) {
+            currentTicker = ticker;
+            if (showLoader) {
+                document.getElementById('loader').classList.remove('hidden');
+                document.getElementById('mainScrollArea').scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            setStatus(`讀取 ${ticker} 即時資料中...`);
+
+            try {
+                const data = await fetchYahooData(ticker);
+                updateDOM(data);
+                setStatus('即時資料已更新', 'ok');
+            } catch (err) {
+                console.error(err);
+                setStatus('即時資料讀取失敗，請稍後重試或改用自建 Proxy', 'error');
+                document.getElementById('newsFeed').innerHTML = `
+                    <div class="p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-xs text-red-200 leading-relaxed">
+                        目前無法讀取 ${ticker} 的最新行情。為避免誤判，本版本不再顯示模擬假資料。<br><br>
+                        建議正式部署時使用 Cloudflare Worker 或後端 API 代理 Yahoo Finance，再將本頁的 fetchJsonWithFallback 改成自己的 API endpoint。
+                    </div>`;
+            } finally {
+                if (showLoader) setTimeout(() => document.getElementById('loader').classList.add('hidden'), 250);
+            }
+        }
+
+        async function renderTickerTape() {
+            const tape = document.getElementById('marquee-content');
+            tape.innerHTML = `<span class="mx-6 text-slate-500">正在更新全球指數...</span>`;
+
+            const results = await Promise.allSettled(INDEX_SYMBOLS.map(async item => {
+                const data = await fetchYahooData(item.symbol);
+                return { ...item, data };
+            }));
+
+            const items = results.map((res, idx) => {
+                if (res.status !== 'fulfilled') {
+                    return `<span class="mx-6 font-bold tracking-wide">${INDEX_SYMBOLS[idx].name} <span class="text-slate-500 ml-1">讀取失敗</span></span>`;
+                }
+                const data = res.value.data;
+                const isPos = data.change >= 0;
+                const colorClass = isPos ? 'text-green-400' : 'text-red-400';
+                const icon = isPos ? 'fa-caret-up' : 'fa-caret-down';
+                const sign = isPos ? '+' : '';
+                return `<span class="mx-6 font-bold tracking-wide">${res.value.name} <span class="${colorClass} ml-1">${Number(data.currentPrice).toLocaleString(undefined, { maximumFractionDigits: 2 })} <i class="fa-solid ${icon} text-[10px]"></i> ${sign}${Number(data.changePercent).toFixed(2)}%</span></span>`;
+            }).join('');
+
+            tape.innerHTML = items + items + items + items;
+        }
+
+        function renderWatchlist() {
+            const list = document.getElementById('watchlist');
+            list.innerHTML = WATCHLIST.map(ticker => `
+                <li>
+                    <button onclick="loadStock('${ticker}')" class="w-full flex justify-between items-center text-sm text-slate-400 hover:text-blue-400 hover:bg-slate-800/50 px-3 py-2 rounded-lg transition group">
+                        <span class="font-medium">${ticker}</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-1"></i>
+                    </button>
+                </li>
+            `).join('');
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim().toUpperCase();
+                if (query) {
+                    loadStock(query);
+                    this.value = '';
+                    this.blur();
+                }
+            }
+        });
+
+        document.getElementById('refreshBtn')?.addEventListener('click', () => {
+            loadStock(currentTicker, false);
+            renderTickerTape();
+        });
+
+        window.onload = function() {
+            renderWatchlist();
+            renderTickerTape();
+            loadStock(currentTicker);
+            refreshTimer = setInterval(() => {
+                loadStock(currentTicker, false);
+                renderTickerTape();
+            }, AUTO_REFRESH_MS);
+        };
+    </script>
+</body>
+</html>
