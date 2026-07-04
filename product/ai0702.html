@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraStyle AI 影片播放器</title>
+  <!-- 引入 Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 自訂進度條樣式 */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #f43f5e; /* rose-500 */
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border: none;
+      border-radius: 50%;
+      background: #f43f5e;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-4 sm:p-6 font-sans selection:bg-rose-500 selection:text-white relative overflow-x-hidden">
+
+  <!-- 背景裝飾光暈 -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-rose-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-amber-500/5 rounded-full blur-[150px] pointer-events-none"></div>
+
+  <!-- 主卡片容器 -->
+  <div class="relative w-full max-w-4xl bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row gap-8 items-center z-10">
+    
+    <!-- 左側：極簡手機模擬外框 (適配 9:16 影片) -->
+    <div class="relative w-full max-w-[290px] sm:max-w-[320px] aspect-[9/19.5] bg-zinc-950 rounded-[48px] p-3 border-4 border-zinc-800 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] flex-shrink-0 group overflow-hidden">
+      
+      <!-- 手機頂部動態島 (Dynamic Island) -->
+      <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full z-30 flex items-center justify-center">
+        <div class="w-2.5 h-2.5 rounded-full bg-zinc-900 border border-zinc-800 ml-auto mr-4"></div>
+      </div>
+
+      <!-- 內部影片顯示區 -->
+      <div class="relative w-full h-full rounded-[38px] overflow-hidden bg-zinc-900 flex items-center justify-center">
+        
+        <!-- 影片標籤 -->
+        <video
+          id="videoPlayer"
+          loop
+          playsinline
+          class="w-full h-full object-cover cursor-pointer"
+        >
+          <source src="Young_woman_trying_on_clothes_202607042352.mp4" type="video/mp4">
+          您的瀏覽器不支援此影片格式。
+        </video>
+
+        <!-- 錯誤提示遮罩 (預設隱藏) -->
+        <div id="errorMask" class="hidden absolute inset-0 bg-zinc-900/95 flex flex-col items-center justify-center p-6 text-center z-20">
+          <div class="w-12 h-12 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-3">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h4 class="text-sm font-bold text-zinc-100">影片載入失敗</h4>
+          <p class="text-[11px] text-zinc-400 mt-2 max-w-[200px] leading-relaxed">
+            找不到指定的影片檔案，請確認該檔案已上傳至正確路徑下。
+          </p>
+          <button
+            id="retryBtn"
+            class="mt-4 px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition active:scale-95"
+          >
+            重試載入
+          </button>
+        </div>
+
+        <!-- 影片懸停播放/暫停按鈕覆蓋層 -->
+        <div 
+          id="videoOverlay"
+          class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer z-10"
+        >
+          <div class="w-16 h-16 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-lg transform group-hover:scale-105 transition-transform">
+            <!-- 播放圖示 -->
+            <svg id="overlayPlayIcon" class="w-8 h-8 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            <!-- 暫停圖示 (預設隱藏) -->
+            <svg id="overlayPauseIcon" class="hidden w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側：影片資訊與控制台 -->
+    <div class="flex-1 flex flex-col justify-between self-stretch py-2 text-center md:text-left">
+      
+      <!-- 標題與描述 -->
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium mb-4">
+          <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
+          AuraStyle 虛擬試衣魔法
+        </div>
+        
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+          Young Woman Trying On Clothes
+        </h1>
+        
+        <p class="text-zinc-400 text-sm mt-3 leading-relaxed max-w-md">
+          點擊畫面或使用下方的控制面板來播放影片。這段影片展示了時尚與 AI 技術結合的驚豔試衣效果，包含高質感粒子變裝與互動。
+        </p>
+      </div>
+
+      <!-- 播放進度條 -->
+      <div class="my-6 md:my-0">
+        <div class="flex items-center justify-between text-xs text-zinc-500 mb-2 font-mono">
+          <span id="currentTimeLabel">0:00</span>
+          <span id="durationLabel">0:00</span>
+        </div>
+        <input
+          id="progressSlider"
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          class="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500/50"
+        />
+      </div>
+
+      <!-- 控制按鈕組 -->
+      <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+        <!-- 播放/暫停主按鈕 -->
+        <button
+          id="controlPlayBtn"
+          class="px-6 py-3 rounded-2xl bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-sm tracking-wide transition-all shadow-lg flex items-center gap-2 active:scale-95"
+        >
+          <svg id="btnPlayIcon" class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24" width="18" height="18">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <svg id="btnPauseIcon" class="hidden w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24" width="18" height="18">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+          </svg>
+          <span id="btnText">開始播放</span>
+        </button>
+
+        <!-- 靜音/取消靜音按鈕 -->
+        <button
+          id="controlMuteBtn"
+          class="p-3 rounded-2xl border transition-all active:scale-95 flex items-center justify-center bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20"
+          title="取消靜音"
+        >
+          <!-- 靜音圖示 -->
+          <svg id="muteIcon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.536 8.464L14.243 11m0 0L11.536 8.464M14.243 11l2.829 2.828M14.243 11L11.536 13.536M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <!-- 喇叭圖示 (預設隱藏) -->
+          <svg id="unmuteIcon" class="hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- 規格標籤 -->
+      <div class="border-t border-zinc-800/80 pt-4 mt-6 md:mt-0 flex flex-wrap justify-center md:justify-start gap-4 text-xs text-zinc-500">
+        <div class="flex items-center gap-1.5">
+          <span class="font-medium text-zinc-400">格式:</span> MP4 (H.264)
+        </div>
+        <div class="hidden sm:inline text-zinc-800">•</div>
+        <div class="flex items-center gap-1.5">
+          <span class="font-medium text-zinc-400">比例:</span> 9:16 (直式)
+        </div>
+        <div class="hidden sm:inline text-zinc-800">•</div>
+        <div class="flex items-center gap-1.5">
+          <span class="font-medium text-zinc-400">技術:</span> HTML5 播放器 (原生)
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 頁尾 -->
+  <footer class="mt-8 text-xs text-zinc-600">
+    © 2026 AuraStyle Studio. 專用影片播放展示頁面。
+  </footer>
+
+  <!-- 核心播放邏輯 Vanilla JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const video = document.getElementById('videoPlayer');
+      const errorMask = document.getElementById('errorMask');
+      const retryBtn = document.getElementById('retryBtn');
+      const videoOverlay = document.getElementById('videoOverlay');
+      
+      // 遮罩與按鈕圖示控制
+      const overlayPlayIcon = document.getElementById('overlayPlayIcon');
+      const overlayPauseIcon = document.getElementById('overlayPauseIcon');
+      const btnPlayIcon = document.getElementById('btnPlayIcon');
+      const btnPauseIcon = document.getElementById('btnPauseIcon');
+      const btnText = document.getElementById('btnText');
+      
+      // 控制按鈕與進度條
+      const controlPlayBtn = document.getElementById('controlPlayBtn');
+      const controlMuteBtn = document.getElementById('controlMuteBtn');
+      const muteIcon = document.getElementById('muteIcon');
+      const unmuteIcon = document.getElementById('unmuteIcon');
+      
+      const progressSlider = document.getElementById('progressSlider');
+      const currentTimeLabel = document.getElementById('currentTimeLabel');
+      const durationLabel = document.getElementById('durationLabel');
+
+      let isPlaying = false;
+      let isMuted = true;
+
+      // 更新播放與暫停的 UI
+      function updatePlayUI(playing) {
+        isPlaying = playing;
+        if (playing) {
+          overlayPlayIcon.classList.add('hidden');
+          overlayPauseIcon.classList.remove('hidden');
+          btnPlayIcon.classList.add('hidden');
+          btnPauseIcon.classList.remove('hidden');
+          btnText.textContent = '暫停播放';
+        } else {
+          overlayPlayIcon.classList.remove('hidden');
+          overlayPauseIcon.classList.add('hidden');
+          btnPlayIcon.classList.remove('hidden');
+          btnPauseIcon.classList.add('hidden');
+          btnText.textContent = '開始播放';
+        }
+      }
+
+      // 更新靜音 UI
+      function updateMuteUI(muted) {
+        isMuted = muted;
+        video.muted = muted;
+        if (muted) {
+          controlMuteBtn.className = "p-3 rounded-2xl border transition-all active:scale-95 flex items-center justify-center bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20";
+          muteIcon.classList.remove('hidden');
+          unmuteIcon.classList.add('hidden');
+        } else {
+          controlMuteBtn.className = "p-3 rounded-2xl border transition-all active:scale-95 flex items-center justify-center bg-zinc-800/80 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white";
+          muteIcon.classList.add('hidden');
+          unmuteIcon.classList.remove('hidden');
+        }
+      }
+
+      // 播放/暫停觸發
+      function togglePlay() {
+        if (errorMask.classList.contains('hidden')) {
+          if (video.paused) {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                updatePlayUI(true);
+              }).catch((err) => {
+                console.log("主動播放被拒，嘗試靜音並強制播:", err);
+                updateMuteUI(true);
+                video.play().then(() => {
+                  updatePlayUI(true);
+                });
+              });
+            }
+          } else {
+            video.pause();
+            updatePlayUI(false);
+          }
+        }
+      }
+
+      // 格式化時間
+      function formatTime(secs) {
+        if (isNaN(secs) || secs === Infinity) return "0:00";
+        const m = Math.floor(secs / 60);
+        const s = Math.floor(secs % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+
+      // 綁定事件
+      videoOverlay.addEventListener('click', togglePlay);
+      video.addEventListener('click', togglePlay);
+      controlPlayBtn.addEventListener('click', togglePlay);
+
+      controlMuteBtn.addEventListener('click', () => {
+        updateMuteUI(!video.muted);
+      });
+
+      // 影片播放進度更新
+      video.addEventListener('timeupdate', () => {
+        const cur = video.currentTime;
+        const dur = video.duration || 0;
+        currentTimeLabel.textContent = formatTime(cur);
+        if (dur > 0) {
+          progressSlider.value = (cur / dur) * 100;
+        }
+      });
+
+      // 載入 Metadata 取得影片總時長
+      video.addEventListener('loadedmetadata', () => {
+        durationLabel.textContent = formatTime(video.duration);
+        errorMask.classList.add('hidden');
+        progressSlider.disabled = false;
+        controlPlayBtn.disabled = false;
+      });
+
+      // 拖曳進度條
+      progressSlider.addEventListener('input', (e) => {
+        const dur = video.duration || 0;
+        if (dur > 0) {
+          video.currentTime = (e.target.value / 100) * dur;
+        }
+      });
+
+      // 錯誤捕獲機制 (包括 NotSupportedError 等相容性異常)
+      function handleLoadError() {
+        errorMask.classList.remove('hidden');
+        progressSlider.disabled = true;
+        controlPlayBtn.disabled = true;
+        updatePlayUI(false);
+      }
+
+      video.addEventListener('error', handleLoadError);
+      
+      // 對 <source> 標籤加裝錯誤偵測
+      const source = video.querySelector('source');
+      if (source) {
+        source.addEventListener('error', handleLoadError);
+      }
+
+      // 重試按鈕點擊
+      retryBtn.addEventListener('click', () => {
+        errorMask.classList.add('hidden');
+        video.load();
+        setTimeout(() => {
+          video.play()
+            .then(() => updatePlayUI(true))
+            .catch(e => console.log("重試播放失敗: ", e));
+        }, 300);
+      });
+
+      // 初始化：靜音自動播放
+      updateMuteUI(true);
+      const startPlay = video.play();
+      if (startPlay !== undefined) {
+        startPlay.then(() => {
+          updatePlayUI(true);
+        }).catch((err) => {
+          console.log("安全規範阻擋背景播放:", err);
+          updatePlayUI(false);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
