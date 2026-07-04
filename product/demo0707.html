@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能端子選型系統 Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .chat-bubble-user {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            border-bottom-right-radius: 0;
+        }
+        .chat-bubble-ai {
+            background-color: #3b82f6;
+            color: white;
+            border-bottom-left-radius: 0;
+        }
+        .scroll-smooth::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scroll-smooth::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .scroll-smooth::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .scroll-smooth::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- 側邊欄：模擬資料庫狀態與工具 -->
+    <aside class="w-80 bg-slate-900 text-slate-300 flex flex-col hidden md:flex border-r border-slate-700">
+        <div class="p-6 border-b border-slate-800">
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-server text-blue-500"></i>
+                AI Agent 核心
+            </h1>
+            <p class="text-xs text-slate-500 mt-2">Agentic RAG / 雙軌檢索架構展示</p>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            <!-- 模組狀態 -->
+            <div>
+                <h2 class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider">系統狀態</h2>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2 text-emerald-400">
+                        <i class="fa-solid fa-circle-check text-xs"></i> 意圖路由 (Intent Router)
+                    </li>
+                    <li class="flex items-center gap-2 text-emerald-400">
+                        <i class="fa-solid fa-circle-check text-xs"></i> Text-to-SQL MCP
+                    </li>
+                    <li class="flex items-center gap-2 text-emerald-400">
+                        <i class="fa-solid fa-circle-check text-xs"></i> 圖例語意解析 (DimLegend)
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 載入的資料表 -->
+            <div>
+                <h2 class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider">目前索引資料表 (Demo)</h2>
+                <div class="bg-slate-800 rounded p-3 text-xs border border-slate-700">
+                    <div class="font-medium text-blue-300 mb-1">ProductSeries</div>
+                    <div class="text-slate-500 mb-2">產品分類與材質大類</div>
+                    
+                    <div class="font-medium text-blue-300 mb-1">ProductDrawing</div>
+                    <div class="text-slate-500 mb-2">圖面主檔 (TLS_DWG_01)</div>
+
+                    <div class="font-medium text-blue-300 mb-1">DimensionLegend</div>
+                    <div class="text-slate-500 mb-2">圖例語意 (d2=螺栓孔徑...)</div>
+
+                    <div class="font-medium text-blue-300 mb-1">ProductItem</div>
+                    <div class="text-slate-500">規格料號 (TLS70~TLS150)</div>
+                </div>
+            </div>
+            
+            <!-- 即時槽位狀態 (Slot Filling) -->
+            <div>
+                 <h2 class="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider">選型槽位 (Slot Filling)</h2>
+                 <div class="space-y-2 text-xs" id="slot-status">
+                    <div class="flex justify-between bg-slate-800 p-2 rounded border border-slate-700">
+                        <span class="text-slate-400">產品大類</span>
+                        <span class="text-slate-500 italic" id="slot-category">等待判定...</span>
+                    </div>
+                    <div class="flex justify-between bg-slate-800 p-2 rounded border border-slate-700">
+                        <span class="text-slate-400">線徑 (Wire)</span>
+                        <span class="text-slate-500 italic" id="slot-wire">等待判定...</span>
+                    </div>
+                    <div class="flex justify-between bg-slate-800 p-2 rounded border border-slate-700">
+                        <span class="text-slate-400">螺栓孔 (Stud)</span>
+                        <span class="text-slate-500 italic" id="slot-stud">等待判定...</span>
+                    </div>
+                 </div>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+            Demo Version 1.0 (TLS Series)
+        </div>
+    </aside>
+
+    <!-- 主對話區域 -->
+    <main class="flex-1 flex flex-col bg-white relative">
+        <!-- 頂部導航 -->
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-slate-800 text-lg leading-tight">智慧選型助理</h2>
+                    <p class="text-xs text-emerald-600 font-medium flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> 系統已連線
+                    </p>
+                </div>
+            </div>
+            <div class="text-sm text-slate-500">
+                <button onclick="resetDemo()" class="hover:text-blue-600 transition-colors px-3 py-1 rounded border border-slate-200 hover:bg-slate-50">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> 重置對話
+                </button>
+            </div>
+        </header>
+
+        <!-- 對話記錄區 -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth bg-slate-50/50">
+            
+            <!-- 初始問候 -->
+            <div class="flex gap-4 max-w-3xl">
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-1">
+                    <i class="fa-solid fa-robot text-sm"></i>
+                </div>
+                <div class="chat-bubble-ai px-5 py-3.5 rounded-2xl shadow-sm text-sm leading-relaxed">
+                    您好！我是智能選型助理。我可以協助您尋找合適的端子型號。
+                    <br><br>
+                    您可以直接告訴我您的需求，例如：<br>
+                    <span class="bg-blue-700/50 px-2 py-1 rounded mt-1 inline-block border border-blue-400/30">「我有 120mm² 的電線，要鎖 M10 的螺栓」</span>
+                    <br>或者<br>
+                    <span class="bg-blue-700/50 px-2 py-1 rounded mt-1 inline-block border border-blue-400/30">「比較 TLS120-10 和 TLS120-12 的差別」</span>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 系統思考狀態 (隱藏/顯示) -->
+        <div id="thinking-indicator" class="hidden absolute bottom-24 left-6 right-6 pointer-events-none">
+            <div class="bg-white/90 backdrop-blur border border-slate-200 rounded-lg p-3 shadow-lg flex items-center gap-3 max-w-sm pointer-events-auto">
+                <div class="flex gap-1">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                </div>
+                <span class="text-sm text-slate-600 font-medium" id="thinking-text">AI 正在解析意圖...</span>
+            </div>
+        </div>
+
+        <!-- 輸入區 -->
+        <div class="p-4 bg-white border-t border-slate-200 z-10">
+            <div class="max-w-4xl mx-auto relative flex items-end gap-2">
+                <div class="relative flex-1">
+                    <textarea 
+                        id="user-input" 
+                        class="w-full bg-slate-100 border-transparent focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-xl px-4 py-3.5 text-sm resize-none transition-all shadow-inner" 
+                        rows="1" 
+                        placeholder="請輸入您的選型需求或規格問題..."
+                        onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }"
+                    ></textarea>
+                </div>
+                <button 
+                    onclick="sendMessage()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-3.5 flex items-center justify-center transition-colors shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    title="發送"
+                >
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="max-w-4xl mx-auto mt-2 flex gap-2 flex-wrap">
+                <span class="text-xs text-slate-400 font-medium pt-1">快速測試：</span>
+                <button onclick="fillInput('我有 120mm² 的線，要鎖 M10 螺栓，有推薦的銅管端子嗎？')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded border border-slate-200 transition-colors">120mm² + M10</button>
+                <button onclick="fillInput('我不知道型號，只知道是 150 平方線，要用大電流端子。')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded border border-slate-200 transition-colors">僅有線徑 (觸發反問)</button>
+                <button onclick="fillInput('TLS120-10 和 TLS120-12 差在哪裡？')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded border border-slate-200 transition-colors">料號差異比較</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- 模擬資料庫 (Mock Database) ---
+        const MOCK_DB = {
+            ProductItem: [
+                { ItemNo: 'TLS120-10', Series: 'TLS', Wire: '120', Stud: 'M10', d2: 10.5, L: 66.7, D: 19.9, S: 4.5, Tool: 'HX-150B', Qty: 25 },
+                { ItemNo: 'TLS120-12', Series: 'TLS', Wire: '120', Stud: 'M12', d2: 13.0, L: 66.7, D: 19.9, S: 4.5, Tool: 'HX-150B', Qty: 25 },
+                { ItemNo: 'TLS150-12', Series: 'TLS', Wire: '150', Stud: 'M12', d2: 13.0, L: 74.5, D: 21.7, S: 4.7, Tool: 'HX-150B', Qty: 25 },
+                { ItemNo: 'TLS150-14', Series: 'TLS', Wire: '150', Stud: '9/16', d2: 15.0, L: 74.5, D: 21.7, S: 4.7, Tool: 'HX-150B', Qty: 25 },
+                { ItemNo: 'TLS150-16', Series: 'TLS', Wire: '150', Stud: '5/8', d2: 17.0, L: 74.5, D: 21.7, S: 4.7, Tool: 'HX-150B', Qty: 25 },
+            ],
+            DimensionLegend: {
+                d2: { zh: '螺栓孔徑', en: 'Stud Hole Diameter' },
+                L: { zh: '端子總長', en: 'Overall Length' },
+                D: { zh: '導線筒外徑', en: 'Barrel Outer Diameter' },
+                S: { zh: '金屬板厚', en: 'Material Thickness' }
+            }
+        };
+
+        // --- UI 狀態 ---
+        let currentStep = 0;
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const thinkingIndicator = document.getElementById('thinking-indicator');
+        const thinkingText = document.getElementById('thinking-text');
+
+        // --- 自動調整 Textarea 高度 ---
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if(this.value === '') this.style.height = 'auto';
+        });
+
+        // --- 填入快速測試文字 ---
+        function fillInput(text) {
+            userInput.value = text;
+            userInput.style.height = 'auto';
+            userInput.style.height = (userInput.scrollHeight) + 'px';
+            userInput.focus();
+        }
+
+        // --- 重置 Demo ---
+        function resetDemo() {
+            // 清空對話
+            chatContainer.innerHTML = `
+                <div class="flex gap-4 max-w-3xl">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-1">
+                        <i class="fa-solid fa-robot text-sm"></i>
+                    </div>
+                    <div class="chat-bubble-ai px-5 py-3.5 rounded-2xl shadow-sm text-sm leading-relaxed">
+                        您好！我是智能選型助理。我可以協助您尋找合適的端子型號。
+                        <br><br>
+                        您可以直接告訴我您的需求，例如：<br>
+                        <span class="bg-blue-700/50 px-2 py-1 rounded mt-1 inline-block border border-blue-400/30">「我有 120mm² 的電線，要鎖 M10 的螺栓」</span>
+                        <br>或者<br>
+                        <span class="bg-blue-700/50 px-2 py-1 rounded mt-1 inline-block border border-blue-400/30">「比較 TLS120-10 和 TLS120-12 的差別」</span>
+                    </div>
+                </div>
+            `;
+            // 重置槽位UI
+            updateSlot('category', '等待判定...', false);
+            updateSlot('wire', '等待判定...', false);
+            updateSlot('stud', '等待判定...', false);
+            userInput.value = '';
+            userInput.style.height = 'auto';
+        }
+
+        // --- 更新槽位狀態 UI ---
+        function updateSlot(slotId, value, isFilled) {
+            const el = document.getElementById(`slot-${slotId}`);
+            if(!el) return;
+            el.textContent = value;
+            if (isFilled) {
+                el.classList.remove('text-slate-500', 'italic');
+                el.classList.add('text-emerald-400', 'font-medium');
+            } else {
+                el.classList.add('text-slate-500', 'italic');
+                el.classList.remove('text-emerald-400', 'font-medium');
+            }
+        }
+
+        // --- 新增對話泡泡 ---
+        function appendMessage(sender, text, isHtml = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex gap-4 max-w-3xl ${sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`;
+            
+            let iconHtml = '';
+            if (sender === 'ai') {
+                iconHtml = `<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-sm border border-blue-200"><i class="fa-solid fa-robot text-sm"></i></div>`;
+            } else {
+                iconHtml = `<div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-user text-sm"></i></div>`;
+            }
+
+            const bubbleClass = sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai';
+            
+            // 安全處理：如果是文字就 escape，如果是我們預期渲染的 HTML 就直接放
+            const contentHtml = isHtml ? text : escapeHtml(text).replace(/\n/g, '<br>');
+
+            wrapper.innerHTML = `
+                ${iconHtml}
+                <div class="${bubbleClass} px-5 py-3.5 rounded-2xl shadow-sm text-sm leading-relaxed">
+                    ${contentHtml}
+                </div>
+            `;
+            
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        // --- 產生產品推薦卡片 (HTML) ---
+        function generateProductCard(item) {
+            if(!item) return '';
+            return `
+                <div class="mt-3 bg-white text-slate-800 rounded-xl overflow-hidden border border-slate-200 shadow-sm max-w-sm">
+                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+                        <span class="font-bold text-lg text-blue-700"><i class="fa-solid fa-tag text-slate-400 mr-2 text-sm"></i>${item.ItemNo}</span>
+                        <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-medium">推薦型號</span>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="text-xs text-slate-500 font-medium">適用線徑</span>
+                            <span class="text-sm font-semibold">${item.Wire} mm² (4/0 MCM)</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="text-xs text-slate-500 font-medium" title="Stud Hole Diameter">d2 螺栓孔徑 <i class="fa-solid fa-circle-info text-slate-300"></i></span>
+                            <span class="text-sm font-semibold text-blue-600">${item.d2} mm <span class="text-xs text-slate-400 font-normal ml-1">(對應 ${item.Stud})</span></span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 py-1">
+                            <div class="bg-slate-50 p-2 rounded text-center border border-slate-100">
+                                <div class="text-[10px] text-slate-400 mb-1">L 總長</div>
+                                <div class="text-xs font-semibold">${item.L}</div>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded text-center border border-slate-100">
+                                <div class="text-[10px] text-slate-400 mb-1">D 外徑</div>
+                                <div class="text-xs font-semibold">${item.D}</div>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded text-center border border-slate-100">
+                                <div class="text-[10px] text-slate-400 mb-1">S 板厚</div>
+                                <div class="text-xs font-semibold">${item.S}</div>
+                            </div>
+                        </div>
+                        <div class="pt-2 text-xs text-slate-500 bg-yellow-50 p-2 rounded flex gap-2 items-start mt-2 border border-yellow-100">
+                            <i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-0.5"></i>
+                            <span>此為型錄初步建議，實際選用仍需確認現場安裝空間與安規需求。</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 border-t border-slate-200 p-3 flex gap-2">
+                         <button class="flex-1 bg-white border border-slate-300 text-slate-700 text-xs py-2 rounded hover:bg-slate-100 transition-colors font-medium">查看圖面</button>
+                         <button class="flex-1 bg-blue-600 text-white text-xs py-2 rounded hover:bg-blue-700 transition-colors font-medium shadow-sm">詢問報價</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // --- 產生比較卡片 (HTML) ---
+        function generateComparisonCard(item1, item2) {
+            if(!item1 || !item2) return '';
+            return `
+                <div class="mt-3 bg-white text-slate-800 rounded-xl overflow-hidden border border-slate-200 shadow-sm w-full max-w-md">
+                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-3">
+                        <span class="font-bold text-sm text-slate-700"><i class="fa-solid fa-code-compare text-blue-500 mr-2"></i>規格差異比對</span>
+                    </div>
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-slate-500 bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-4 py-2 font-medium w-1/3">比較項目</th>
+                                <th class="px-4 py-2 font-bold text-blue-700 border-l border-slate-200 w-1/3">${item1.ItemNo}</th>
+                                <th class="px-4 py-2 font-bold text-blue-700 border-l border-slate-200 w-1/3">${item2.ItemNo}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100">
+                                <td class="px-4 py-2 text-slate-500">適用線徑</td>
+                                <td class="px-4 py-2 border-l border-slate-200">${item1.Wire} mm²</td>
+                                <td class="px-4 py-2 border-l border-slate-200">${item2.Wire} mm²</td>
+                            </tr>
+                            <tr class="bg-blue-50/50">
+                                <td class="px-4 py-2 text-slate-700 font-medium leading-tight">d2 螺栓孔徑<br><span class="text-[10px] text-slate-400 font-normal">(對應螺栓)</span></td>
+                                <td class="px-4 py-2 font-bold text-blue-700 border-l border-slate-200 leading-tight">${item1.d2} mm<br><span class="text-[10px] font-normal text-slate-500">${item1.Stud}</span></td>
+                                <td class="px-4 py-2 font-bold text-blue-700 border-l border-slate-200 leading-tight">${item2.d2} mm<br><span class="text-[10px] font-normal text-slate-500">${item2.Stud}</span></td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="px-4 py-2 text-slate-500">L 端子總長</td>
+                                <td class="px-4 py-2 border-l border-slate-200">${item1.L} mm</td>
+                                <td class="px-4 py-2 border-l border-slate-200">${item2.L} mm</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 text-slate-500">S 金屬板厚</td>
+                                <td class="px-4 py-2 border-l border-slate-200">${item1.S} mm</td>
+                                <td class="px-4 py-2 border-l border-slate-200">${item2.S} mm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // --- 核心：模擬 Agentic RAG 處理邏輯 ---
+        async function processUserInput(input) {
+            // 顯示思考動畫
+            thinkingIndicator.classList.remove('hidden');
+            // 將使用者按鈕變暗，防止連點
+            const sendBtn = document.querySelector('button[title="發送"]');
+            if(sendBtn) sendBtn.disabled = true;
+            
+            const lowerInput = input.toLowerCase();
+
+            try {
+                // 模擬情境 1：精確查詢 + 推薦 (120mm² + M10)
+                if (lowerInput.includes('120') && lowerInput.includes('m10')) {
+                    await updateStatusSequence([
+                        {text: "解析意圖: 規格選型", delay: 600},
+                        {text: "提取槽位: 線徑=120, 螺栓=M10", delay: 800},
+                        {text: "工具調用: query_table(TLS, 120, M10)", delay: 1000},
+                        {text: "工具調用: get_dimension_legend()", delay: 800}
+                    ]);
+                    
+                    updateSlot('category', 'TLS (銅管端子)', true);
+                    updateSlot('wire', '120 mm²', true);
+                    updateSlot('stud', 'M10', true);
+                    
+                    const item = MOCK_DB.ProductItem.find(i => i.ItemNo === 'TLS120-10');
+                    if(item) {
+                         const replyText = `為您初步推薦 **${item.ItemNo}**。<br><br>這款為非絕緣銅管端子，適用線徑為 120 mm²。其 **d2 尺寸為 ${item.d2} mm**，依圖面代號對照，d2 代表**「螺栓孔徑」**，可對應 M10 固定螺栓。<br>` + generateProductCard(item);
+                         finishProcessing(replyText, true);
+                    } else {
+                         finishProcessing("查無符合規格的產品。", false);
+                    }
+                }
+                // 模擬情境 2：料號差異比較 (TLS120-10 vs TLS120-12)
+                else if (lowerInput.includes('tls120-10') && lowerInput.includes('tls120-12')) {
+                    await updateStatusSequence([
+                        {text: "解析意圖: 料號規格比較", delay: 600},
+                        {text: "工具調用: query_table(['TLS120-10', 'TLS120-12'])", delay: 1000},
+                        {text: "比對數據差異...", delay: 800}
+                    ]);
+                    
+                    updateSlot('category', 'TLS (銅管端子)', true);
+                    
+                    const item1 = MOCK_DB.ProductItem.find(i => i.ItemNo === 'TLS120-10');
+                    const item2 = MOCK_DB.ProductItem.find(i => i.ItemNo === 'TLS120-12');
+                    
+                    if(item1 && item2) {
+                        const replyText = `這兩款型號的主要差異在於**螺栓孔徑 (d2)**：<br><br>兩者皆適用 120 mm² 導線，端子總長與板厚皆相同。但 **TLS120-10 對應 M10 螺栓**，而 **TLS120-12 孔徑較大，對應 M12 螺栓**。選型時請依照設備端銅排的尺寸決定。<br>` + generateComparisonCard(item1, item2);
+                        finishProcessing(replyText, true);
+                    } else {
+                        finishProcessing("查無指定的比對料號。", false);
+                    }
+                }
+                // 模擬情境 3：槽位未填滿，觸發反問 (只有 150 平方)
+                else if (lowerInput.includes('150') || lowerInput.includes('大電流')) {
+                    await updateStatusSequence([
+                        {text: "解析意圖: 規格選型", delay: 600},
+                        {text: "提取槽位: 線徑=150", delay: 800},
+                        {text: "檢查狀態: 缺乏螺栓孔尺寸 (Stud Size)", delay: 800},
+                        {text: "決策: 觸發反問引導腳本", delay: 800}
+                    ]);
+                    
+                    updateSlot('category', 'TLS (銅管端子)', true);
+                    updateSlot('wire', '150 mm²', true);
+                    
+                    const replyText = `了解，150 mm² 線材可對應 TLS150 系列大電流銅管端子。<br><br>為了幫您縮小精確型號，**請問設備端用來固定的螺栓尺寸大約是多少呢？**<br><br>常見選項包含：<br>• M12 (孔徑約 13.0 mm)<br>• M14 或 9/16 (孔徑約 15.0 mm)<br>• M16 或 5/8 (孔徑約 17.0 mm)<br><br><span class="text-xs text-blue-200 bg-blue-800/80 px-2 py-1 rounded mt-2 inline-block">如果不確定，也可以提供大約的孔徑量測值。</span>`;
+                    
+                    finishProcessing(replyText, true);
+                }
+                // 預設回應
+                else {
+                    await updateStatusSequence([
+                        {text: "解析意圖中...", delay: 600},
+                        {text: "搜尋全庫目錄...", delay: 1000}
+                    ]);
+                    
+                    const replyText = `我收到您的問題了。由於目前在 Demo 模式下，未連接完整後端資料庫，請嘗試輸入上方「快速測試」提供的關鍵字情境，例如：<br><br>1. 「我有 120mm² 的線，要鎖 M10 螺栓」<br>2. 「我只有 150 平方線的資訊」<br>3. 「比較 TLS120-10 與 TLS120-12」`;
+                    finishProcessing(replyText, true);
+                }
+            } catch (err) {
+                finishProcessing("系統發生錯誤，請稍後再試。", false);
+            } finally {
+                if(sendBtn) sendBtn.disabled = false;
+            }
+        }
+
+        // --- 輔助：狀態文字更新動畫 ---
+        function updateStatusSequence(sequence) {
+            return new Promise(resolve => {
+                let currentStep = 0;
+                function next() {
+                    if (currentStep < sequence.length) {
+                        thinkingText.textContent = sequence[currentStep].text;
+                        setTimeout(next, sequence[currentStep].delay);
+                        currentStep++;
+                    } else {
+                        resolve();
+                    }
+                }
+                next();
+            });
+        }
+
+        // --- 輔助：完成處理，印出結果 ---
+        function finishProcessing(replyText, isHtml) {
+            thinkingIndicator.classList.add('hidden');
+            appendMessage('ai', replyText, isHtml);
+        }
+
+        // --- 發送訊息按鈕事件 ---
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            
+            // 清空並重置輸入框
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            
+            // 顯示使用者訊息
+            appendMessage('user', text);
+            
+            // 觸發 AI 處理邏輯
+            processUserInput(text);
+        }
+    </script>
+</body>
+</html>
