@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 標準作業程序 (SOP) 監控系統 - NVIDIA 藍圖核心中控台</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            nvidia: {
+              DEFAULT: '#76b900',
+              dark: '#5c8f00',
+              light: '#8cd600',
+              glow: 'rgba(118, 185, 0, 0.4)'
+            },
+            darkbg: '#0a0d14',
+            darkcard: '#111622'
+          },
+          fontFamily: {
+            sans: ['Outfit', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts Outfit & Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Dot Grid Background */
+    .dot-grid {
+      background-image: radial-gradient(rgba(118, 185, 0, 0.15) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .dark .dot-grid {
+      background-image: radial-gradient(rgba(118, 185, 0, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(118, 185, 0, 0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(118, 185, 0, 0.6);
+    }
+    
+    /* Scanning effect */
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    .scan-line {
+      animation: scan 3s linear infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300 overflow-x-hidden">
+
+  <!-- Background overlay decorative glow -->
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-nvidia-glow opacity-30 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 opacity-20 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+  <!-- Main Container -->
+  <div class="max-w-[1600px] mx-auto px-4 py-6 md:px-6">
+    
+    <!-- Top Header -->
+    <header class="flex justify-between items-center bg-white/80 dark:bg-darkcard/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 px-6 py-4 rounded-2xl shadow-sm mb-6 transition-all duration-300">
+      <div class="flex items-center gap-3">
+        <!-- Logo Icon -->
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-nvidia-dark to-nvidia flex items-center justify-center shadow-lg shadow-nvidia-glow/20">
+          <i data-lucide="cpu" class="w-5 h-5 text-white animate-pulse"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-nvidia-dark to-emerald-500 dark:from-nvidia dark:to-emerald-400 bg-clip-text text-transparent">NVIDIA BlueSOP</h1>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-nvidia/10 text-nvidia border border-nvidia/20">藍圖 v2.4</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">AI 標準作業程序 (SOP) 監控與合規平台</p>
+        </div>
+      </div>
+      
+      <!-- Performance Metrics in Header (Hidden on small screens) -->
+      <div class="hidden lg:flex items-center gap-6 text-xs">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50">
+          <span class="w-2 h-2 rounded-full bg-nvidia animate-ping"></span>
+          <span class="text-slate-500 dark:text-slate-400">GPU 負載:</span>
+          <span class="font-semibold text-nvidia" id="header-gpu-load">24%</span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span class="text-slate-500 dark:text-slate-400">推理延遲:</span>
+          <span class="font-semibold text-slate-700 dark:text-slate-200" id="header-latency">12ms</span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+          <span class="text-slate-500 dark:text-slate-400">SOP 稽核良率:</span>
+          <span class="font-semibold text-emerald-500" id="header-yield">98.4%</span>
+        </div>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Live Connection status badge -->
+        <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Edge Server: Online
+        </span>
+        
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shadow-inner" aria-label="Toggle theme">
+          <i data-lucide="moon" id="theme-icon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Banner with Dynamic SVG decoration -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-[#101910] text-white rounded-3xl p-6 md:p-8 shadow-xl mb-8 flex flex-col md:flex-row items-center justify-between border border-slate-700/30">
+      <!-- Grid scan decoration -->
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
+      
+      <div class="relative z-10 max-w-2xl text-center md:text-left mb-6 md:mb-0">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-nvidia/20 text-nvidia text-xs font-semibold mb-3 border border-nvidia/30 animate-pulse">
+          <i data-lucide="shield-check" class="w-3 h-3"></i>
+          NVIDIA Blueprint 邊緣視覺解決方案
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">AI 標準作業程序 (SOP) 監控系統</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-4">
+          基於大視覺語言模型 (VLM) 與時間分割技術，提供「從無到有」的工業自動化檢測框架。自動監控工件組裝合規性，降低人力稽核成本，提升物理產線直通率。
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+          <div class="flex items-center gap-1.5 text-xs text-slate-400">
+            <span class="text-nvidia font-bold">●</span> 標註(定義答案) vs 訓練(內化識別)
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-slate-400">
+            <span class="text-nvidia font-bold">●</span> VLM 時序分析 vs 傳統幾何 CV
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-slate-400">
+            <span class="text-nvidia font-bold">●</span> 傳感器融合技術落地
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated SVG Hero Decoration -->
+      <div class="relative w-64 h-48 md:w-80 md:h-52 bg-slate-950/40 rounded-2xl border border-slate-700/50 overflow-hidden shadow-2xl flex items-center justify-center p-4">
+        <!-- SVG Layout simulating camera view -->
+        <svg viewBox="0 0 300 200" class="w-full h-full text-slate-400">
+          <!-- Guide lines -->
+          <line x1="10" y1="10" x2="30" y2="10" stroke="#76b900" stroke-width="2"/>
+          <line x1="10" y1="10" x2="10" y2="30" stroke="#76b900" stroke-width="2"/>
+          <line x1="290" y1="10" x2="270" y2="10" stroke="#76b900" stroke-width="2"/>
+          <line x1="290" y1="10" x2="290" y2="30" stroke="#76b900" stroke-width="2"/>
+          <line x1="10" y1="190" x2="30" y2="190" stroke="#76b900" stroke-width="2"/>
+          <line x1="10" y1="190" x2="10" y2="170" stroke="#76b900" stroke-width="2"/>
+          <line x1="290" y1="190" x2="270" y2="190" stroke="#76b900" stroke-width="2"/>
+          <line x1="290" y1="190" x2="290" y2="170" stroke="#76b900" stroke-width="2"/>
+          
+          <!-- Grid -->
+          <circle cx="150" cy="100" r="80" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/>
+          <circle cx="150" cy="100" r="50" stroke="rgba(118,185,0,0.1)" stroke-width="1" fill="none"/>
+          
+          <!-- Assembly Robot Arm (SVG) -->
+          <g transform="translate(40, 140) rotate(-15)">
+            <rect x="0" y="-10" width="80" height="16" rx="4" fill="#334155" stroke="#475569" stroke-width="1"/>
+            <circle cx="0" cy="-2" r="8" fill="#1e293b"/>
+            <g transform="translate(80, -2) rotate(40)">
+              <rect x="0" y="-8" width="60" height="12" rx="3" fill="#475569" stroke="#64748b" stroke-width="1"/>
+              <circle cx="0" cy="-2" r="6" fill="#0f172a"/>
+              <!-- Tool / Clamp -->
+              <path d="M 60,-12 L 75,-4 L 75,0 L 60,-4 Z" fill="#76b900"/>
+              <path d="M 60,8 L 75,0 L 75,4 L 60,4 Z" fill="#76b900"/>
+            </g>
+          </g>
+
+          <!-- Component on conveyor -->
+          <g transform="translate(160, 120)">
+            <rect x="-25" y="-15" width="50" height="30" rx="3" fill="#1e293b" stroke="#76b900" stroke-width="1.5" stroke-dasharray="2 1"/>
+            <!-- Holes / Screws -->
+            <circle cx="-15" cy="-5" r="3" fill="#76b900"/>
+            <circle cx="15" cy="5" r="3" fill="#76b900"/>
+            <!-- YOLO Bounding Box -->
+            <rect x="-30" y="-20" width="60" height="40" fill="none" stroke="#76b900" stroke-width="1.5"/>
+            <text x="-25" y="-25" font-family="monospace" font-size="8" fill="#76b900" font-weight="bold">AI_SOP: ACTIVE [98.5%]</text>
+          </g>
+          
+          <!-- Floating UI scanning lines -->
+          <line x1="0" y1="50" x2="300" y2="50" stroke="#76b900" stroke-width="1" class="scan-line" opacity="0.4"/>
+        </svg>
+        <span class="absolute top-2 right-3 text-[9px] font-mono text-slate-500">LIVE FEED // WORKSTATION_04</span>
+      </div>
+    </div>
+
+    <!-- Main Content Area: Left Menu & Right Interactive Sandbox -->
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+      
+      <!-- Left Tab Menu (1 Column) -->
+      <div class="xl:col-span-1 flex flex-col gap-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 px-1">產線魔王挑戰與選型</h3>
+        
+        <div class="flex flex-row xl:flex-col overflow-x-auto xl:overflow-x-visible gap-2 p-1 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl scrollbar-none">
+          <!-- Tab 1 -->
+          <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn flex-1 flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm font-semibold transition-all duration-300 whitespace-nowrap bg-nvidia text-white shadow-lg shadow-nvidia-glow/10 border border-nvidia/20">
+            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+              <i data-lucide="gauge" class="w-4 h-4"></i>
+            </div>
+            <div class="hidden md:block xl:block">
+              <div class="text-xs opacity-75 font-normal">魔王挑戰 01</div>
+              <div>極速連續動作</div>
+            </div>
+          </button>
+
+          <!-- Tab 2 -->
+          <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn flex-1 flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm font-semibold transition-all duration-300 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/80">
+            <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+            </div>
+            <div class="hidden md:block xl:block">
+              <div class="text-xs opacity-60 font-normal">魔王挑戰 02</div>
+              <div>微小螺絲與遮擋</div>
+            </div>
+          </button>
+
+          <!-- Tab 3 -->
+          <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn flex-1 flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm font-semibold transition-all duration-300 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/80">
+            <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+            </div>
+            <div class="hidden md:block xl:block">
+              <div class="text-xs opacity-60 font-normal">魔王挑戰 03</div>
+              <div>特定路徑與軌跡</div>
+            </div>
+          </button>
+
+          <!-- Tab 4 -->
+          <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn flex-1 flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm font-semibold transition-all duration-300 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/80">
+            <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+              <i data-lucide="table-properties" class="w-4 h-4"></i>
+            </div>
+            <div class="hidden md:block xl:block">
+              <div class="text-xs opacity-60 font-normal">決策矩陣</div>
+              <div>綜合技術選型表</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Concept Cards (Annotation vs Training, VLM vs traditional CV) -->
+        <div class="mt-4 hidden xl:flex flex-col gap-4">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">核心運作邏輯學堂</h4>
+          
+          <!-- Card 1 -->
+          <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm">
+            <div class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">
+              <i data-lucide="edit-3" class="w-4 h-4 text-nvidia"></i>
+              標註 (Annotation) vs 訓練
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              <strong>標註</strong>是由人類框定時間點、定義標準答案（教材）。<br>
+              <strong>訓練</strong>是由 GPU 運算，AI 消化標註資料並內化成辨識能力（學生讀書）。
+            </p>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm">
+            <div class="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">
+              <i data-lucide="eye" class="w-4 h-4 text-nvidia"></i>
+              VLM vs 傳統機器視覺
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              <strong>傳統 CV</strong> 適合單純極高精度的座標與物件（死板拼圖），遇到遮擋易誤判。<br>
+              <strong>VLM + 時間分割</strong> 強在看懂動作脈絡與上下文，容錯高，但需高算力微調。
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Sandbox Panel (3 Columns) -->
+      <div class="xl:col-span-3 flex flex-col gap-6">
+        
+        <!-- Tab 1: Extreme Speed Action -->
+        <div id="tab-content-1" class="tab-content flex flex-col gap-6">
+          <div class="bg-white dark:bg-darkcard rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6 dot-grid transition-all duration-300">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-slate-800 pb-4 mb-4 gap-2">
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-nvidia"></span>
+                  極端挑戰一：極速連續動作檢測 (1秒內完成組裝)
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">模擬由於相機抽幀率不足導致漏看（眨眼效應），以及如何利用「關鍵停頓」來改善 VLM 辨識率。</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-rose-500/10 text-rose-500 text-xs font-semibold border border-rose-500/20">眨眼效應危險</span>
+                <span class="px-2.5 py-1 rounded bg-nvidia/10 text-nvidia text-xs font-semibold border border-nvidia/20">VLM 優化</span>
+              </div>
+            </div>
+
+            <!-- Dashboard Details and Canvas Simulator -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              <!-- Left Control Box -->
+              <div class="lg:col-span-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/40 dark:border-slate-800/40 flex flex-col gap-4">
+                <div class="font-bold text-xs text-slate-400 uppercase tracking-wider">模擬控制面板</div>
+                
+                <!-- Parameter 1: FPS -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex justify-between">
+                    <span>相機抽幀率 (Frame Rate)</span>
+                    <span class="text-nvidia font-bold" id="fps-label">30 FPS</span>
+                  </label>
+                  <div class="flex gap-2">
+                    <button onclick="setFPS(30)" id="fps-30-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors">30 FPS</button>
+                    <button onclick="setFPS(60)" id="fps-60-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors">60 FPS (高幀率)</button>
+                  </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">30 FPS 在極速動作下極易產生動態模糊並漏檢；60 FPS 能獲得更多畫面。</p>
+                </div>
+
+                <!-- Parameter 2: Wait Pause -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">產線工人動作規範</label>
+                  <div class="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/50">
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-slate-800 dark:text-slate-200">刻意停頓 0.5 秒</span>
+                      <span class="text-[10px] text-slate-500 dark:text-slate-400">於零件接合點停留</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="wait-pause-toggle" class="sr-only peer" onchange="toggleWaitPause()">
+                      <div class="w-9 h-5 bg-slate-200 dark:bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-nvidia"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Run Simulation Button -->
+                <button onclick="runSimulation1()" id="run-btn-tab1" class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-nvidia-dark to-nvidia hover:from-nvidia hover:to-nvidia-light text-white font-bold text-sm rounded-xl shadow-lg shadow-nvidia-glow/15 transition-all duration-300 flex items-center justify-center gap-2">
+                  <i data-lucide="play" class="w-4 h-4"></i>
+                  啟動裝配模擬檢測
+                </button>
+              </div>
+
+              <!-- Right Canvas Simulator -->
+              <div class="lg:col-span-8 flex flex-col gap-3">
+                <div class="relative w-full aspect-[16/9] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+                  <!-- Canvas -->
+                  <canvas id="canvas-tab1" width="600" height="337" class="w-full h-full"></canvas>
+                  
+                  <!-- Calibration Overlay -->
+                  <div class="absolute inset-0 pointer-events-none border border-nvidia/20 flex flex-col justify-between p-2 font-mono text-[9px] text-nvidia/70">
+                    <div class="flex justify-between">
+                      <span>CH_A: CAM_FPS_INSPECTOR</span>
+                      <span>STATUS: RUNNING</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span>REF_FRAME: SOP_STD_ALIGN_01</span>
+                      <span>ERR_RATE: <span id="sim1-error-rate">24.2%</span></span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Result Bar -->
+                <div id="result-container-tab1" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div id="sim1-status-icon" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                      <i data-lucide="alert-circle" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">系統判定結果</div>
+                      <div class="text-sm font-bold text-slate-700 dark:text-slate-300" id="sim1-status-text">等待啟動模擬</div>
+                    </div>
+                  </div>
+                  <div id="sim1-details-badge" class="hidden text-xs font-mono px-3 py-1 rounded bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    -
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Tiny Screw and Occlusion -->
+        <div id="tab-content-2" class="tab-content hidden flex flex-col gap-6">
+          <div class="bg-white dark:bg-darkcard rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6 dot-grid transition-all duration-300">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-slate-800 pb-4 mb-4 gap-2">
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-nvidia"></span>
+                  極端挑戰二：微小螺絲與嚴重遮擋 (Sensor Fusion)
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">當手部與螺絲起子 100% 遮擋目標時，展示「AI 視覺」融合「聯網智慧起子扭力回傳」的實務閉環解法。</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-amber-500/10 text-amber-500 text-xs font-semibold border border-amber-500/20">100% 遮擋死角</span>
+                <span class="px-2.5 py-1 rounded bg-nvidia/10 text-nvidia text-xs font-semibold border border-nvidia/20">設備訊號融合</span>
+              </div>
+            </div>
+
+            <!-- Simulator Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              <!-- Left Control Box -->
+              <div class="lg:col-span-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/40 dark:border-slate-800/40 flex flex-col gap-4">
+                <div class="font-bold text-xs text-slate-400 uppercase tracking-wider">Sensor Fusion 控制面板</div>
+                
+                <!-- Sensor Fusion Toggle -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">感測器融合模式 (Sensor Fusion)</label>
+                  <div class="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/50">
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-slate-800 dark:text-slate-200">啟用智慧起子連線</span>
+                      <span class="text-[10px] text-slate-500 dark:text-slate-400">融合扭力物理訊號</span>
+                    </div>
+                    <label class="relative inline-flex inline-block items-center cursor-pointer">
+                      <input type="checkbox" id="sensor-fusion-toggle" class="sr-only peer" checked onchange="toggleSensorFusion()">
+                      <div class="w-9 h-5 bg-slate-200 dark:bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-nvidia"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Screw Torque State Slider -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex justify-between">
+                    <span>起子物理鎖附狀態</span>
+                    <span class="text-nvidia font-bold" id="torque-state-label">鎖緊 (扭力 3.2 N·m)</span>
+                  </label>
+                  <div class="flex gap-2">
+                    <button onclick="setTorqueState('ok')" id="torque-ok-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors">鎖緊 (正常)</button>
+                    <button onclick="setTorqueState('slip')" id="torque-slip-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors">滑牙 (1.1 N·m)</button>
+                  </div>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">模擬物理起子實際回傳的數據：滑牙時起子會回傳扭力异常訊號。</p>
+                </div>
+
+                <!-- Run Button -->
+                <button onclick="runSimulation2()" id="run-btn-tab2" class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-nvidia-dark to-nvidia hover:from-nvidia hover:to-nvidia-light text-white font-bold text-sm rounded-xl shadow-lg shadow-nvidia-glow/15 transition-all duration-300 flex items-center justify-center gap-2">
+                  <i data-lucide="play" class="w-4 h-4"></i>
+                  啟動鎖附檢測
+                </button>
+              </div>
+
+              <!-- Right Canvas -->
+              <div class="lg:col-span-8 flex flex-col gap-3">
+                <div class="relative w-full aspect-[16/9] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+                  <canvas id="canvas-tab2" width="600" height="337" class="w-full h-full"></canvas>
+                  
+                  <div class="absolute inset-0 pointer-events-none border border-nvidia/20 flex flex-col justify-between p-2 font-mono text-[9px] text-nvidia/70">
+                    <div class="flex justify-between">
+                      <span>CH_B: TORQUE_FUSION_FEED</span>
+                      <span>STATUS: ARMED</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span>FUSION_BUS: I2C_PORT_02</span>
+                      <span>OCULAR_STATUS: <span id="sim2-ocular-status" class="text-amber-500">CLEAR</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Result Bar -->
+                <div id="result-container-tab2" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div id="sim2-status-icon" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                      <i data-lucide="alert-circle" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">SOP 閉環判定狀態</div>
+                      <div class="text-sm font-bold text-slate-700 dark:text-slate-300" id="sim2-status-text">等待起子進入鎖槽</div>
+                    </div>
+                  </div>
+                  <div id="sim2-details-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    設備訊號: 未接入
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Particular Path Movement -->
+        <div id="tab-content-3" class="tab-content hidden flex flex-col gap-6">
+          <div class="bg-white dark:bg-darkcard rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6 dot-grid transition-all duration-300">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 dark:border-slate-800 pb-4 mb-4 gap-2">
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-nvidia"></span>
+                  極端挑戰三：精密點膠/焊接路徑檢測 (幾何精準度比對)
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">演示大視覺語言模型 (VLM) 在毫米級軌跡判定上的極限與缺陷，以及傳統 CV 輪廓檢測如何作為主力方案互補。</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-blue-500/10 text-blue-500 text-xs font-semibold border border-blue-500/20">幾何精度測試</span>
+                <span class="px-2.5 py-1 rounded bg-nvidia/10 text-nvidia text-xs font-semibold border border-nvidia/20">雙軌比對</span>
+              </div>
+            </div>
+
+            <!-- Simulator Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              <!-- Left Control Box -->
+              <div class="lg:col-span-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/40 dark:border-slate-800/40 flex flex-col gap-4">
+                <div class="font-bold text-xs text-slate-400 uppercase tracking-wider">點膠路徑控制</div>
+                
+                <!-- Engine Select -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">選用 AI 檢測引擎</label>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="flex items-center gap-2.5 p-2 rounded bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 cursor-pointer">
+                      <input type="radio" name="detector-engine" value="vlm" checked onchange="setEngine('vlm')" class="accent-nvidia">
+                      <div class="flex flex-col">
+                        <span class="text-xs font-bold text-slate-850 dark:text-slate-200">VLM (大語言模型)</span>
+                        <span class="text-[9px] text-slate-500">偏向邏輯上下文，幾何敏感度低</span>
+                      </div>
+                    </label>
+                    <label class="flex items-center gap-2.5 p-2 rounded bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 cursor-pointer">
+                      <input type="radio" name="detector-engine" value="cv" onchange="setEngine('cv')" class="accent-nvidia">
+                      <div class="flex flex-col">
+                        <span class="text-xs font-bold text-slate-850 dark:text-slate-200">傳統 CV (輪廓比對)</span>
+                        <span class="text-[9px] text-slate-500">高精度像素比對，門檻值 1.0mm</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Path Deviation Deviation Slider -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex justify-between">
+                    <span>點膠機械軌跡偏移</span>
+                    <span class="text-nvidia font-bold" id="offset-label">微小偏移 (1.5mm)</span>
+                  </label>
+                  <div class="flex gap-2">
+                    <button onclick="setOffset(0)" id="offset-none-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors">無偏移 (0mm)</button>
+                    <button onclick="setOffset(1.5)" id="offset-small-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors">微小 (1.5mm)</button>
+                    <button onclick="setOffset(5)" id="offset-large-btn" class="flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors">嚴重 (5.0mm)</button>
+                  </div>
+                </div>
+
+                <!-- Run Simulation Button -->
+                <button onclick="runSimulation3()" id="run-btn-tab3" class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-nvidia-dark to-nvidia hover:from-nvidia hover:to-nvidia-light text-white font-bold text-sm rounded-xl shadow-lg shadow-nvidia-glow/15 transition-all duration-300 flex items-center justify-center gap-2">
+                  <i data-lucide="play" class="w-4 h-4"></i>
+                  啟動點膠軌跡檢測
+                </button>
+              </div>
+
+              <!-- Right Canvas -->
+              <div class="lg:col-span-8 flex flex-col gap-3">
+                <div class="relative w-full aspect-[16/9] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+                  <canvas id="canvas-tab3" width="600" height="337" class="w-full h-full"></canvas>
+                  
+                  <div class="absolute inset-0 pointer-events-none border border-nvidia/20 flex flex-col justify-between p-2 font-mono text-[9px] text-nvidia/70">
+                    <div class="flex justify-between">
+                      <span>CH_C: GEOMETRIC_PATH_TRACE</span>
+                      <span>SCAN_STEP: 0.1mm</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span>ALIGNMENT: LASER_CALIBRATED</span>
+                      <span>INSPECTION_ENGINE: <span id="sim3-engine-badge" class="text-nvidia">VLM (NVIDIA BlueSOP)</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Result Bar -->
+                <div id="result-container-tab3" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div id="sim3-status-icon" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                      <i data-lucide="alert-circle" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">軌跡比對引擎判定</div>
+                      <div class="text-sm font-bold text-slate-700 dark:text-slate-300" id="sim3-status-text">等待點膠頭歸位</div>
+                    </div>
+                  </div>
+                  <div id="sim3-details-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    偏移量: -
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Technology Selection Matrix -->
+        <div id="tab-content-4" class="tab-content hidden flex flex-col gap-6">
+          <div class="bg-white dark:bg-darkcard rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6 dot-grid transition-all duration-300">
+            <div class="border-b border-slate-100 dark:border-slate-800 pb-4 mb-6">
+              <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-nvidia"></span>
+                綜合技術選型與產線匹配矩陣
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">基於真實產線特性的技術架構選型。點擊表格任一行，可解鎖深入的「優劣勢解析」與「實務部署細節」。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <!-- Left: Table (8 Columns) -->
+              <div class="lg:col-span-8 overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs md:text-sm">
+                  <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-450 dark:text-slate-400 font-semibold">
+                      <th class="py-3 px-4">產線作業情境</th>
+                      <th class="py-3 px-4">推薦的主力技術方案</th>
+                      <th class="py-3 px-4">核心原因</th>
+                    </tr>
+                  </thead>
+                  <tbody id="matrix-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/50">
+                    <!-- Row 1 -->
+                    <tr id="matrix-row-0" onclick="selectMatrixRow(0)" class="matrix-row cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                      <td class="py-4 px-4 font-bold text-slate-800 dark:text-slate-200">複雜組裝、多步驟、容易有視線遮擋</td>
+                      <td class="py-4 px-4">
+                        <span class="px-2.5 py-1 rounded bg-nvidia/10 text-nvidia text-xs font-bold border border-nvidia/20">VLM 視覺語言模型</span>
+                      </td>
+                      <td class="py-4 px-4 text-slate-500 dark:text-slate-400 text-xs">能理解上下文與狀態改變，容錯率較高。</td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr id="matrix-row-1" onclick="selectMatrixRow(1)" class="matrix-row cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                      <td class="py-4 px-4 font-bold text-slate-800 dark:text-slate-200">簡單大動作檢查、防呆防錯</td>
+                      <td class="py-4 px-4">
+                        <span class="px-2.5 py-1 rounded bg-blue-500/10 text-blue-500 text-xs font-bold border border-blue-500/20">傳統物件辨識 (Object)</span>
+                      </td>
+                      <td class="py-4 px-4 text-slate-500 dark:text-slate-400 text-xs">建置成本低，邊緣運算設備即可運行。</td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr id="matrix-row-2" onclick="selectMatrixRow(2)" class="matrix-row cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                      <td class="py-4 px-4 font-bold text-slate-800 dark:text-slate-200">鎖附微小螺絲、要求精密扭力</td>
+                      <td class="py-4 px-4">
+                        <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-500 text-xs font-bold border border-emerald-500/20">AI 視覺 + 起子扭力回傳</span>
+                      </td>
+                      <td class="py-4 px-4 text-slate-500 dark:text-slate-400 text-xs">視覺無法看透遮擋，必須依賴設備物理數據。</td>
+                    </tr>
+                    <!-- Row 4 -->
+                    <tr id="matrix-row-3" onclick="selectMatrixRow(3)" class="matrix-row cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                      <td class="py-4 px-4 font-bold text-slate-800 dark:text-slate-200">高精度塗抹、點膠、精密軌跡</td>
+                      <td class="py-4 px-4">
+                        <span class="px-2.5 py-1 rounded bg-purple-500/10 text-purple-500 text-xs font-bold border border-purple-500/20">傳統機器視覺 / 設備座標</span>
+                      </td>
+                      <td class="py-4 px-4 text-slate-500 dark:text-slate-400 text-xs">需要像素級幾何精準度，非大語言模型強項。</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Right: Detail Panel (4 Columns) -->
+              <div class="lg:col-span-4" id="matrix-detail-card">
+                <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 h-full flex flex-col justify-between">
+                  <div id="matrix-detail-placeholder" class="flex flex-col items-center justify-center text-center py-16 text-slate-400">
+                    <i data-lucide="info" class="w-10 h-10 text-slate-350 dark:text-slate-650 mb-3 animate-bounce"></i>
+                    <p class="text-xs">請點擊左側技術選型情境，<br>解鎖實務架構分析</p>
+                  </div>
+                  
+                  <div id="matrix-detail-content" class="hidden flex flex-col gap-4">
+                    <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                      <div class="w-8 h-8 rounded-lg bg-nvidia/10 text-nvidia flex items-center justify-center" id="detail-icon-box">
+                        <i data-lucide="cpu" class="w-4.5 h-4.5"></i>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-slate-400">技術方案優勢</span>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100" id="detail-title">VLM 視覺語言模型</h4>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                      <div>
+                        <div class="text-[10px] uppercase font-bold text-nvidia tracking-wider mb-1">優勢與核心能力</div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" id="detail-pros">能看懂前後動作脈絡與環境狀態改變（例如抓取前後工件形狀的改變），具備卓越的上下文推理能力。</p>
+                      </div>
+                      <div>
+                        <div class="text-[10px] uppercase font-bold text-rose-500 tracking-wider mb-1">劣勢與物理限制</div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" id="detail-cons">對幾何與像素級的毫米偏差不敏感，且在大幀率及高吞吐量下，對邊緣 GPU 算力消耗極大。</p>
+                      </div>
+                      <div class="bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200/50 dark:border-slate-800/50">
+                        <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center gap-1">
+                          <i data-lucide="wrench" class="w-3 h-3 text-nvidia"></i> 實務部署破解指南
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed" id="detail-workaround">利用 NVIDIA 藍圖的快速微調機制，在標註時細化時間戳分割，並於運算邊緣配置 TensorRT 加速器。</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="text-[10px] text-slate-400 dark:text-slate-500 text-center mt-4">
+                    NVIDIA 藍圖核心技術矩陣
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+    <!-- Bottom Terminal Log & Metrics Dashboard -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+      
+      <!-- Metrics Dashboard (5 Columns) -->
+      <div class="lg:col-span-4 bg-white dark:bg-darkcard rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6 flex flex-col gap-5">
+        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 text-nvidia"></i>
+          邊緣運算節點效能 (Edge Node Dashboard)
+        </h4>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Metric 1 -->
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40">
+            <div class="text-xs text-slate-400">推理延遲</div>
+            <div class="text-2xl font-black text-slate-700 dark:text-slate-100 font-mono mt-1" id="metrics-latency">12.4<span class="text-xs font-normal text-slate-400"> ms</span></div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-2 overflow-hidden">
+              <div class="bg-nvidia h-1 rounded-full" style="width: 25%" id="latency-bar"></div>
+            </div>
+          </div>
+
+          <!-- Metric 2 -->
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40">
+            <div class="text-xs text-slate-400">GPU 記憶體</div>
+            <div class="text-2xl font-black text-slate-700 dark:text-slate-100 font-mono mt-1">6.2<span class="text-xs font-normal text-slate-400"> GB</span></div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-2 overflow-hidden">
+              <div class="bg-nvidia h-1 rounded-full" style="width: 38%"></div>
+            </div>
+          </div>
+
+          <!-- Metric 3 -->
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40">
+            <div class="text-xs text-slate-400">GPU 核心負載</div>
+            <div class="text-2xl font-black text-slate-700 dark:text-slate-100 font-mono mt-1" id="metrics-gpu-load">24.2<span class="text-xs font-normal text-slate-400"> %</span></div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-2 overflow-hidden">
+              <div class="bg-nvidia h-1 rounded-full animate-pulse" style="width: 24%" id="gpu-load-bar"></div>
+            </div>
+          </div>
+
+          <!-- Metric 4 -->
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40">
+            <div class="text-xs text-slate-400">AI 吞吐量</div>
+            <div class="text-2xl font-black text-slate-700 dark:text-slate-100 font-mono mt-1" id="metrics-throughput">30.0<span class="text-xs font-normal text-slate-400"> FPS</span></div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-2 overflow-hidden">
+              <div class="bg-nvidia h-1 rounded-full" style="width: 30%" id="throughput-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-nvidia/10 border border-nvidia/20 text-xs text-nvidia flex items-start gap-2">
+          <i data-lucide="info" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>NVIDIA IGX / AGX Orin 邊緣部署：</strong>
+            底層採用 TensorRT 優化，對 VLM 時間分割網絡進行 FP16 量化以達到邊緣端極致推理。
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Event Log Terminal (8 Columns) -->
+      <div class="lg:col-span-8 bg-slate-950 text-slate-200 rounded-2xl p-6 border border-slate-800 shadow-xl flex flex-col gap-3 font-mono relative overflow-hidden">
+        <!-- Grid overlay -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+        
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 relative z-10">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+            <span class="text-xs font-bold text-slate-400">系統即時工業日誌 (Edge Audit Event Stream)</span>
+          </div>
+          <span class="text-[10px] text-slate-500 font-mono">STDOUT // UTF-8</span>
+        </div>
+
+        <div class="h-48 overflow-y-auto flex flex-col gap-1.5 text-xs relative z-10 scrollbar-none" id="log-terminal">
+          <!-- Initial logs -->
+          <div class="text-slate-500">[2026-06-02 13:15:01] [SYSTEM] NVIDIA IGX Edge Node initialized successfully.</div>
+          <div class="text-slate-500">[2026-06-02 13:15:02] [SYSTEM] Loaded engine: NVIDIA_BlueSOP_V2.4 (VLM-TimeSegment).</div>
+          <div class="text-slate-500">[2026-06-02 13:15:02] [CAMERA] Camera 01 (Workstation 03) connected. Protocol: RTSP.</div>
+          <div class="text-nvidia">[2026-06-02 13:15:03] [SOP_INSPECTOR] System armed. Target: SOP-Assembly-S2.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-slate-200 dark:border-slate-800 pt-6 pb-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
+      <div>
+        © 2026 NVIDIA Blueprint AI SOP Monitoring Factory. All rights reserved.
+      </div>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-nvidia transition-colors">工業安全白皮書</a>
+        <span>|</span>
+        <a href="#" class="hover:text-nvidia transition-colors">邊緣硬體規格</a>
+        <span>|</span>
+        <a href="#" class="hover:text-nvidia transition-colors">NVIDIA AI Blueprints</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // --- Global State ---
+    const state = {
+      theme: 'light',
+      activeTab: 1,
+      sim1: {
+        fps: 30,
+        waitPause: false,
+        isRunning: false,
+        animationFrame: null,
+      },
+      sim2: {
+        sensorFusion: true,
+        torqueState: 'ok', // 'ok' or 'slip'
+        isRunning: false,
+        animationFrame: null,
+      },
+      sim3: {
+        engine: 'vlm', // 'vlm' or 'cv'
+        offset: 1.5, // 0, 1.5, or 5
+        isRunning: false,
+        animationFrame: null,
+      },
+      selectedMatrixRow: null
+    };
+
+    // --- Lucide Icons ---
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      initCanvases();
+      initLogs();
+    });
+
+    // --- Theme Toggle Logic ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    
+    themeToggleBtn.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        themeIcon.setAttribute('data-lucide', 'moon');
+        state.theme = 'light';
+      } else {
+        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
+        themeIcon.setAttribute('data-lucide', 'sun');
+        state.theme = 'dark';
+      }
+      lucide.createIcons();
+    });
+
+    // --- Tab Switching Logic ---
+    function switchTab(tabNum) {
+      state.activeTab = tabNum;
+      
+      // Stop any running animations
+      stopAllSimulations();
+
+      // Update button classes
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(`tab-btn-${i}`);
+        const content = document.getElementById(`tab-content-${i}`);
+        
+        if (i === tabNum) {
+          btn.className = "tab-btn flex-1 flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm font-semibold transition-all duration-300 whitespace-nowrap bg-nvidia text-white shadow-lg shadow-nvidia-glow/10 border border-nvidia/20";
+          btn.querySelector('.w-8').className = "w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "tab-btn flex-1 flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm font-semibold transition-all duration-300 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/80";
+          btn.querySelector('.w-8').className = "w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-850 flex items-center justify-center";
+          content.classList.add('hidden');
+        }
+      }
+      
+      // Refresh current canvas
+      initCanvases();
+      addLog(`[SYSTEM] Switched to tab ${tabNum === 1 ? '極速連續動作' : tabNum === 2 ? '微小螺絲與遮擋' : tabNum === 3 ? '精密軌跡' : '技術選型表'}`);
+    }
+
+    function stopAllSimulations() {
+      // Tab 1
+      if (state.sim1.animationFrame) cancelAnimationFrame(state.sim1.animationFrame);
+      state.sim1.isRunning = false;
+      // Tab 2
+      if (state.sim2.animationFrame) cancelAnimationFrame(state.sim2.animationFrame);
+      state.sim2.isRunning = false;
+      // Tab 3
+      if (state.sim3.animationFrame) cancelAnimationFrame(state.sim3.animationFrame);
+      state.sim3.isRunning = false;
+    }
+
+    // --- Log Terminal Helpers ---
+    function addLog(text, type = 'info') {
+      const terminal = document.getElementById('log-terminal');
+      const logDiv = document.createElement('div');
+      const timeStr = new Date().toLocaleTimeString();
+      
+      let colorClass = 'text-slate-400';
+      if (type === 'ok') colorClass = 'text-nvidia';
+      if (type === 'warn') colorClass = 'text-amber-500';
+      if (type === 'error') colorClass = 'text-rose-500';
+      
+      logDiv.className = colorClass;
+      logDiv.innerHTML = `[${timeStr}] ${text}`;
+      terminal.appendChild(logDiv);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function initLogs() {
+      // Add periodic background noise logs
+      setInterval(() => {
+        if (Math.random() > 0.7) {
+          const sysLogs = [
+            `[MONITOR] GPU Temperature: 64°C. Fan Speed: 42%.`,
+            `[INSPECTOR] Heartbeat ok. Camera RTSP feed stabilized.`,
+            `[SYSTEM] Syncing model parameters with factory main server.`,
+            `[STORAGE] Log buffer rotation executed.`
+          ];
+          addLog(sysLogs[Math.floor(Math.random() * sysLogs.length)], 'info');
+        }
+      }, 5000);
+    }
+
+    // --- Canvas Initialization ---
+    let ctx1, ctx2, ctx3;
+    function initCanvases() {
+      if (state.activeTab === 1) {
+        const c1 = document.getElementById('canvas-tab1');
+        ctx1 = c1.getContext('2d');
+        drawStaticTab1();
+      } else if (state.activeTab === 2) {
+        const c2 = document.getElementById('canvas-tab2');
+        ctx2 = c2.getContext('2d');
+        drawStaticTab2();
+      } else if (state.activeTab === 3) {
+        const c3 = document.getElementById('canvas-tab3');
+        ctx3 = c3.getContext('2d');
+        drawStaticTab3();
+      }
+    }
+
+    // --- Tab 1: Extreme Speed Action Logic ---
+    function setFPS(fps) {
+      state.sim1.fps = fps;
+      document.getElementById('fps-label').innerText = `${fps} FPS`;
+      
+      const btn30 = document.getElementById('fps-30-btn');
+      const btn60 = document.getElementById('fps-60-btn');
+      
+      if (fps === 30) {
+        btn30.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        btn60.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+        document.getElementById('sim1-error-rate').innerText = "24.2%";
+        document.getElementById('metrics-gpu-load').innerHTML = `24.2<span class="text-xs font-normal text-slate-400"> %</span>`;
+        document.getElementById('gpu-load-bar').style.width = '24%';
+        document.getElementById('metrics-throughput').innerHTML = `30.0<span class="text-xs font-normal text-slate-400"> FPS</span>`;
+        document.getElementById('throughput-bar').style.width = '30%';
+      } else {
+        btn60.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        btn30.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+        document.getElementById('sim1-error-rate').innerText = "1.8%";
+        document.getElementById('metrics-gpu-load').innerHTML = `55.8<span class="text-xs font-normal text-slate-400"> %</span>`;
+        document.getElementById('gpu-load-bar').style.width = '55%';
+        document.getElementById('metrics-throughput').innerHTML = `60.0<span class="text-xs font-normal text-slate-400"> FPS</span>`;
+        document.getElementById('throughput-bar').style.width = '60%';
+      }
+      
+      addLog(`[CAMERA] Set capture frame rate to ${fps} FPS.`);
+    }
+
+    function toggleWaitPause() {
+      state.sim1.waitPause = document.getElementById('wait-pause-toggle').checked;
+      addLog(`[SOP_INSPECTOR] SOP Workstation 03 regulation updated: WaitPause = ${state.sim1.waitPause ? 'ON (0.5s pause required)' : 'OFF'}`);
+    }
+
+    function drawStaticTab1() {
+      ctx1.clearRect(0, 0, 600, 337);
+      
+      // Draw background conveyer belt
+      ctx1.fillStyle = '#1e293b';
+      ctx1.fillRect(50, 180, 500, 30);
+      ctx1.strokeStyle = '#475569';
+      ctx1.lineWidth = 2;
+      ctx1.strokeRect(50, 180, 500, 30);
+      
+      // Draw rollers
+      ctx1.fillStyle = '#0f172a';
+      for (let x = 70; x < 550; x += 60) {
+        ctx1.beginPath();
+        ctx1.arc(x, 195, 8, 0, Math.PI * 2);
+        ctx1.fill();
+        ctx1.strokeStyle = '#64748b';
+        ctx1.lineWidth = 1;
+        ctx1.stroke();
+      }
+
+      // Draw workpoints A, B, C, D
+      const points = [120, 220, 320, 420];
+      const names = ['A:基底', 'B:晶片', 'C:焊接', 'D:緊固'];
+      points.forEach((x, i) => {
+        ctx1.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx1.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx1.fillRect(x - 30, 100, 60, 40);
+        ctx1.strokeRect(x - 30, 100, 60, 40);
+        
+        ctx1.fillStyle = '#64748b';
+        ctx1.font = 'bold 9px monospace';
+        ctx1.fillText(names[i], x - 25, 90);
+      });
+
+      // Draw initial label
+      ctx1.fillStyle = '#94a3b8';
+      ctx1.font = 'bold 12px sans-serif';
+      ctx1.textAlign = 'center';
+      ctx1.fillText('請點擊「啟動裝配模擬檢測」按鈕', 300, 260);
+    }
+
+    function runSimulation1() {
+      if (state.sim1.isRunning) return;
+      state.sim1.isRunning = true;
+      
+      // Remove class if it was present
+      document.getElementById('result-container-tab1').classList.remove('result-loaded');
+      
+      let startTime = null;
+      const duration = 2500; // 2.5 seconds total assembly animation
+      const points = [120, 220, 320, 420];
+      const detectionFrames = []; // records timestamp of frames
+      let frameCounter = 0;
+      
+      // Generate frame timestamps based on FPS
+      const frameInterval = 1000 / state.sim1.fps;
+      
+      addLog(`[SOP_DETECTOR] Started monitoring assembly sequence...`, 'info');
+      
+      function animate(time) {
+        if (!startTime) startTime = time;
+        const progress = time - startTime;
+        
+        ctx1.clearRect(0, 0, 600, 337);
+        
+        // Re-draw conveyer belt & stations
+        ctx1.fillStyle = '#1e293b';
+        ctx1.fillRect(50, 180, 500, 30);
+        ctx1.strokeStyle = '#475569';
+        ctx1.lineWidth = 2;
+        ctx1.strokeRect(50, 180, 500, 30);
+        
+        ctx1.fillStyle = '#0f172a';
+        for (let x = 70; x < 550; x += 60) {
+          ctx1.beginPath();
+          ctx1.arc(x, 195, 8, 0, Math.PI * 2);
+          ctx1.fill();
+          ctx1.stroke();
+        }
+        
+        // Target steps status
+        const stepsVisited = [false, false, false, false];
+        
+        // Time ranges for each workstation
+        // If waitPause is true, movement is slower because of pauses
+        let tA = 400, tB = 1000, tC = 1600, tD = 2200;
+        let p = progress;
+        
+        // Draw stations & text
+        points.forEach((x, i) => {
+          ctx1.fillStyle = 'rgba(255, 255, 255, 0.05)';
+          ctx1.strokeStyle = 'rgba(255,255,255,0.1)';
+          ctx1.fillRect(x - 30, 100, 60, 40);
+          ctx1.strokeRect(x - 30, 100, 60, 40);
+          
+          ctx1.fillStyle = '#94a3b8';
+          ctx1.font = 'bold 9px monospace';
+          ctx1.fillText(`步驟 ${i+1}`, x - 18, 90);
+        });
+
+        // Compute current hand position along path
+        // Path is A -> B -> C -> D
+        let handX = 50;
+        let handY = 220;
+        let isAtStation = -1;
+        let stationProgress = 0; // 0 to 1 inside a station
+        
+        if (state.sim1.waitPause) {
+          // Worker pauses 0.5s (500ms) at each station
+          // Total timeline:
+          // 0-300ms: Move to A
+          // 300-800ms: Pause at A (500ms)
+          // 800-1100ms: Move to B
+          // 1100-1600ms: Pause at B (500ms)
+          // 1600-1900ms: Move to C
+          // 1900-2400ms: Pause at C (500ms)
+          // 2400-2700ms: Move to D
+          // 2700-3200ms: Pause at D (500ms)
+          const segments = [
+            { start: 0, end: 300, fromX: 50, toX: 120, fromY: 220, toY: 120, pause: false },
+            { start: 300, end: 800, fromX: 120, toX: 120, fromY: 120, toY: 120, pause: true, station: 0 },
+            { start: 800, end: 1100, fromX: 120, toX: 220, fromY: 120, toY: 120, pause: false },
+            { start: 1100, end: 1600, fromX: 220, toX: 220, fromY: 120, toY: 120, pause: true, station: 1 },
+            { start: 1600, end: 1900, fromX: 220, toX: 320, fromY: 120, toY: 120, pause: false },
+            { start: 1900, end: 2400, fromX: 320, toX: 320, fromY: 120, toY: 120, pause: true, station: 2 },
+            { start: 2400, end: 2700, fromX: 320, toX: 420, fromY: 120, toY: 120, pause: false },
+            { start: 2700, end: 3200, fromX: 420, toX: 420, fromY: 120, toY: 120, pause: true, station: 3 }
+          ];
+          
+          let currentSeg = segments[segments.length - 1];
+          for (let seg of segments) {
+            if (progress >= seg.start && progress < seg.end) {
+              currentSeg = seg;
+              break;
+            }
+          }
+          
+          const segDuration = currentSeg.end - currentSeg.start;
+          const segProgress = (progress - currentSeg.start) / segDuration;
+          
+          handX = currentSeg.fromX + (currentSeg.toX - currentSeg.fromX) * segProgress;
+          handY = currentSeg.fromY + (currentSeg.toY - currentSeg.fromY) * segProgress;
+          
+          if (currentSeg.pause) {
+            isAtStation = currentSeg.station;
+            stationProgress = segProgress;
+          }
+        } else {
+          // Fast continuous movement, no pause
+          // 0-500ms: Move to A
+          // 500-1000ms: Move to B
+          // 1000-1500ms: Move to C
+          // 1500-2000ms: Move to D
+          // 2000-2500ms: Return to home
+          const segments = [
+            { start: 0, end: 500, fromX: 50, toX: 120, fromY: 220, toY: 120, station: 0 },
+            { start: 500, end: 1000, fromX: 120, toX: 220, fromY: 120, toY: 120, station: 1 },
+            { start: 1000, end: 1500, fromX: 220, toX: 320, fromY: 120, toY: 120, station: 2 },
+            { start: 1500, end: 2000, fromX: 320, toX: 420, fromY: 120, toY: 120, station: 3 },
+            { start: 2000, end: 2500, fromX: 420, toX: 550, fromY: 120, toY: 220 }
+          ];
+          
+          let currentSeg = segments[segments.length - 1];
+          for (let seg of segments) {
+            if (progress >= seg.start && progress < seg.end) {
+              currentSeg = seg;
+              break;
+            }
+          }
+          
+          const segDuration = currentSeg.end - currentSeg.start;
+          const segProgress = (progress - currentSeg.start) / segDuration;
+          
+          handX = currentSeg.fromX + (currentSeg.toX - currentSeg.fromX) * segProgress;
+          handY = currentSeg.fromY + (currentSeg.toY - currentSeg.fromY) * segProgress;
+          
+          // In continuous mode, it is at station only briefly at the boundary points
+          if (progress >= 480 && progress <= 520) isAtStation = 0;
+          if (progress >= 980 && progress <= 1020) isAtStation = 1;
+          if (progress >= 1480 && progress <= 1520) isAtStation = 2;
+          if (progress >= 1980 && progress <= 2020) isAtStation = 3;
+        }
+
+        // Draw path line
+        ctx1.strokeStyle = 'rgba(118, 185, 0, 0.2)';
+        ctx1.lineWidth = 1;
+        ctx1.setLineDash([4, 4]);
+        ctx1.beginPath();
+        ctx1.moveTo(50, 220);
+        ctx1.lineTo(120, 120);
+        ctx1.lineTo(220, 120);
+        ctx1.lineTo(320, 120);
+        ctx1.lineTo(420, 120);
+        ctx1.stroke();
+        ctx1.setLineDash([]);
+
+        // Simulated AI Frame Capture check
+        // Check if camera captures a frame *exactly* at this instant
+        const currentFrameCount = Math.floor(progress / frameInterval);
+        const hasCameraFlash = (currentFrameCount > frameCounter);
+        if (hasCameraFlash) {
+          frameCounter = currentFrameCount;
+          // Capture flash animation trigger
+          ctx1.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx1.fillRect(0, 0, 600, 337);
+          
+          // Log camera capture frame
+          if (isAtStation >= 0) {
+            detectionFrames.push({ station: isAtStation, time: progress });
+          }
+        }
+
+        // Draw YOLO Detection box on Hand if at station
+        // In 30FPS fast movement, B and C are often missed because no camera frame lands on the brief station window
+        let hasAILocked = false;
+        
+        if (state.sim1.waitPause) {
+          // Pause mode: camera definitely captures it
+          if (isAtStation >= 0) hasAILocked = true;
+        } else {
+          // Fast continuous mode: only locked if a detection frame was recorded in the small window
+          const capturedThisStation = detectionFrames.some(df => df.station === Math.floor((handX - 70) / 100));
+          if (capturedThisStation && Math.abs(handY - 120) < 10) {
+            hasAILocked = true;
+          }
+        }
+
+        if (hasAILocked) {
+          ctx1.strokeStyle = '#76b900';
+          ctx1.lineWidth = 2;
+          ctx1.strokeRect(handX - 35, handY - 25, 70, 50);
+          
+          ctx1.fillStyle = '#76b900';
+          ctx1.font = 'bold 9px monospace';
+          ctx1.fillText('OPERATOR_HAND', handX - 32, handY - 30);
+          
+          // draw check
+          ctx1.beginPath();
+          ctx1.arc(handX + 25, handY - 15, 6, 0, Math.PI * 2);
+          ctx1.fill();
+          ctx1.fillStyle = '#000';
+          ctx1.font = 'bold 8px monospace';
+          ctx1.fillText('✓', handX + 22, handY - 12);
+        } else if (Math.abs(handY - 120) < 15 && (handX > 90 && handX < 450)) {
+          // Hand is in the assembly area but not locked (Blink Effect / Motion Blur)
+          ctx1.strokeStyle = '#ef4444';
+          ctx1.lineWidth = 1.5;
+          ctx1.setLineDash([2, 2]);
+          ctx1.strokeRect(handX - 35, handY - 25, 70, 50);
+          ctx1.setLineDash([]);
+          
+          ctx1.fillStyle = '#ef4444';
+          ctx1.font = 'bold 8px monospace';
+          ctx1.fillText('BLUR / UNLOCKED', handX - 32, handY - 30);
+        }
+
+        // Draw Worker Hand (as a rounded circle pointer with indicator)
+        ctx1.fillStyle = '#e2e8f0';
+        ctx1.beginPath();
+        ctx1.arc(handX, handY, 15, 0, Math.PI * 2);
+        ctx1.fill();
+        ctx1.strokeStyle = '#475569';
+        ctx1.lineWidth = 2;
+        ctx1.stroke();
+        
+        ctx1.fillStyle = '#76b900';
+        ctx1.beginPath();
+        ctx1.arc(handX, handY, 5, 0, Math.PI * 2);
+        ctx1.fill();
+
+        // Draw logs in real-time on key events
+        if (progress >= 300 && progress < 320) addLog(`[SOP_DETECTOR] Hand moving towards Workstation A (Base)...`);
+        if (isAtStation === 0 && progress % 100 < 15) addLog(`[SOP_DETECTOR] Station A detected. Processing...`, 'info');
+        if (isAtStation === 1 && progress % 100 < 15) addLog(`[SOP_DETECTOR] Station B (Chip placing) detected. Processing...`, 'info');
+        if (isAtStation === 2 && progress % 100 < 15) addLog(`[SOP_DETECTOR] Station C (Soldering) detected. Processing...`, 'info');
+        
+        // Loop limit
+        const finalTime = state.sim1.waitPause ? 3300 : 2600;
+        if (progress < finalTime) {
+          state.sim1.animationFrame = requestAnimationFrame(animate);
+        } else {
+          // Simulation ended. Output final decision
+          state.sim1.isRunning = false;
+          evaluateSimulation1(detectionFrames);
+        }
+      }
+      
+      state.sim1.animationFrame = requestAnimationFrame(animate);
+    }
+
+    function evaluateSimulation1(frames) {
+      // Analyze what was detected
+      // We need stations 0, 1, 2, 3 to all be captured
+      const capturedStations = new Set();
+      frames.forEach(f => capturedStations.add(f.station));
+      
+      const success = (capturedStations.has(0) && capturedStations.has(1) && capturedStations.has(2) && capturedStations.has(3)) || 
+                      (state.sim1.fps === 60) || 
+                      (state.sim1.waitPause);
+      
+      const statusIcon = document.getElementById('sim1-status-icon');
+      const statusText = document.getElementById('sim1-status-text');
+      const detailsBadge = document.getElementById('sim1-details-badge');
+      const container = document.getElementById('result-container-tab1');
+      
+      container.classList.add('result-loaded'); // Mark class for E2E wait
+      detailsBadge.classList.remove('hidden');
+
+      if (success) {
+        statusIcon.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-white"></i>`;
+        statusIcon.className = "w-8 h-8 rounded-full bg-nvidia flex items-center justify-center animate-bounce";
+        statusText.innerText = "SOP 判定結果: OK (合規組裝)";
+        statusText.className = "text-sm font-bold text-nvidia";
+        detailsBadge.innerText = `${state.sim1.fps}FPS | 完整捕捉 4/4 步驟`;
+        detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-nvidia/10 text-nvidia border border-nvidia/20";
+        addLog(`[SOP_AUDITOR] SUCCESS: All 4 assembly steps verified successfully.`, 'ok');
+      } else {
+        statusIcon.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-white"></i>`;
+        statusIcon.className = "w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center animate-shake";
+        statusText.innerText = "SOP 判定結果: NG (步驟漏檢 / 眨眼效應)";
+        statusText.className = "text-sm font-bold text-rose-500";
+        
+        // list missing
+        const missing = [];
+        if (!capturedStations.has(0)) missing.push("步驟1");
+        if (!capturedStations.has(1)) missing.push("步驟2");
+        if (!capturedStations.has(2)) missing.push("步驟3");
+        if (!capturedStations.has(3)) missing.push("步驟4");
+        
+        detailsBadge.innerText = `漏檢項目: ${missing.join(', ') || '步驟2, 步驟3'}`;
+        detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20";
+        addLog(`[SOP_AUDITOR] CRITICAL: Blink effect detected. Station B/C missed capture window. Audit FAIL.`, 'error');
+      }
+      lucide.createIcons();
+    }
+
+    // --- Tab 2: Tiny Screw and Occlusion Logic ---
+    function toggleSensorFusion() {
+      state.sim2.sensorFusion = document.getElementById('sensor-fusion-toggle').checked;
+      addLog(`[SOP_INSPECTOR] Sensor Fusion Mode: ${state.sim2.sensorFusion ? 'ENABLED (AI + Torque Smart Driver)' : 'DISABLED (AI Vision Only)'}`);
+    }
+
+    function setTorqueState(stateStr) {
+      state.sim2.torqueState = stateStr;
+      const btnOk = document.getElementById('torque-ok-btn');
+      const btnSlip = document.getElementById('torque-slip-btn');
+      const label = document.getElementById('torque-state-label');
+      
+      if (stateStr === 'ok') {
+        btnOk.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        btnSlip.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+        label.innerText = "鎖緊 (扭力 3.2 N·m)";
+      } else {
+        btnSlip.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        btnOk.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+        label.innerText = "滑牙/未鎖緊 (1.1 N·m)";
+      }
+      
+      addLog(`[SMART_TOOL] Driver torque calibration set to: ${stateStr === 'ok' ? '3.2 N·m' : '1.1 N·m (Fault simulation)'}`);
+    }
+
+    function drawStaticTab2() {
+      ctx2.clearRect(0, 0, 600, 337);
+      
+      // Draw work piece (plate with hole)
+      ctx2.fillStyle = '#334155';
+      ctx2.fillRect(150, 120, 300, 100);
+      ctx2.strokeStyle = '#64748b';
+      ctx2.lineWidth = 3;
+      ctx2.strokeRect(150, 120, 300, 100);
+      
+      // Draw screw hole
+      ctx2.fillStyle = '#0f172a';
+      ctx2.beginPath();
+      ctx2.arc(300, 170, 20, 0, Math.PI * 2);
+      ctx2.fill();
+      ctx2.strokeStyle = '#475569';
+      ctx2.stroke();
+      
+      // Thread pattern in hole
+      ctx2.strokeStyle = '#334155';
+      ctx2.lineWidth = 2;
+      ctx2.beginPath();
+      ctx2.arc(300, 170, 12, 0, Math.PI * 2);
+      ctx2.stroke();
+
+      ctx2.fillStyle = '#94a3b8';
+      ctx2.font = 'bold 12px sans-serif';
+      ctx2.textAlign = 'center';
+      ctx2.fillText('請點擊「啟動鎖附檢測」按鈕', 300, 280);
+    }
+
+    function runSimulation2() {
+      if (state.sim2.isRunning) return;
+      state.sim2.isRunning = true;
+      
+      document.getElementById('result-container-tab2').classList.remove('result-loaded');
+      
+      let startTime = null;
+      const duration = 3000;
+      
+      addLog(`[SOP_DETECTOR] Screw fastening simulation started. Arming optical track...`);
+      
+      function animate(time) {
+        if (!startTime) startTime = time;
+        const progress = time - startTime;
+        
+        ctx2.clearRect(0, 0, 600, 337);
+        
+        // Re-draw work piece
+        ctx2.fillStyle = '#334155';
+        ctx2.fillRect(150, 120, 300, 100);
+        ctx2.strokeStyle = '#64748b';
+        ctx2.lineWidth = 3;
+        ctx2.strokeRect(150, 120, 300, 100);
+        
+        ctx2.fillStyle = '#0f172a';
+        ctx2.beginPath();
+        ctx2.arc(300, 170, 20, 0, Math.PI * 2);
+        ctx2.fill();
+        ctx2.strokeStyle = '#475569';
+        ctx2.stroke();
+        
+        // Screw head drawing inside hole
+        ctx2.fillStyle = '#64748b';
+        ctx2.beginPath();
+        ctx2.arc(300, 170, 10, 0, Math.PI * 2);
+        ctx2.fill();
+        
+        // Screwdriver arm position
+        // 0-1000ms: Driver approaches
+        // 1000-2200ms: Hand moves in and covers it completely
+        // 2200-3000ms: Finished
+        let driverY = 0;
+        if (progress < 1000) {
+          driverY = -80 + (progress / 1000) * 230; // approaches hole
+        } else {
+          driverY = 150;
+        }
+
+        // Draw driver tool (shaft and tip)
+        if (progress < 2500) {
+          ctx2.fillStyle = '#94a3b8';
+          ctx2.fillRect(294, driverY - 120, 12, 100); // shaft
+          ctx2.fillStyle = '#cbd5e1';
+          ctx2.fillRect(290, driverY - 20, 20, 15); // driver base
+          ctx2.fillStyle = '#e2e8f0';
+          ctx2.beginPath();
+          ctx2.moveTo(297, driverY - 5);
+          ctx2.lineTo(303, driverY - 5);
+          ctx2.lineTo(300, driverY + 10);
+          ctx2.closePath();
+          ctx2.fill();
+        }
+
+        // Hand occlusion animation
+        // Comes from top-right to cover center
+        let handAlpha = 0;
+        let handX = 500;
+        let handY = 50;
+        
+        if (progress >= 800 && progress < 1800) {
+          const p = (progress - 800) / 1000;
+          handX = 500 - p * 200;
+          handY = 50 + p * 100;
+          handAlpha = p * 0.85;
+        } else if (progress >= 1800) {
+          handX = 300;
+          handY = 150;
+          handAlpha = 0.85;
+        }
+
+        if (handAlpha > 0) {
+          // Draw Operator Hand Occlusion Zone (Semi-transparent red box or hand icon)
+          ctx2.save();
+          ctx2.globalAlpha = handAlpha;
+          
+          // Outer box
+          ctx2.fillStyle = 'rgba(239, 68, 68, 0.2)';
+          ctx2.strokeStyle = '#ef4444';
+          ctx2.lineWidth = 2;
+          ctx2.setLineDash([4, 4]);
+          ctx2.fillRect(handX - 80, handY - 80, 160, 160);
+          ctx2.strokeRect(handX - 80, handY - 80, 160, 160);
+          ctx2.setLineDash([]);
+          
+          // Bounding Box text
+          ctx2.fillStyle = '#ef4444';
+          ctx2.font = 'bold 10px monospace';
+          ctx2.fillText('WARNING: VISUAL OCCLUSION (100%)', handX - 75, handY - 85);
+          
+          // Draw hand shape
+          ctx2.fillStyle = 'rgba(226, 232, 240, 0.9)';
+          ctx2.beginPath();
+          ctx2.arc(handX, handY, 35, 0, Math.PI * 2);
+          ctx2.fill();
+          ctx2.strokeStyle = '#dc2626';
+          ctx2.lineWidth = 3;
+          ctx2.stroke();
+          
+          ctx2.fillStyle = '#dc2626';
+          ctx2.font = 'bold 9px sans-serif';
+          ctx2.textAlign = 'center';
+          ctx2.fillText('OPERATOR HAND', handX, handY + 4);
+          
+          ctx2.restore();
+          
+          document.getElementById('sim2-ocular-status').innerText = "BLOCKED (0%)";
+          document.getElementById('sim2-ocular-status').className = "text-rose-500 font-bold";
+        } else {
+          document.getElementById('sim2-ocular-status').innerText = "CLEAR";
+          document.getElementById('sim2-ocular-status').className = "text-nvidia font-bold";
+        }
+
+        // Live Torque Readings displayed on UI
+        let currentTorque = 0;
+        if (progress > 1200 && progress < 2400) {
+          // Torque ramping up
+          const p = (progress - 1200) / 1200;
+          const targetT = state.sim2.torqueState === 'ok' ? 3.2 : 1.1;
+          currentTorque = (p * targetT).toFixed(1);
+        } else if (progress >= 2400) {
+          currentTorque = state.sim2.torqueState === 'ok' ? 3.2 : 1.1;
+        }
+        
+        if (progress > 1200) {
+          // Draw torque feedback graphic
+          ctx2.fillStyle = '#0f172a';
+          ctx2.fillRect(380, 40, 180, 50);
+          ctx2.strokeStyle = '#475569';
+          ctx2.strokeRect(380, 40, 180, 50);
+          
+          ctx2.fillStyle = '#94a3b8';
+          ctx2.font = 'bold 8px monospace';
+          ctx2.fillText('SMART SCREWDRIVER FEED', 470, 53);
+          
+          ctx2.fillStyle = currentTorque > 2 ? '#76b900' : '#ef4444';
+          ctx2.font = 'bold 16px monospace';
+          ctx2.fillText(`TORQUE: ${currentTorque} N·m`, 470, 75);
+        }
+
+        if (progress < duration) {
+          state.sim2.animationFrame = requestAnimationFrame(animate);
+        } else {
+          state.sim2.isRunning = false;
+          evaluateSimulation2();
+        }
+      }
+      state.sim2.animationFrame = requestAnimationFrame(animate);
+    }
+
+    function evaluateSimulation2() {
+      const statusIcon = document.getElementById('sim2-status-icon');
+      const statusText = document.getElementById('sim2-status-text');
+      const detailsBadge = document.getElementById('sim2-details-badge');
+      const container = document.getElementById('result-container-tab2');
+      
+      container.classList.add('result-loaded'); // Mark class for E2E wait
+
+      if (!state.sim2.sensorFusion) {
+        // AI Vision Only - FAIL because obscured
+        statusIcon.innerHTML = `<i data-lucide="help-circle" class="w-5 h-5 text-white"></i>`;
+        statusIcon.className = "w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center animate-bounce";
+        statusText.innerText = "SOP 判定結果: WARN (盲區遮擋無法確認)";
+        statusText.className = "text-sm font-bold text-amber-500";
+        detailsBadge.innerText = "視覺遮擋 | 物理訊號未接入";
+        detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20";
+        addLog(`[SOP_AUDITOR] WARNING: Camera 01 line-of-sight fully blocked by hand. Cannot verify screw presence visually.`, 'warn');
+      } else {
+        // Sensor Fusion Mode
+        if (state.sim2.torqueState === 'ok') {
+          statusIcon.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-white"></i>`;
+          statusIcon.className = "w-8 h-8 rounded-full bg-nvidia flex items-center justify-center animate-bounce";
+          statusText.innerText = "SOP 判定結果: OK (雙重訊號融合-合格閉環)";
+          statusText.className = "text-sm font-bold text-nvidia";
+          detailsBadge.innerText = "扭力達標 3.2 N·m | AI 判定鎖附完成";
+          detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-nvidia/10 text-nvidia border border-nvidia/20";
+          addLog(`[SOP_AUDITOR] SUCCESS: Visual occlusion bypassed. Smart driver torque 3.2 N·m received. Step verified.`, 'ok');
+        } else {
+          statusIcon.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-white"></i>`;
+          statusIcon.className = "w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center animate-shake";
+          statusText.innerText = "SOP 判定結果: NG (螺絲滑牙 / 扭力不足)";
+          statusText.className = "text-sm font-bold text-rose-500";
+          detailsBadge.innerText = "扭力異常 1.1 N·m | 滑牙判定";
+          detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20";
+          addLog(`[SOP_AUDITOR] CRITICAL FAIL: Sensor Fusion detected torque fault (1.1 N·m, under 2.5 N·m limit). Assembly rejected.`, 'error');
+        }
+      }
+      lucide.createIcons();
+    }
+
+    // --- Tab 3: Particular Path Movement Logic ---
+    function setEngine(engine) {
+      state.sim3.engine = engine;
+      const badge = document.getElementById('sim3-engine-badge');
+      if (engine === 'vlm') {
+        badge.innerText = "VLM (NVIDIA BlueSOP)";
+        badge.className = "text-nvidia";
+      } else {
+        badge.innerText = "傳統 CV (幾何輪廓檢測)";
+        badge.className = "text-blue-500";
+      }
+      addLog(`[SOP_INSPECTOR] Switch geometry testing engine to: ${engine.toUpperCase()}`);
+    }
+
+    function setOffset(offset) {
+      state.sim3.offset = offset;
+      const label = document.getElementById('offset-label');
+      const btnNone = document.getElementById('offset-none-btn');
+      const btnSmall = document.getElementById('offset-small-btn');
+      const btnLarge = document.getElementById('offset-large-btn');
+      
+      btnNone.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+      btnSmall.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+      btnLarge.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors";
+      
+      if (offset === 0) {
+        btnNone.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        label.innerText = "無偏移 (0mm)";
+      } else if (offset === 1.5) {
+        btnSmall.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        label.innerText = "微小偏移 (1.5mm)";
+      } else {
+        btnLarge.className = "flex-1 py-1.5 rounded-lg text-xs font-bold border bg-nvidia/10 border-nvidia text-nvidia transition-colors";
+        label.innerText = "嚴重偏移 (5.0mm)";
+      }
+      
+      addLog(`[GLUING_CNC] Machine calibration pathway offset set to: ${offset} mm`);
+    }
+
+    function drawStaticTab3() {
+      ctx3.clearRect(0, 0, 600, 337);
+      
+      // Standard path path outline (U shape)
+      ctx3.strokeStyle = '#475569';
+      ctx3.lineWidth = 4;
+      ctx3.setLineDash([6, 6]);
+      drawUPath(ctx3, 0); // draw path centered
+      ctx3.stroke();
+      ctx3.setLineDash([]);
+      
+      ctx3.fillStyle = '#94a3b8';
+      ctx3.font = 'bold 12px sans-serif';
+      ctx3.textAlign = 'center';
+      ctx3.fillText('請點擊「啟動點膠軌跡檢測」按鈕', 300, 260);
+      
+      ctx3.fillStyle = '#e2e8f0';
+      ctx3.font = 'bold 9px monospace';
+      ctx3.fillText('標準幾何軌跡基準線 (TOLERANCE: ±1.0mm)', 300, 100);
+    }
+
+    function drawUPath(ctx, offsetAmount) {
+      ctx.beginPath();
+      // standard points
+      // Start: 150, 180
+      // Curve down to 150, 220
+      // Line to 450, 220
+      // Curve up to 450, 180
+      ctx.moveTo(150, 130 + offsetAmount);
+      ctx.lineTo(150, 200 + offsetAmount);
+      ctx.bezierCurveTo(150, 240 + offsetAmount, 450, 240 + offsetAmount, 450, 200 + offsetAmount);
+      ctx.lineTo(450, 130 + offsetAmount);
+    }
+
+    function runSimulation3() {
+      if (state.sim3.isRunning) return;
+      state.sim3.isRunning = true;
+      
+      document.getElementById('result-container-tab3').classList.remove('result-loaded');
+      
+      let startTime = null;
+      const duration = 2500;
+      
+      addLog(`[SOP_DETECTOR] Gluing trace scanner activated. Model: ${state.sim3.engine.toUpperCase()}...`);
+      
+      function animate(time) {
+        if (!startTime) startTime = time;
+        const progress = time - startTime;
+        const p = Math.min(progress / duration, 1);
+        
+        ctx3.clearRect(0, 0, 600, 337);
+        
+        // Re-draw Standard Path
+        ctx3.strokeStyle = 'rgba(71, 85, 105, 0.4)';
+        ctx3.lineWidth = 8;
+        ctx3.setLineDash([8, 8]);
+        drawUPath(ctx3, 0);
+        ctx3.stroke();
+        ctx3.setLineDash([]);
+        
+        // Draw standard tolerance band (±1mm)
+        ctx3.strokeStyle = 'rgba(118, 185, 0, 0.1)';
+        ctx3.lineWidth = 16;
+        drawUPath(ctx3, 0);
+        ctx3.stroke();
+        
+        // Draw Actual Gluing Path (offset by user selected offset)
+        // Offset in Canvas representation: 1mm = 6 pixels
+        const pixelOffset = state.sim3.offset * 6;
+        ctx3.strokeStyle = '#60a5fa'; // Blue glue gel
+        ctx3.lineWidth = 6;
+        
+        // Draw UPath up to progress p
+        ctx3.save();
+        // Custom path clip based on progress
+        ctx3.beginPath();
+        ctx3.moveTo(150, 130 + pixelOffset);
+        
+        // Draw segment by segment
+        const totalLength = 340; // Approx
+        const currentLength = totalLength * p;
+        
+        // Approximating segment drawings
+        if (currentLength < 70) {
+          ctx3.lineTo(150, 130 + pixelOffset + currentLength);
+        } else if (currentLength < 270) {
+          ctx3.lineTo(150, 200 + pixelOffset);
+          const curveP = (currentLength - 70) / 200;
+          // Interpolate bezier curve
+          // bezier points: (150, 240) to (450, 240) and end at (450, 200)
+          ctx3.bezierCurveTo(
+            150 + curveP * 100, 240 + pixelOffset,
+            150 + curveP * 200, 240 + pixelOffset,
+            150 + curveP * 300, 200 + pixelOffset
+          );
+        } else {
+          ctx3.lineTo(150, 200 + pixelOffset);
+          ctx3.bezierCurveTo(150, 240 + pixelOffset, 450, 240 + pixelOffset, 450, 200 + pixelOffset);
+          const endP = (currentLength - 270) / 70;
+          ctx3.lineTo(450, 200 + pixelOffset - endP * 70);
+        }
+        ctx3.stroke();
+        ctx3.restore();
+        
+        // Draw gluing nozzle tool
+        let nozzleX = 150;
+        let nozzleY = 130 + pixelOffset;
+        if (currentLength < 70) {
+          nozzleX = 150;
+          nozzleY = 130 + pixelOffset + currentLength;
+        } else if (currentLength < 270) {
+          const curveP = (currentLength - 70) / 200;
+          // Approximate position on cubic bezier
+          const t = curveP;
+          const p0 = {x: 150, y: 200 + pixelOffset};
+          const p1 = {x: 150, y: 240 + pixelOffset};
+          const p2 = {x: 450, y: 240 + pixelOffset};
+          const p3 = {x: 450, y: 200 + pixelOffset};
+          
+          nozzleX = Math.pow(1-t, 3)*p0.x + 3*Math.pow(1-t, 2)*t*p1.x + 3*(1-t)*Math.pow(t, 2)*p2.x + Math.pow(t, 3)*p3.x;
+          nozzleY = Math.pow(1-t, 3)*p0.y + 3*Math.pow(1-t, 2)*t*p1.y + 3*(1-t)*Math.pow(t, 2)*p2.y + Math.pow(t, 3)*p3.y;
+        } else {
+          const endP = (currentLength - 270) / 70;
+          nozzleX = 450;
+          nozzleY = 200 + pixelOffset - endP * 70;
+        }
+        
+        // Draw CNC Nozzle
+        ctx3.fillStyle = '#ef4444';
+        ctx3.beginPath();
+        ctx3.moveTo(nozzleX - 5, nozzleY - 15);
+        ctx3.lineTo(nozzleX + 5, nozzleY - 15);
+        ctx3.lineTo(nozzleX, nozzleY);
+        ctx3.closePath();
+        ctx3.fill();
+        
+        // Laser scanning line at nozzle
+        ctx3.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+        ctx3.lineWidth = 1;
+        ctx3.beginPath();
+        ctx3.moveTo(nozzleX - 20, nozzleY);
+        ctx3.lineTo(nozzleX + 20, nozzleY);
+        ctx3.stroke();
+
+        // Overlay text feedback
+        ctx3.fillStyle = '#60a5fa';
+        ctx3.font = 'bold 8px monospace';
+        ctx3.fillText(`NOZZLE_CNC: (${Math.round(nozzleX)}, ${Math.round(nozzleY)})`, 15, 300);
+
+        if (progress < duration) {
+          state.sim3.animationFrame = requestAnimationFrame(animate);
+        } else {
+          state.sim3.isRunning = false;
+          evaluateSimulation3();
+        }
+      }
+      state.sim3.animationFrame = requestAnimationFrame(animate);
+    }
+
+    function evaluateSimulation3() {
+      const statusIcon = document.getElementById('sim3-status-icon');
+      const statusText = document.getElementById('sim3-status-text');
+      const detailsBadge = document.getElementById('sim3-details-badge');
+      const container = document.getElementById('result-container-tab3');
+      
+      container.classList.add('result-loaded'); // Mark class for E2E wait
+      
+      const offset = state.sim3.offset;
+      const engine = state.sim3.engine;
+      
+      detailsBadge.innerText = `路徑偏差: ${offset}mm`;
+
+      if (offset === 0) {
+        statusIcon.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-white"></i>`;
+        statusIcon.className = "w-8 h-8 rounded-full bg-nvidia flex items-center justify-center animate-bounce";
+        statusText.innerText = "SOP 判定結果: OK (幾何軌跡合格)";
+        statusText.className = "text-sm font-bold text-nvidia";
+        detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-nvidia/10 text-nvidia border border-nvidia/20";
+        addLog(`[SOP_AUDITOR] SUCCESS: CNC path fully matches standard trace. Deviation 0.0mm.`, 'ok');
+      } else if (offset === 1.5) {
+        if (engine === 'vlm') {
+          // VLM is insensitive to 1.5mm - MISSED / FALSE POSITIVE OK
+          statusIcon.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-white"></i>`;
+          statusIcon.className = "w-8 h-8 rounded-full bg-nvidia flex items-center justify-center";
+          statusText.innerText = "SOP 判定結果: OK (VLM 引擎漏報)";
+          statusText.className = "text-sm font-bold text-nvidia";
+          detailsBadge.innerText = "微小偏差 1.5mm | VLM 誤判 OK";
+          detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-nvidia/10 text-nvidia border border-nvidia/20";
+          addLog(`[SOP_AUDITOR] WARNING: VLM engine did not flag 1.5mm trace shift. Under-sensitive danger!`, 'warn');
+        } else {
+          // Traditional CV - Correctly flags it
+          statusIcon.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-white"></i>`;
+          statusIcon.className = "w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center animate-shake";
+          statusText.innerText = "SOP 判定結果: NG (傳統 CV 精密攔截)";
+          statusText.className = "text-sm font-bold text-rose-500";
+          detailsBadge.innerText = "幾何超標 1.5mm | 門檻 1.0mm";
+          detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20";
+          addLog(`[SOP_AUDITOR] CRITICAL: Path deviation 1.5mm exceeds quality tolerance band (±1.0mm). CNC stopped.`, 'error');
+        }
+      } else {
+        // offset = 5.0mm (Both engines flag it)
+        statusIcon.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-white"></i>`;
+        statusIcon.className = "w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center animate-shake";
+        statusText.innerText = "SOP 判定結果: NG (嚴重軌跡偏移)";
+        statusText.className = "text-sm font-bold text-rose-500";
+        detailsBadge.innerText = "偏差極大 5.0mm | 品質異常";
+        detailsBadge.className = "text-xs font-mono px-3 py-1 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20";
+        addLog(`[SOP_AUDITOR] CRITICAL: Massive path deviation 5.0mm. Verified by both engines. Audit FAIL.`, 'error');
+      }
+      lucide.createIcons();
+    }
+
+    // --- Tab 4: Technology Selection Table Logic ---
+    const matrixData = [
+      {
+        title: "VLM 視覺語言模型",
+        pros: "能理解前後動作脈絡與環境狀態改變（例如抓取前後工件形狀的改變），具備卓越的上下文推理與多步驟步驟關係檢測能力。容易應對局部視覺遮擋。",
+        cons: "對幾何像素級的毫米偏差不敏感，容易對精細塗抹、焊接線段偏移漏檢；且在大幀率下運算算力要求極高。",
+        workaround: "適用於多步驟、有前後關聯的複雜 SOP (如車體組裝、機器人打包)。可配合 NVIDIA 藍圖邊緣推理進行大方向稽核。"
+      },
+      {
+        title: "傳統物件辨識 (Object Detection)",
+        pros: "建置成本低，訓練資料集與邊緣推導算力極小 (如 YOLOv8 Tiny)，非常適合資源有限的邊緣工控主機部署。",
+        cons: "無法理解前後動作邏輯與脈絡，一旦遇到手部或工具長期遮擋即會判定遺失，極易產生防呆防錯誤報。",
+        workaround: "適用於單純、單一動作的防呆防錯檢查，或是作為大動作流程的起點觸發器。"
+      },
+      {
+        title: "AI 視覺 + 智慧起子扭力回傳",
+        pros: "通過實體物理設備回傳與 AI 動作軌跡雙重驗證。起子回傳力矩數據（例如 3.2 N·m）作為閉環依據，無視視覺死角。",
+        cons: "需升級車間聯網硬體（IoT 智慧工具），整體硬體改造成本高，且需要撰寫 PLC 與 AI 中控的接口膠水代碼。",
+        workaround: "微小螺絲鎖緊的產線標準標配。AI 檢測手部定位與螺栓位置，PLC 接收扭力曲線，兩者核對均 OK 才放行。"
+      },
+      {
+        title: "傳統機器視覺 (輪廓檢測) 或 設備座標",
+        pros: "提供像素級的幾何檢測精度，對 ±0.1mm 級的幾何輪廓位移極度敏感。點膠、走線、焊接等精密點線軌跡檢測必備。",
+        cons: "無法泛化，一旦環境光線稍微改變或工件反光、位置偏移就可能失效。不具備任何語意理解能力。",
+        workaround: "高精度塗抹與焊接產線的最佳主力方案。以設備內部 CNC 運動軌跡座標作為直接真值，輔以傳統 CV 進行膠水溢出輪廓檢測。"
+      }
+    ];
+
+    function selectMatrixRow(index) {
+      state.selectedMatrixRow = index;
+      
+      // Update row selection styling
+      const rows = document.querySelectorAll('.matrix-row');
+      rows.forEach((row, i) => {
+        if (i === index) {
+          row.className = "matrix-row cursor-pointer transition-all duration-200 bg-nvidia/10 border-l-4 border-nvidia font-semibold selected-row";
+        } else {
+          row.className = "matrix-row cursor-pointer transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-900/50 border-l-0";
+        }
+      });
+      
+      // Update detail card
+      const placeholder = document.getElementById('matrix-detail-placeholder');
+      const content = document.getElementById('matrix-detail-content');
+      
+      placeholder.classList.add('hidden');
+      content.classList.remove('hidden');
+      
+      // Mark selection container for E2E tests
+      document.getElementById('matrix-detail-card').classList.add('result-loaded-tab4');
+
+      const data = matrixData[index];
+      document.getElementById('detail-title').innerText = data.title;
+      document.getElementById('detail-pros').innerText = data.pros;
+      document.getElementById('detail-cons').innerText = data.cons;
+      document.getElementById('detail-workaround').innerText = data.workaround;
+      
+      // Set matching icons for detail box
+      const iconBox = document.getElementById('detail-icon-box');
+      if (index === 0) iconBox.innerHTML = `<i data-lucide="brain" class="w-4.5 h-4.5"></i>`;
+      else if (index === 1) iconBox.innerHTML = `<i data-lucide="scan-eye" class="w-4.5 h-4.5"></i>`;
+      else if (index === 2) iconBox.innerHTML = `<i data-lucide="wrench" class="w-4.5 h-4.5"></i>`;
+      else if (index === 3) iconBox.innerHTML = `<i data-lucide="binary" class="w-4.5 h-4.5"></i>`;
+      
+      lucide.createIcons();
+      addLog(`[DECISION_MATRIX] User reviewed technical specs for: ${data.title}`);
+    }
+  </script>
+</body>
+</html>
