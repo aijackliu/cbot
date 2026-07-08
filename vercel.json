@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/test0708",
+      "destination": "/test0708/",
+      "permanent": true
+    }
+  ]
+}

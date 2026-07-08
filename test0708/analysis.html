@@ -2,6 +2,16 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+  <script>
+  (function () {
+    var p = location.pathname;
+    var last = p.split("/").pop() || "";
+    var base = /\.[a-z0-9]+$/i.test(last)
+      ? p.slice(0, p.lastIndexOf("/") + 1)
+      : (p.endsWith("/") ? p : p + "/");
+    document.head.appendChild(Object.assign(document.createElement("base"), { href: base }));
+  })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>數據分析 - 軸心 AI 檢測系統（展示版）</title>
   <link rel="stylesheet" href="css/style.css">
