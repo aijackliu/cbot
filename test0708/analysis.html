@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>數據分析 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="analysis">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 圖表與分析數據為固定示意</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>數據分析</h1>
+          <p>瑕疵柏拉圖、信心值分布、時段良率趨勢與批次比較</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary btn-sm" data-demo-action="展示版：分析為固定資料">重新分析</button>
+        </div>
+      </header>
+      <div class="summary-cards" id="summaryCards"></div>
+      <div class="page-content">
+        <div class="page-grid analysis-grid">
+          <section class="panel"><div class="panel-header"><h2>瑕疵柏拉圖</h2></div><div class="panel-body" id="paretoChart"></div></section>
+          <section class="panel"><div class="panel-header"><h2>信心值分布</h2></div><div class="panel-body" id="confChart"></div></section>
+          <section class="panel"><div class="panel-header"><h2>時段良率趨勢</h2></div><div class="panel-body"><div id="trendChart" class="trend-chart"></div></div></section>
+          <section class="panel"><div class="panel-header"><h2>批次比較</h2></div><div class="panel-body" id="batchCompare"></div></section>
+          <section class="panel panel-wide"><div class="panel-header"><h2>判定統計</h2></div><div class="panel-body review-stats" id="judgmentStats"></div></section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

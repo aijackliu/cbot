@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 建議 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="suggestions">
+  <div class="demo-banner"><strong>靜態展示版</strong> · AI 建議為固定示意內容</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>AI 建議</h1>
+          <p>依據檢測數據自動產出品質改善建議與行動方案</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary btn-sm" data-demo-action="展示版：建議為固定資料">更新建議</button>
+        </div>
+      </header>
+      <div id="riskAlerts" class="risk-alerts-page"></div>
+      <div class="summary-cards" id="summaryCards"></div>
+      <div class="page-content">
+        <section class="panel">
+          <div class="panel-header"><h2>改善建議清單</h2></div>
+          <div class="panel-body" id="recommendations"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>統計 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="stats">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 累計 OK 100 / NG 20 / 合格率 83.3%</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>統計</h1>
+          <p>依每次批次檢測更新：檢測數量、合格率、瑕疵分布與批次良率總覽</p>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="page-grid stats-grid">
+          <div class="stat-cards stat-cards-4">
+            <div class="stat-card ok"><div class="stat-value" id="totalOk">0</div><div class="stat-label">累計 OK</div></div>
+            <div class="stat-card ng"><div class="stat-value" id="totalNg">0</div><div class="stat-label">累計 NG</div></div>
+            <div class="stat-card total"><div class="stat-value" id="totalAll">0</div><div class="stat-label">檢測總數</div></div>
+            <div class="stat-card yield"><div class="stat-value" id="totalYield">--</div><div class="stat-label">累計合格率</div></div>
+          </div>
+          <section class="panel">
+            <div class="panel-header"><h2>今日統計</h2></div>
+            <div class="stat-cards">
+              <div class="stat-card ok"><div class="stat-value" id="todayOk">0</div><div class="stat-label">今日 OK</div></div>
+              <div class="stat-card ng"><div class="stat-value" id="todayNg">0</div><div class="stat-label">今日 NG</div></div>
+              <div class="stat-card yield"><div class="stat-value" id="todayYield">--</div><div class="stat-label">今日合格率</div></div>
+            </div>
+            <div class="yield-chart"><div class="yield-bar"><div class="yield-fill" id="yieldFill"></div></div></div>
+            <div class="metric-row"><span>平均推論</span><strong id="avgMs">--</strong> ms</div>
+            <div class="metric-row"><span>推論 FPS</span><strong id="fps">--</strong></div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>瑕疵分布</h2></div>
+            <div class="panel-body" id="defectBars"></div>
+          </section>
+          <section class="panel panel-wide">
+            <div class="panel-header"><h2>批次良率比較</h2></div>
+            <div class="history-table-wrap">
+              <table class="history-table">
+                <thead><tr><th>批次</th><th>總數</th><th>OK</th><th>NG</th><th>合格率</th><th>良率條</th></tr></thead>
+                <tbody id="batchTable"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

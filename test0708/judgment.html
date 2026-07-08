@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>判定參數設定 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="judgment">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 判定參數與預覽表為固定資料</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>判定參數設定</h1>
+          <p>設定 OK / NG 判定規則：瑕疵數量上限、最小面積門檻、信心值等</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-primary btn-sm" data-demo-action="展示版：儲存功能僅供預覽">儲存設定</button>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="page-grid judgment-grid">
+          <section class="panel">
+            <div class="panel-header"><h2>NG 判定規則</h2></div>
+            <div class="panel-body settings-form">
+              <div class="form-group">
+                <label>瑕疵數量上限（超過此數量 → NG）</label>
+                <input type="number" id="failCount" min="0" max="99" readonly>
+                <span class="unit">個</span>
+              </div>
+              <div class="form-group">
+                <label>最小瑕疵面積（低於此面積不計入）</label>
+                <input type="number" id="failArea" min="0" step="0.1" readonly>
+                <span class="unit">mm²</span>
+              </div>
+              <div class="form-group">
+                <label>AI 信心值門檻</label>
+                <input type="number" id="confThreshold" min="0" max="1" step="0.05" readonly>
+              </div>
+              <div class="form-group">
+                <label>像素換算（px / mm）</label>
+                <input type="number" id="pxPerMm" min="1" step="0.1" readonly>
+                <span class="unit">px/mm</span>
+              </div>
+              <div class="form-group">
+                <label>啟用瑕疵類別</label>
+                <div class="checkbox-group" id="typeChecks">
+                  <label><input type="checkbox" value="裂痕" checked disabled> 裂痕</label>
+                  <label><input type="checkbox" value="刮痕" checked disabled> 刮痕</label>
+                  <label><input type="checkbox" value="凹陷" checked disabled> 凹陷</label>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>規則說明</h2></div>
+            <div class="panel-body rule-explainer">
+              <div class="rule-step"><span class="rule-num">1</span> AI 偵測出所有瑕疵</div>
+              <div class="rule-step"><span class="rule-num">2</span> 篩選：類別有啟用、信心值 ≥ 門檻、面積 ≥ 最小面積</div>
+              <div class="rule-step"><span class="rule-num">3</span> 符合條件的瑕疵數量 <strong id="ruleCount">&gt; 0</strong> → <span class="badge ng">NG</span>，否則 <span class="badge ok">OK</span></div>
+              <div class="rule-preview" id="rulePreview"></div>
+            </div>
+          </section>
+          <section class="panel panel-wide">
+            <div class="panel-header">
+              <h2>樣本判定預覽</h2>
+              <button class="btn btn-secondary btn-sm" data-demo-action="展示版：預覽為固定資料">重新預覽</button>
+            </div>
+            <div class="history-table-wrap">
+              <table class="history-table">
+                <thead><tr><th>樣本</th><th>AI 偵測數</th><th>符合條件數</th><th>最大面積(mm²)</th><th>判定結果</th><th>判定說明</th></tr></thead>
+                <tbody id="previewBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

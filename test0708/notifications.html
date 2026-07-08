@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>通知 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="notifications">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 通知列表與 Email 為固定資料</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>通知</h1>
+          <p>品質警示、判定參數提醒與系統通知</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary btn-sm" data-demo-action="展示版：通知為固定資料">重新整理</button>
+        </div>
+      </header>
+      <div class="notif-summary">
+        <span>共 <strong id="notifTotal">0</strong> 則通知</span>
+        <span>未讀 <strong id="notifUnread" class="text-ng">0</strong></span>
+        <span>通知對象 <strong id="notifRecipients">-</strong></span>
+      </div>
+      <div class="page-content">
+        <div id="notifList" class="notif-list"></div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

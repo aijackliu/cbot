@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>重新訓練 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="retrain">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 模型版本與訓練歷程為固定資料</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>重新訓練</h1>
+          <p>模型版本管理、Dataset 概況與再訓練流程</p>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="page-grid retrain-grid">
+          <section class="panel"><div class="panel-header"><h2>目前部署版本</h2></div><div class="panel-body" id="currentModel"></div></section>
+          <section class="panel"><div class="panel-header"><h2>Dataset 概況</h2></div><div class="panel-body" id="datasetInfo"></div></section>
+          <section class="panel panel-wide">
+            <div class="panel-header"><h2>啟動再訓練</h2></div>
+            <div class="panel-body">
+              <p class="setup-hint ready">流程：選擇圖面與 Label → 填寫員工編號 → 進入訓練頁面執行</p>
+              <a href="retrain-dataset.html" class="btn btn-primary">啟動再訓練（選擇資料）</a>
+            </div>
+          </section>
+          <section class="panel panel-wide">
+            <div class="panel-header"><h2>版本歷程</h2></div>
+            <div class="history-table-wrap">
+              <table class="history-table">
+                <thead><tr><th>版本</th><th>狀態</th><th>訓練日期</th><th>員工</th><th>資料量</th><th>Precision</th><th>Recall</th><th>mAP50</th><th>備註</th></tr></thead>
+                <tbody id="historyTable"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

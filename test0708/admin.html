@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系統管理 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="admin">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 預設值與統計紀錄為固定資料</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>系統管理</h1>
+          <p>編輯機台、工單、批次、員工預設值、通知 Email 與統計紀錄</p>
+        </div>
+        <div class="page-header-actions">
+          <a href="index.html" class="btn btn-secondary btn-sm">返回首頁</a>
+          <button type="button" class="btn btn-primary btn-sm" data-demo-action="展示版：儲存功能僅供預覽">儲存預設值</button>
+        </div>
+      </header>
+      <div class="page-content">
+        <section class="panel">
+          <div class="panel-header"><h2>系統預設值</h2></div>
+          <div class="panel-body setup-form">
+            <div class="setup-grid admin-settings-grid">
+              <label class="setup-field"><span>機台編號</span><input type="text" id="machineId" readonly></label>
+              <label class="setup-field"><span>預設工單</span><input type="text" id="defaultWorkOrder" readonly></label>
+              <label class="setup-field"><span>預設員工編號</span><input type="text" id="defaultEmployeeId" readonly></label>
+              <label class="setup-field"><span>預設批次號</span><input type="text" id="defaultBatchId" readonly></label>
+              <label class="setup-field setup-field-wide">
+                <span>通知 Email</span>
+                <textarea id="notificationEmails" rows="4" readonly></textarea>
+              </label>
+            </div>
+            <p class="setup-hint" id="settingsHint"></p>
+          </div>
+        </section>
+        <section class="panel panel-wide">
+          <div class="panel-header">
+            <h2>統計紀錄（批次檢測）</h2>
+            <button type="button" class="btn btn-secondary btn-sm" data-demo-action="展示版：列表為固定資料">重新整理</button>
+          </div>
+          <div class="history-table-wrap">
+            <table class="history-table admin-table">
+              <thead>
+                <tr><th>Run ID</th><th>機台</th><th>工單</th><th>員工</th><th>批次</th><th>總數</th><th>OK</th><th>NG</th><th>合格率</th><th>完成時間</th><th>操作</th></tr>
+              </thead>
+              <tbody id="batchRunsBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

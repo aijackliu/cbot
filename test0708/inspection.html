@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dbeafe">
+  <title>檢測流程 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="inspection">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 顯示批次完成後狀態（120 組 / NG 20）</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>檢測流程</h1>
+          <p>AOI 影像擷取 → AI 推論 → 瑕疵標註 → 參數判定 OK/NG → 資料紀錄</p>
+        </div>
+      </header>
+      <nav class="workflow-track" id="workflowBar">
+        <div class="wf-step" data-step="1"><span class="wf-num">1</span><span class="wf-label">影像擷取</span></div>
+        <div class="wf-arrow">›</div>
+        <div class="wf-step" data-step="2"><span class="wf-num">2</span><span class="wf-label">AI 推論</span></div>
+        <div class="wf-arrow">›</div>
+        <div class="wf-step" data-step="3"><span class="wf-num">3</span><span class="wf-label">瑕疵標註</span></div>
+        <div class="wf-arrow">›</div>
+        <div class="wf-step" data-step="4"><span class="wf-num">4</span><span class="wf-label">參數判定</span></div>
+        <div class="wf-arrow">›</div>
+        <div class="wf-step" data-step="5"><span class="wf-num">5</span><span class="wf-label">資料紀錄</span></div>
+      </nav>
+      <div class="page-content">
+        <section class="panel setup-panel" id="setupPanel">
+          <div class="panel-header">
+            <h2>開工前登入</h2>
+            <span class="machine-badge" id="machineBadge">機台 —</span>
+          </div>
+          <div class="panel-body setup-form">
+            <div class="setup-grid">
+              <label class="setup-field"><span>機台編號</span><input type="text" id="machineId" readonly></label>
+              <label class="setup-field"><span>工單號</span><input type="text" id="workOrder" readonly></label>
+              <label class="setup-field"><span>員工編號</span><input type="text" id="employeeId" readonly></label>
+              <label class="setup-field"><span>批次號</span><input type="text" id="batchId" readonly></label>
+            </div>
+            <p class="setup-hint" id="setupHint"></p>
+          </div>
+        </section>
+        <div class="page-grid inspection-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>影像檢視</h2>
+              <div class="view-toggle">
+                <button class="toggle-btn" id="btnRaw">原始影像</button>
+                <button class="toggle-btn active" id="btnAnnotated">AI 標註結果</button>
+              </div>
+            </div>
+            <div class="camera-view">
+              <img id="displayImage" src="" alt="展示影像" class="hidden">
+              <div id="placeholder" class="placeholder hidden">
+                <div class="placeholder-icon">📷</div>
+                <p>展示影像</p>
+              </div>
+              <div id="resultBadge" class="result-badge hidden"></div>
+            </div>
+            <div class="controls">
+              <button class="btn btn-primary" data-demo-action="展示版：批次檢測為固定完成狀態">開始批次檢測</button>
+            </div>
+            <div class="sample-gallery" id="sampleGallery"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>檢測結果</h2></div>
+            <div id="detailContent" class="detail-content"></div>
+            <div id="defectTotals" class="defect-totals hidden"></div>
+            <div id="judgmentPanel" class="judgment-panel hidden"></div>
+          </section>
+          <section class="panel panel-wide">
+            <div class="panel-header">
+              <h2>異常紀錄（僅 NG）</h2>
+              <select id="filterResult" disabled><option value="NG" selected>NG</option></select>
+            </div>
+            <div class="history-table-wrap">
+              <table class="history-table">
+                <thead><tr><th>樣本</th><th>時間</th><th>機台</th><th>工單</th><th>員工</th><th>批次</th><th>結果</th><th>瑕疵</th><th>符合/偵測</th><th>ms</th></tr></thead>
+                <tbody id="historyBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dbeafe">
+  <title>首頁 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="home">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 資料為固定示意，無需後端伺服器</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>軸心表面微瑕疵 AI 檢測</h1>
+          <p>Edge AI AOI 展示系統 · 合成展示影像</p>
+        </div>
+        <div class="page-header-actions">
+          <a href="admin.html" class="btn btn-secondary">系統管理</a>
+        </div>
+      </header>
+      <div class="page-content home-content">
+        <div class="home-hero panel">
+          <div class="home-hero-text">
+            <h2>歡迎使用</h2>
+            <p id="homeSummary">載入中…</p>
+          </div>
+          <div class="home-actions">
+            <a href="inspection.html" class="btn btn-primary btn-lg">進入檢測流程</a>
+            <a href="admin.html" class="btn btn-secondary btn-lg">系統管理</a>
+          </div>
+        </div>
+        <div class="home-grid">
+          <a href="inspection.html" class="home-card panel">
+            <h3>檢測流程</h3>
+            <p>批次自動檢測、瑕疵標註與 NG 紀錄</p>
+          </a>
+          <a href="stats.html" class="home-card panel">
+            <h3>統計</h3>
+            <p>批次檢測良率與瑕疵分布</p>
+          </a>
+          <a href="retrain.html" class="home-card panel">
+            <h3>重新訓練</h3>
+            <p>選圖訓練與模型部署</p>
+          </a>
+          <a href="admin.html" class="home-card panel home-card-admin">
+            <h3>系統管理</h3>
+            <p>機台、工單、批次、員工與統計紀錄</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

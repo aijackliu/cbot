@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選擇訓練資料 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="retrain-dataset">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 已預選 8 張訓練圖面（示意）</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>選擇訓練資料</h1>
+          <p>步驟 1／2：勾選訓練圖面與 Label 類別，完成後進入訓練頁面</p>
+        </div>
+        <div class="page-header-actions">
+          <a href="retrain.html" class="btn btn-secondary btn-sm">返回總覽</a>
+        </div>
+      </header>
+      <div class="page-content">
+        <section class="panel">
+          <div class="panel-header"><h2>Label 類別（至少選一項）</h2></div>
+          <div class="panel-body">
+            <div class="label-filter" id="labelFilters"></div>
+            <p class="setup-hint ready" id="labelHint">展示版：Label 與圖面為固定示意</p>
+          </div>
+        </section>
+        <section class="panel panel-wide">
+          <div class="panel-header">
+            <h2>訓練圖面</h2>
+            <div class="dataset-toolbar">
+              <button type="button" class="btn btn-secondary btn-sm" data-demo-action="展示版：匯入功能僅供預覽">匯入資料</button>
+              <button type="button" class="btn btn-secondary btn-sm" data-demo-action="展示版：全選功能僅供預覽">全選可見</button>
+              <button type="button" class="btn btn-secondary btn-sm" data-demo-action="展示版：清除功能僅供預覽">清除</button>
+              <span id="selectionCount" class="selection-count">已選 0 張</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="dataset-grid" id="datasetGrid"></div>
+          </div>
+        </section>
+        <div class="dataset-actions">
+          <a href="retrain-train.html" class="btn btn-primary" id="goTrainBtn">下一步：進入訓練頁面</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>

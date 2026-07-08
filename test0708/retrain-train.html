@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模型訓練 - 軸心 AI 檢測系統（展示版）</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body data-page="retrain-train">
+  <div class="demo-banner"><strong>靜態展示版</strong> · 顯示訓練完成與可部署狀態（示意）</div>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>模型訓練</h1>
+          <p>步驟 2／2：確認資料與員工編號後啟動再訓練</p>
+        </div>
+        <div class="page-header-actions">
+          <a href="retrain-dataset.html" class="btn btn-secondary btn-sm">返回選圖</a>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="page-grid retrain-grid">
+          <section class="panel">
+            <div class="panel-header"><h2>訓練登入</h2></div>
+            <div class="panel-body setup-form">
+              <div class="setup-grid">
+                <label class="setup-field"><span>員工編號</span><input type="text" id="employeeId" readonly></label>
+                <label class="setup-field"><span>訓練 Epochs</span><input type="number" id="epochs" readonly></label>
+                <label class="setup-field setup-field-wide"><span>備註</span><input type="text" id="retrainNote" readonly></label>
+              </div>
+              <p class="setup-hint" id="employeeHint"></p>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>已選資料摘要</h2></div>
+            <div class="panel-body" id="selectionSummary"></div>
+          </section>
+          <section class="panel panel-wide">
+            <div class="panel-header"><h2>訓練執行</h2></div>
+            <div class="panel-body">
+              <button type="button" class="btn btn-primary" id="startTrainBtn">啟動訓練</button>
+              <div id="jobPanel" class="job-panel hidden">
+                <div class="job-progress"><div class="job-fill" id="jobFill"></div></div>
+                <p id="jobStatus">準備中…</p>
+                <div id="jobMeta"></div>
+                <div id="jobMetrics"></div>
+                <div id="deployPanel" class="deploy-panel hidden">
+                  <p class="deploy-title">訓練完成，可部署至 AOI 機台</p>
+                  <button type="button" class="btn btn-primary" id="deployBtn" data-demo-action="展示版：部署功能僅供預覽">部署模型</button>
+                  <p id="deployResult" class="deploy-result"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/demo.js"></script>
+</body>
+</html>
