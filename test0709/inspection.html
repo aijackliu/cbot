@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dbeafe">
+  <title>檢測流程 - 軸心 AI 檢測 v0513best</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/static-extra.css">
+</head>
+<body data-page="inspection">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+
+      <header class="page-header">
+        <div class="page-header-text">
+          <h1>檢測流程</h1>
+          <p>瀏覽內嵌樣本與 0513best 真實推論結果（離線）</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary btn-sm" id="prevBtn">上一張</button>
+          <button class="btn btn-primary btn-sm" id="nextBtn">下一張</button>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="page-grid inspection-grid">
+          <section class="panel">
+            <div class="panel-header"><h2>樣本清單</h2></div>
+            <div class="panel-body" id="sampleList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>原圖 / 結果</h2></div>
+            <div class="panel-body inspect-images">
+              <div><span class="text-dim">原圖</span><img id="rawImg" alt="raw"></div>
+              <div><span class="text-dim">結果</span><img id="resultImg" alt="result"></div>
+            </div>
+          </section>
+          <section class="panel panel-wide">
+            <div class="panel-header"><h2>判定結果</h2></div>
+            <div class="panel-body" id="inspectDetail"></div>
+          </section>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="static-banner">靜態版 v0513best · 免後端 · 真實 0513best 推論快照</div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/page-inspection.js"></script>
+</body>
+</html>

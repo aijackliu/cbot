@@ -1,0 +1,939 @@
+{
+  "version": "0513best",
+  "exported_at": "2026-07-09T12:08:55.933237Z",
+  "machine": {
+    "machine_id": "MC-AOI-01",
+    "app_name": "軸心表面微瑕疵 AI 檢測系統",
+    "model": "YOLOv26 · 0513best",
+    "model_path": "models/0513best.pt",
+    "imgsz": 1024,
+    "mode": "production"
+  },
+  "showcase": {
+    "source": "own_samples",
+    "sample_count": 56,
+    "embedded_count": 16,
+    "disclaimer": "靜態匯出版：內嵌真實 0513best 推論結果，無需後端",
+    "classes": [
+      "裂痕",
+      "刮痕",
+      "凹陷"
+    ]
+  },
+  "judgment": {
+    "fail_defect_count_exceeds": 0,
+    "fail_min_area_mm2": 2.0,
+    "confidence_threshold": 0.25,
+    "px_per_mm": 30.0,
+    "enabled_types": [
+      "裂痕",
+      "刮痕",
+      "凹陷"
+    ]
+  },
+  "stats": {
+    "total_inspections": 16,
+    "ok_count": 0,
+    "ng_count": 16,
+    "yield_rate": 0.0,
+    "today_total": 16,
+    "today_ok": 0,
+    "today_ng": 16,
+    "today_yield": 0.0,
+    "defect_distribution": {
+      "裂痕": 12,
+      "刮痕": 4
+    },
+    "avg_inference_ms": 714.9,
+    "model_version": "0513best",
+    "fps": 1.5
+  },
+  "batches": [
+    {
+      "batch_id": "BATCH-OWN-01",
+      "total": 16,
+      "ok": 0,
+      "ng": 16,
+      "yield_rate": 0.0,
+      "top_defect": "裂痕"
+    }
+  ],
+  "analysis": {
+    "summary": {
+      "total_inspections": 16,
+      "ok_count": 0,
+      "ng_count": 16,
+      "yield_rate": 0.0,
+      "avg_confidence": 0.832,
+      "avg_inference_ms": 714.9,
+      "target_accuracy": 90.0,
+      "accuracy_status": "待改善"
+    },
+    "defect_pareto": [
+      {
+        "type": "裂痕",
+        "count": 12,
+        "pct": 75.0
+      },
+      {
+        "type": "刮痕",
+        "count": 4,
+        "pct": 25.0
+      }
+    ],
+    "batch_comparison": [
+      {
+        "batch_id": "BATCH-OWN-01",
+        "total": 16,
+        "ok": 0,
+        "ng": 16,
+        "yield_rate": 0.0,
+        "top_defect": "裂痕"
+      }
+    ],
+    "ai_insights": [
+      {
+        "level": "warning",
+        "title": "靜態匯出洞察",
+        "text": "本包內嵌 16 張真實推論（模型 0513best、imgsz=1024），NG 16 張。"
+      },
+      {
+        "level": "info",
+        "title": "主要瑕疵",
+        "text": "以「裂痕」為主（12 次）。"
+      }
+    ],
+    "risk_alerts": [
+      {
+        "severity": "medium",
+        "message": "NG 率 100.0% ，建議檢視入料"
+      }
+    ],
+    "llm": {
+      "source": "static",
+      "model": "0513best-export"
+    }
+  },
+  "suggestions": {
+    "recommendations": [
+      {
+        "priority": "warning",
+        "title": "依 0513best 結果改善",
+        "description": "抽樣 16 張，合格率 0.0%。",
+        "action": "至正式系統調整判定參數或補標再訓練"
+      },
+      {
+        "priority": "info",
+        "title": "模型版本",
+        "description": "目前靜態包對應 models/0513best.pt · 1024",
+        "action": "更新權重後請重新執行 scripts/export_static_html.py"
+      }
+    ],
+    "summary": {
+      "yield_rate": 0.0,
+      "ng_count": 16,
+      "accuracy_status": "待改善"
+    },
+    "risk_alerts": [],
+    "llm": {
+      "source": "static"
+    }
+  },
+  "notifications": {
+    "unread_count": 3,
+    "notifications": [
+      {
+        "type": "inspection",
+        "severity": "medium",
+        "title": "NG 檢測紀錄",
+        "message": "樣本 001：裂痕",
+        "time": "2026-07-09T12:08:55",
+        "read": false,
+        "link": "inspection.html"
+      },
+      {
+        "type": "inspection",
+        "severity": "medium",
+        "title": "NG 檢測紀錄",
+        "message": "樣本 002：裂痕",
+        "time": "2026-07-09T12:08:55",
+        "read": true,
+        "link": "inspection.html"
+      },
+      {
+        "type": "inspection",
+        "severity": "medium",
+        "title": "NG 檢測紀錄",
+        "message": "樣本 003：裂痕",
+        "time": "2026-07-09T12:08:55",
+        "read": true,
+        "link": "inspection.html"
+      },
+      {
+        "type": "inspection",
+        "severity": "medium",
+        "title": "NG 檢測紀錄",
+        "message": "樣本 004：裂痕",
+        "time": "2026-07-09T12:08:55",
+        "read": true,
+        "link": "inspection.html"
+      },
+      {
+        "type": "inspection",
+        "severity": "medium",
+        "title": "NG 檢測紀錄",
+        "message": "樣本 005：裂痕",
+        "time": "2026-07-09T12:08:55",
+        "read": true,
+        "link": "inspection.html"
+      }
+    ]
+  },
+  "retrain": {
+    "current_version": "0513best",
+    "model_architecture": "YOLOv26",
+    "metrics": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    "dataset": {
+      "total_images": 56,
+      "classes": [
+        "Crack",
+        "Scratch",
+        "Dent"
+      ]
+    },
+    "note": "靜態展示；實際訓練請用正式系統或 scripts/train.py"
+  },
+  "samples": [
+    {
+      "sample_id": "001",
+      "name": "自有-Pic1_00012",
+      "raw_file": "Pic1_00012.jpg",
+      "result_file": "result_Pic1_00012.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.666,
+      "defect_count": 2,
+      "inference_ms": 1028.96,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.666,
+          "bbox": [
+            295.03,
+            540.93,
+            444.03,
+            653.08
+          ]
+        },
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.2634,
+          "bbox": [
+            284.07,
+            528.54,
+            452.62,
+            666.81
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "002",
+      "name": "自有-Pic1_00048",
+      "raw_file": "Pic1_00048.jpg",
+      "result_file": "result_Pic1_00048.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.8772,
+      "defect_count": 1,
+      "inference_ms": 703.38,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8772,
+          "bbox": [
+            525.2,
+            335.35,
+            617.23,
+            468.22
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "003",
+      "name": "自有-Pic1_00096",
+      "raw_file": "Pic1_00096.jpg",
+      "result_file": "result_Pic1_00096.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.8915,
+      "defect_count": 1,
+      "inference_ms": 706.69,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8915,
+          "bbox": [
+            452.11,
+            268.03,
+            513.55,
+            337.33
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "004",
+      "name": "自有-Pic1_00120",
+      "raw_file": "Pic1_00120.jpg",
+      "result_file": "result_Pic1_00120.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.8613,
+      "defect_count": 1,
+      "inference_ms": 671.84,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8613,
+          "bbox": [
+            592.68,
+            276.3,
+            659.61,
+            349.76
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "005",
+      "name": "自有-Pic1_00156",
+      "raw_file": "Pic1_00156.jpg",
+      "result_file": "result_Pic1_00156.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.8969,
+      "defect_count": 1,
+      "inference_ms": 672.53,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8969,
+          "bbox": [
+            254.55,
+            487.69,
+            310.14,
+            527.49
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "006",
+      "name": "自有-Pic1_00192",
+      "raw_file": "Pic1_00192.jpg",
+      "result_file": "result_Pic1_00192.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.9151,
+      "defect_count": 1,
+      "inference_ms": 688.07,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.9151,
+          "bbox": [
+            350.1,
+            648.44,
+            409.38,
+            721.87
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "007",
+      "name": "自有-Pic1_00249",
+      "raw_file": "Pic1_00249.jpg",
+      "result_file": "result_Pic1_00249.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.6197,
+      "defect_count": 3,
+      "inference_ms": 705.2,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.6197,
+          "bbox": [
+            727.77,
+            143.67,
+            802.87,
+            202.9
+          ]
+        },
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.5719,
+          "bbox": [
+            311.76,
+            617.0,
+            396.64,
+            672.54
+          ]
+        },
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.292,
+          "bbox": [
+            306.23,
+            608.71,
+            402.13,
+            681.73
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "008",
+      "name": "自有-Pic1_00252",
+      "raw_file": "Pic1_00252.jpg",
+      "result_file": "result_Pic1_00252.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.853,
+      "defect_count": 2,
+      "inference_ms": 717.36,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.853,
+          "bbox": [
+            843.14,
+            447.63,
+            922.96,
+            514.59
+          ]
+        },
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8427,
+          "bbox": [
+            250.29,
+            521.43,
+            340.12,
+            588.67
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "009",
+      "name": "自有-Pic1_00321",
+      "raw_file": "Pic1_00321.jpg",
+      "result_file": "result_Pic1_00321.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.7823,
+      "defect_count": 1,
+      "inference_ms": 739.57,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.7823,
+          "bbox": [
+            619.23,
+            709.75,
+            766.84,
+            784.42
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "010",
+      "name": "自有-Pic1_00345",
+      "raw_file": "Pic1_00345.jpg",
+      "result_file": "result_Pic1_00345.jpg",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.7849,
+      "defect_count": 1,
+      "inference_ms": 732.98,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.7849,
+          "bbox": [
+            618.32,
+            275.65,
+            766.3,
+            360.14
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "011",
+      "name": "自有-Pic1_00393",
+      "raw_file": "Pic1_00393.jpg",
+      "result_file": "result_Pic1_00393.jpg",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "confidence": 0.8241,
+      "defect_count": 1,
+      "inference_ms": 677.51,
+      "defects": [
+        {
+          "class_name_zh": "刮痕",
+          "class_name": "Scratch",
+          "confidence": 0.8241,
+          "bbox": [
+            230.31,
+            401.67,
+            403.78,
+            542.19
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "012",
+      "name": "自有-Pic1_00420",
+      "raw_file": "Pic1_00420.jpg",
+      "result_file": "result_Pic1_00420.jpg",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "confidence": 0.8578,
+      "defect_count": 1,
+      "inference_ms": 675.53,
+      "defects": [
+        {
+          "class_name_zh": "刮痕",
+          "class_name": "Scratch",
+          "confidence": 0.8578,
+          "bbox": [
+            505.1,
+            204.43,
+            638.01,
+            368.11
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "013",
+      "name": "自有-Pic1_00468",
+      "raw_file": "Pic1_00468.jpg",
+      "result_file": "result_Pic1_00468.jpg",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.8896,
+      "defect_count": 1,
+      "inference_ms": 683.72,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8896,
+          "bbox": [
+            639.27,
+            587.55,
+            672.16,
+            657.12
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "014",
+      "name": "自有-Pic1_00537",
+      "raw_file": "Pic1_00537.jpg",
+      "result_file": "result_Pic1_00537.jpg",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "confidence": 0.8059,
+      "defect_count": 1,
+      "inference_ms": 666.41,
+      "defects": [
+        {
+          "class_name_zh": "刮痕",
+          "class_name": "Scratch",
+          "confidence": 0.8059,
+          "bbox": [
+            655.16,
+            170.24,
+            813.66,
+            267.01
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "015",
+      "name": "自有-Pic1_00657",
+      "raw_file": "Pic1_00657.jpg",
+      "result_file": "result_Pic1_00657.jpg",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "confidence": 0.9143,
+      "defect_count": 1,
+      "inference_ms": 682.09,
+      "defects": [
+        {
+          "class_name_zh": "刮痕",
+          "class_name": "Scratch",
+          "confidence": 0.9143,
+          "bbox": [
+            426.18,
+            402.15,
+            508.59,
+            519.21
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "016",
+      "name": "自有-Pic1_00744",
+      "raw_file": "Pic1_00744.jpg",
+      "result_file": "result_Pic1_00744.jpg",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "confidence": 0.8692,
+      "defect_count": 1,
+      "inference_ms": 686.97,
+      "defects": [
+        {
+          "class_name_zh": "裂痕",
+          "class_name": "Crack",
+          "confidence": 0.8692,
+          "bbox": [
+            427.37,
+            316.41,
+            504.81,
+            398.24
+          ]
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "inspection_id": "INS-001",
+      "sample_id": "001",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 2,
+      "total_detected": 2,
+      "confidence": 0.666,
+      "inference_ms": 1028.96,
+      "raw_url": "assets/raw/Pic1_00012.jpg",
+      "result_url": "assets/results/result_Pic1_00012.jpg"
+    },
+    {
+      "inspection_id": "INS-002",
+      "sample_id": "002",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8772,
+      "inference_ms": 703.38,
+      "raw_url": "assets/raw/Pic1_00048.jpg",
+      "result_url": "assets/results/result_Pic1_00048.jpg"
+    },
+    {
+      "inspection_id": "INS-003",
+      "sample_id": "003",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8915,
+      "inference_ms": 706.69,
+      "raw_url": "assets/raw/Pic1_00096.jpg",
+      "result_url": "assets/results/result_Pic1_00096.jpg"
+    },
+    {
+      "inspection_id": "INS-004",
+      "sample_id": "004",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8613,
+      "inference_ms": 671.84,
+      "raw_url": "assets/raw/Pic1_00120.jpg",
+      "result_url": "assets/results/result_Pic1_00120.jpg"
+    },
+    {
+      "inspection_id": "INS-005",
+      "sample_id": "005",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8969,
+      "inference_ms": 672.53,
+      "raw_url": "assets/raw/Pic1_00156.jpg",
+      "result_url": "assets/results/result_Pic1_00156.jpg"
+    },
+    {
+      "inspection_id": "INS-006",
+      "sample_id": "006",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.9151,
+      "inference_ms": 688.07,
+      "raw_url": "assets/raw/Pic1_00192.jpg",
+      "result_url": "assets/results/result_Pic1_00192.jpg"
+    },
+    {
+      "inspection_id": "INS-007",
+      "sample_id": "007",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 3,
+      "total_detected": 3,
+      "confidence": 0.6197,
+      "inference_ms": 705.2,
+      "raw_url": "assets/raw/Pic1_00249.jpg",
+      "result_url": "assets/results/result_Pic1_00249.jpg"
+    },
+    {
+      "inspection_id": "INS-008",
+      "sample_id": "008",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 2,
+      "total_detected": 2,
+      "confidence": 0.853,
+      "inference_ms": 717.36,
+      "raw_url": "assets/raw/Pic1_00252.jpg",
+      "result_url": "assets/results/result_Pic1_00252.jpg"
+    },
+    {
+      "inspection_id": "INS-009",
+      "sample_id": "009",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.7823,
+      "inference_ms": 739.57,
+      "raw_url": "assets/raw/Pic1_00321.jpg",
+      "result_url": "assets/results/result_Pic1_00321.jpg"
+    },
+    {
+      "inspection_id": "INS-010",
+      "sample_id": "010",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-001",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.7849,
+      "inference_ms": 732.98,
+      "raw_url": "assets/raw/Pic1_00345.jpg",
+      "result_url": "assets/results/result_Pic1_00345.jpg"
+    },
+    {
+      "inspection_id": "INS-011",
+      "sample_id": "011",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8241,
+      "inference_ms": 677.51,
+      "raw_url": "assets/raw/Pic1_00393.jpg",
+      "result_url": "assets/results/result_Pic1_00393.jpg"
+    },
+    {
+      "inspection_id": "INS-012",
+      "sample_id": "012",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8578,
+      "inference_ms": 675.53,
+      "raw_url": "assets/raw/Pic1_00420.jpg",
+      "result_url": "assets/results/result_Pic1_00420.jpg"
+    },
+    {
+      "inspection_id": "INS-013",
+      "sample_id": "013",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8896,
+      "inference_ms": 683.72,
+      "raw_url": "assets/raw/Pic1_00468.jpg",
+      "result_url": "assets/results/result_Pic1_00468.jpg"
+    },
+    {
+      "inspection_id": "INS-014",
+      "sample_id": "014",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8059,
+      "inference_ms": 666.41,
+      "raw_url": "assets/raw/Pic1_00537.jpg",
+      "result_url": "assets/results/result_Pic1_00537.jpg"
+    },
+    {
+      "inspection_id": "INS-015",
+      "sample_id": "015",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "刮痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.9143,
+      "inference_ms": 682.09,
+      "raw_url": "assets/raw/Pic1_00657.jpg",
+      "result_url": "assets/results/result_Pic1_00657.jpg"
+    },
+    {
+      "inspection_id": "INS-016",
+      "sample_id": "016",
+      "inspection_time": "2026-07-09T12:08:55",
+      "machine_id": "MC-AOI-01",
+      "work_order": "WO-2026-0513",
+      "employee_id": "EMP-000",
+      "batch_id": "BATCH-OWN-002",
+      "ai_result": "NG",
+      "defect_type": "裂痕",
+      "qualifying_count": 1,
+      "total_detected": 1,
+      "confidence": 0.8692,
+      "inference_ms": 686.97,
+      "raw_url": "assets/raw/Pic1_00744.jpg",
+      "result_url": "assets/results/result_Pic1_00744.jpg"
+    }
+  ],
+  "infra": {
+    "mode": "static-export",
+    "model": "0513best.pt",
+    "imgsz": 1024,
+    "postgres": "（正式系統）100.88.220.82:5432/shaft_inspection",
+    "redis": "（正式系統）100.88.220.82:6379",
+    "note": "本靜態包不連線後端"
+  }
+}

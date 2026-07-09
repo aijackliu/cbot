@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dbeafe">
+  <title>系統管理 - 軸心 AI 檢測 v0513best</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/static-extra.css">
+</head>
+<body data-page="admin">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+
+      <header class="page-header">
+        <div class="page-header-text"><h1>系統管理</h1><p>機台與版本資訊（靜態）</p></div>
+      </header>
+      <div class="page-content">
+        <section class="panel panel-wide"><div class="panel-header"><h2>設定摘要</h2></div><div class="panel-body" id="adminBody"></div></section>
+        <section class="panel panel-wide"><div class="panel-header"><h2>NG 歷史（內嵌）</h2></div>
+          <div class="panel-body history-table-wrap"><table class="history-table"><thead>
+          <tr><th>ID</th><th>樣本</th><th>結果</th><th>瑕疵</th><th>信心</th><th>ms</th></tr>
+          </thead><tbody id="histBody"></tbody></table></div>
+        </section>
+      </div>
+
+    </div>
+  </div>
+  <div class="static-banner">靜態版 v0513best · 免後端 · 真實 0513best 推論快照</div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/page-admin.js"></script>
+</body>
+</html>

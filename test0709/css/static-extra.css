@@ -1,0 +1,25 @@
+
+.static-banner {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  background: #1e3a5f; color: #fff; font-size: 12px; text-align: center;
+  padding: 6px 12px; opacity: 0.92;
+}
+.main-area { padding-bottom: 36px; }
+.inspect-images { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.inspect-images img { width: 100%; border-radius: 10px; background: #0f172a; max-height: 360px; object-fit: contain; }
+.sample-list-item { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+.sample-list-item:hover, .sample-list-item.active { background: var(--surface-hover); border-color: var(--border); }
+.sample-list-item .ng { color: var(--ng); font-weight: 600; }
+.sample-list-item .ok { color: var(--ok); font-weight: 600; }
+.bar-row { display: grid; grid-template-columns: 72px 1fr 40px; gap: 8px; align-items: center; margin: 6px 0; }
+.bar-track { height: 10px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #f97316, #fb923c); }
+.home-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.home-links a { display: inline-block; padding: 10px 14px; border-radius: 10px; background: var(--surface2); color: var(--text); text-decoration: none; border: 1px solid var(--border); }
+.home-links a:hover { border-color: var(--accent); }
+.badge-ng { background: var(--ng-dim); color: var(--ng); padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+.badge-ok { background: var(--ok-dim); color: var(--ok); padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+.recommendation-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; background: var(--surface); }
+.recommendation-card.warning { border-color: rgba(217,119,6,.35); }
+.detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+.notif-item { padding: 12px; border-radius: 10px; background: var(--surface2); margin-bottom: 8px; }
