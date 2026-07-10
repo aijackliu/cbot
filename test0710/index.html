@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>市場情報報告 | AI眼鏡市場監測儀表板</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM (Umd) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel for Live JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Google Font - Noto Sans TC -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#F4F5F7] min-h-screen">
+  <div id="root"></div>
+
+  <!-- React Code with Babel -->
+  <script type="text/babel">
+    const { useState, useMemo, useEffect } = React;
+
+    // === PESTEL 維度樣式（新聞本體見 data/pestel-news.json）===
+    const PESTEL_META = {
+      P: { cnCategory: '政治 Political', color: 'bg-red-100 text-red-800 border-red-200 text-red-700' },
+      E: { cnCategory: '經濟 Economic', color: 'bg-orange-100 text-orange-800 border-orange-200 text-orange-700' },
+      S: { cnCategory: '社會 Social', color: 'bg-amber-100 text-amber-800 border-amber-200 text-amber-700' },
+      T: { cnCategory: '科技 Technological', color: 'bg-emerald-100 text-emerald-800 border-emerald-200 text-emerald-700' },
+      Env: { cnCategory: '環境 Environmental', color: 'bg-cyan-100 text-cyan-800 border-cyan-200 text-cyan-700' },
+      L: { cnCategory: '法律 Legal', color: 'bg-indigo-100 text-indigo-800 border-indigo-200 text-indigo-700' }
+    };
+
+    const enrichPestelItem = (item) => {
+      const meta = PESTEL_META[item.category] || { cnCategory: item.category, color: 'bg-slate-100 text-slate-700 border-slate-200' };
+      return { ...item, cnCategory: meta.cnCategory, color: meta.color };
+    };
+
+    // === SWOT & TOWS 預設數據結構 ===
+    const STRATEGY_DATA = {
+      SWOT: {
+        S: ['極致輕量化 (35g) 與配戴舒適度', '價格具破壞性優勢 (預估 NT$9,900)', '開放接入主流 AI 語言大模型', '精準深耕 Top 10 日常剛需場景'],
+        W: ['無顯示螢幕，依賴語音與手機連線', '本機儲存空間僅 4GB 較為受限', '品牌知名度與軟體生態系尚待驗證', '快充與待機續航無絕對優勢'],
+        O: ['AI 眼鏡市場迎來爆發性成長期', '國際巨頭教育市場降低消費者門檻', '健康管理與商務生產力需求激增', '語音助理成通勤與特定場景新寵'],
+        T: ['Meta/Google 挾生態系與資金優勢壓境', '陸系品牌 (如 Rokid) 顯示技術降維打擊', '各國隱私法規與社會觀感帶來限制', '硬體供應鏈成本波動風險']
+      },
+      TOWS: {
+        SO: { title: '增長擴張策略', content: '利用極致輕量與破壞性平價優勢，搭上大廠教育市場的順風車，快速搶攻「AI 眼鏡首購族」；主打開放模型與健康生活管理，建立高頻率使用習慣。' },
+        ST: { title: '差異防禦策略', content: '避開科技巨頭的封閉生態系，強調「模型自由度」與「硬體客製化 (如屈光鏡片)」；以硬體隱私燈設計化解社會疑慮，鞏固平價實用定位。' },
+        WO: { title: '扭轉劣勢策略', content: '藉由市場熱度傾全力進行體驗行銷，彌補初期品牌力不足；透過強大手機 App 端雲端運算，彌補本機儲存小與無螢幕的硬體劣勢。' },
+        WT: { title: '生存底線策略', content: '避免與 AR 顯示螢幕產品陷入無謂硬體軍備競賽；嚴控供應鏈成本，深耕特定利基場景 (如視障輔助、餐飲與快遞從業等)，確保現金流穩定。' }
+      }
+    };
+
+    // === 市場空白機會分析預設數據結構 ===
+    const MARKET_GAPS = [
+      {
+        title: '高性價比 AI 終端',
+        painPoint: '現有大廠設備定價偏高 (NT$1.2萬-3萬) 或需依賴笨重外接主機，首購門檻極高。',
+        solution: 'NOYA 預估定價不到萬元 (約 NT$9,900)，極致性價比精準切入首購族群與大眾市場。',
+        icon: `<svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>`
+      },
+      {
+        title: '全天候無感佩戴',
+        painPoint: '多數 AR/AI 眼鏡重量超過 50g 甚至 80g，無法滿足用戶 8 小時以上的日常配戴需求。',
+        solution: 'NOYA 僅 35g (TR90 材質) 極致輕量化，更支援客製化屈光度鏡片，真正實現「無感穿戴」。',
+        icon: `<svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.24 12.24a6 6 0 00-8.49-8.49L5 10.5V19h8.5zM16 8L2 19"></path></svg>`
+      },
+      {
+        title: '開放式 AI 生態',
+        painPoint: '科技巨頭 (Meta/Google) 綁定自家封閉生態系模型，用戶無法依場景自由切換最聰明的 AI。',
+        solution: '打破平台壁壘，支援自由接入主流大模型 (ChatGPT, Gemini, 通義千問等)，確保技術領先不脫節。',
+        icon: `<svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 019.9-1"></path></svg>`
+      },
+      {
+        title: '生活健康深度賦能',
+        painPoint: '市面產品多強調影音娛樂、電競或抽象的商務應用，缺乏對日常剛需情境的解決方案。',
+        solution: '深耕 Top 10 剛需場景，如飲食熱量分析、喝水提醒、菜單翻譯等，成為不可或缺的「生活教練目標」。',
+        icon: `<svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h3L9 9l3 9 1.5-6h3M12 21a9 9 0 100-18 9 9 0 000 18z"></path></svg>`
+      }
+    ];
+
+    // === 擴充數據集 ===
+    const PRODUCT_DATA = [
+      {
+        id: 'noya',
+        isMain: true,
+        brand: '恩能',
+        country: '台灣',
+        model: '',
+        shortModel: 'NOYA',
+        category: 'AI眼鏡(有鏡頭)',
+        website: '',
+        crowdfunding: '',
+        releaseDate: '2026 Q3',
+        status: '未發表',
+        releaseTimestamp: 2026.75,
+        price: '約 NT$9,900',
+        priceNumeric: 9900,
+        weight: '約 35g (不含鏡片，TR90 材質)',
+        batteryLife: '310 mAh (2PIN 磁吸充電)\n正常使用 6-8 小時 / 待機 3-4 天',
+        cameraSpecs: '1300 萬畫素鏡頭 (格科 GC13B0)',
+        micSpeaker: '3 MIC / 2 顆揚聲器',
+        display: '無 (觸碰鍵)',
+        positioning: '智慧生活、音樂、第一人稱錄影 (AI眼鏡有鏡頭)',
+        aiFeatures: '串接雲端主流多模態大模型 (如 Google Gemini / OpenAI)',
+        voiceAssistant: '有 (支援日常排程、天氣運勢、智慧問答)',
+        photo: '有',
+        video: '有 (1080p @ 30 fps)',
+        audioRecord: '有 (支援會議錄音與語音備忘)',
+        translation: '有 (支援菜單與環境文字翻譯)',
+        musicCall: '有 (適合通勤聽音樂 / Podcast)',
+        salesChannel: '預計採線上官網、群眾募資及指定實體合作通路',
+        customAi: '可 (ChatGPT, Gemini 等)',
+        waveguide: '無',
+        videoRes: '1080p @ 30fps',
+        prosCons: '優：35g極致輕量、支援 iOS/Android 雙平台、開放串接雲端主流大模型(Gemini/OpenAI)、具備強大 AI 視覺檢索與日常健康賦能。\n缺：本機硬體配置重度依賴手機端與雲端運算，若未搭載波導則缺乏視覺化互動能力。',
+        scores: {
+          ai: 6, sdk: 5, weight: 10, battery: 7, price: 8, comfort: 9, scale: 3,
+          ecosystem: 4, brand: 3, b2bMaturity: 4, b2cMaturity: 7, productMaturity: 5,
+          innovation: 9, camera: 7, visionAi: 8, cpValue: 10, privacy: 9
+        },
+        chipset: '安凱微 KM02G (內建六軸 G-sensor)',
+        ramRom: 'SD Nand 32Gb (約 4GB)',
+        connectivity: 'Wi-Fi 6 雙頻 / Bluetooth 5.4 雙模',
+        ipRating: 'IP54 防潑水防塵 (生活防水)',
+        osApp: '支援 iOS / Android',
+        interactionMode: '語音 + 左右鏡腿觸控 (滑動/點擊) + 實體雙按鍵',
+        cameraOpt: '文件掃描、以圖搜圖 (商品比價)、海報/公眾人物辨識',
+        lifeAssistant: '三餐熱量分析、喝水健康紀錄與提醒、購物清單、行程管理',
+        exclusiveFeature: 'Top 10 日常場景深度賦能 (特別強化語音健康追蹤與生活決策)',
+        privacySecurity: '前置補光燈 + 拍攝/錄影狀態指示燈'
+      },
+      {
+        id: 'ergo',
+        isMain: false,
+        brand: '人因科技 (Ergo)',
+        country: '台灣',
+        model: 'BW1300',
+        shortModel: '凌視 Aero Sight',
+        category: 'AI眼鏡(有鏡頭)',
+        website: 'https://www.ergocity.com.tw/product/detail/BW1300',
+        crowdfunding: 'https://www.zeczec.com/projects/AeroSight-Ai-Glasses',
+        releaseDate: '2026 Q2',
+        status: '已發表',
+        releaseTimestamp: 2026.5,
+        price: '約 NT$4,990 (集資價)',
+        priceNumeric: 4990,
+        weight: '48g',
+        batteryLife: '290 mAh (附磁吸充電線)\n待機最長可達 11 小時',
+        cameraSpecs: '1300 萬畫素 (內建 Sony 感光元件)',
+        micSpeaker: '3 顆指向性數位麥克風\n開放式揚聲器',
+        display: '無',
+        positioning: '第一人稱 2K 錄影、跨語溝通、商務紀錄 (AI眼鏡有鏡頭)',
+        aiFeatures: '內建 16 種語系 AI 助理，整合語音翻譯與逐字稿',
+        voiceAssistant: '有 (語音喚醒："你好小叡")',
+        photo: '有 (語音指令："拍照")',
+        video: '有 (2K 全高清錄影，語音指令："錄影")',
+        audioRecord: '開會錄音生成逐字稿',
+        translation: '有 (搭配 EYEVUE App 支援 165 種語言即時語音/視訊翻譯)',
+        musicCall: '有',
+        salesChannel: '群眾募資平台 (嘖嘖)、人因科技官網',
+        customAi: '透過專屬 APP 整合應用',
+        waveguide: '無',
+        videoRes: '2K @ 30fps (具 EIS 電子防手震)',
+        prosCons: '優：性價比極高，具備 2K 高畫質錄影與 EIS 防手震，內建 Novatek AI 影像晶片，並透過 EYEVUE App 提供高達 165 種語言的即時翻譯與逐字稿生成能力。\n缺：重量 48g 在無螢幕眼鏡中稍微偏重，無內建顯示螢幕。',
+        scores: {
+          ai: 7, sdk: 4, weight: 6, battery: 6, price: 9, comfort: 7, scale: 5,
+          ecosystem: 5, brand: 5, b2bMaturity: 5, b2cMaturity: 7, productMaturity: 7,
+          innovation: 6, camera: 8, visionAi: 6, cpValue: 8, privacy: 7
+        },
+        chipset: '聯詠科技 Novatek 專業 AI 影像晶片',
+        ramRom: '',
+        connectivity: '藍牙連線',
+        ipRating: '',
+        osApp: '專屬 EYEVUE App (iOS / Android)',
+        interactionMode: '語音喚醒 ("你好小叡") + 鏡腳觸控',
+        cameraOpt: 'EIS 電子防手震、2K 錄影、第一人稱隨走隨拍',
+        lifeAssistant: '語音天氣、行程提醒、即時語音對話翻譯',
+        exclusiveFeature: '支援視訊通話翻譯，雙向跨語溝通極度便利',
+        privacySecurity: '具備硬體拍攝指示燈'
+      },
+      {
+        id: 'apple',
+        isMain: false,
+        brand: 'Apple',
+        country: '美國',
+        model: 'N50 (傳聞開發代號)',
+        shortModel: 'Apple',
+        category: 'AI眼鏡(有鏡頭)',
+        website: 'https://www.bnext.com.tw/article/90608/apple-ai-glasses-n50',
+        crowdfunding: '',
+        releaseDate: '預計 2026 年底或 2027 年初',
+        status: '未發表',
+        releaseTimestamp: 2027.0,
+        price: '',
+        priceNumeric: 12000,
+        weight: '預計採用高級醋酸纖維材質',
+        batteryLife: '',
+        cameraSpecs: '橢圓形直立鏡頭搭配環繞燈光 (傳聞)',
+        micSpeaker: '預計搭配 AirPods 負責聽覺與語音互動',
+        display: '無螢幕配置 (傳聞)',
+        positioning: 'AI 穿戴三叉戟之一，以 iPhone 為核心運算樞紐 (預計)',
+        aiFeatures: '升級版 Siri 與 Apple Intelligence (傳聞)',
+        voiceAssistant: '有 (升級版 Siri 預計)',
+        photo: '預計有 (具備環繞燈光提醒拍攝)',
+        video: '',
+        audioRecord: '',
+        translation: '',
+        musicCall: '',
+        salesChannel: '',
+        customAi: '否 (以 iPhone 整合 Apple Intelligence 為主)',
+        waveguide: '無 (傳聞無螢幕設計)',
+        videoRes: '',
+        prosCons: '預計優勢：全程自主設計，結合 AirPods 與智慧吊墜形成「AI 穿戴三叉戟」，並與 iPhone 深度連動建立強大護城河。\n傳聞劣勢：無顯示螢幕，實際發表時間最快至 2026 年底。',
+        scores: {
+          ai: 9, sdk: 2, weight: 8, battery: 6, price: 7, comfort: 8, scale: 10,
+          ecosystem: 10, brand: 10, b2bMaturity: 4, b2cMaturity: 9, productMaturity: 3,
+          innovation: 8, camera: 8, visionAi: 9, cpValue: 7, privacy: 9
+        },
+        chipset: '',
+        ramRom: '',
+        connectivity: '預計以 iPhone 為核心樞紐深度連動',
+        ipRating: '',
+        osApp: '預計深度整合 iOS / Apple Intelligence',
+        interactionMode: '語音 (Siri) + 電腦視覺環境感知 (傳聞)',
+        cameraOpt: '電腦視覺即時感知與回應 (傳聞)',
+        lifeAssistant: '',
+        exclusiveFeature: '傳聞規劃「AI 穿戴三叉戟」(眼鏡、AirPods、智慧吊墜)',
+        privacySecurity: '預計具備環繞燈光提醒周圍正在拍攝'
+      },
+      {
+        id: 'vive',
+        isMain: false,
+        brand: '宏達電 HTC',
+        country: '台灣',
+        model: '',
+        shortModel: 'HTC VIVE Eagle',
+        category: 'AI眼鏡(有鏡頭)',
+        website: 'https://www.vive.com/',
+        crowdfunding: '',
+        releaseDate: '2026 Q1',
+        status: '已開賣',
+        releaseTimestamp: 2025.75,
+        price: '約 NT$15,600',
+        priceNumeric: 15600,
+        weight: '約 42.8~45.5g (不含鏡片)\n約 48.8~51.5g (含鏡片)',
+        batteryLife: '235 mAh (快充: 23分充至80%)\n連續音樂 4.5H',
+        cameraSpecs: '1200 萬畫素超廣角鏡頭 (AI 自動校正)',
+        micSpeaker: '4 麥克風 (1指向+3全向)\n2顆立體聲低音強化開放式喇叭',
+        display: '無顯示螢幕 (純外觀鏡片)',
+        positioning: '社群短影音創作、跨語溝通 (AI眼鏡有鏡頭)',
+        aiFeatures: '串接雲端主流多模態大模型 (如 Google Gemini / OpenAI)',
+        voiceAssistant: '有 (手機助理整合)',
+        photo: '有',
+        video: '1512 x 2016 @ 30fps 直式影片',
+        audioRecord: '快充: 23分充至80%\n連續音樂 4.5H',
+        translation: 'AI 雙向即時口譯 (透過耳機播放語音翻譯)',
+        musicCall: '有',
+        salesChannel: 'HTC 網路商店、實體體驗店及指定經銷',
+        customAi: '',
+        waveguide: '無',
+        videoRes: '1512 x 2016 @ 30fps (直式)',
+        prosCons: '優：磁吸快充、蔡司鏡片(具UV400)、結合 AI Notes 筆記應用。\n缺：續航力 4.5H 略短於競品。',
+        scores: {
+          ai: 7, sdk: 6, weight: 8, battery: 5, price: 6, comfort: 8, scale: 7,
+          ecosystem: 6, brand: 7, b2bMaturity: 5, b2cMaturity: 8, productMaturity: 8,
+          innovation: 7, camera: 8, visionAi: 6, cpValue: 7, privacy: 8
+        },
+        chipset: 'Qualcomm Snapdragon AR1 Gen 1',
+        ramRom: '4GB RAM / 32GB ROM',
+        connectivity: 'Wi-Fi 6E / Bluetooth 5.3',
+        ipRating: 'IP54 防潑水防塵',
+        osApp: '支援 iOS / Android',
+        interactionMode: '純語音互動 (聽覺)',
+        cameraOpt: 'AI 自動校正水平、AI 偵測模糊、第一人稱直式短影音優化',
+        lifeAssistant: 'AI 物體識別 (語音說明)、行程提醒、天氣查詢、音樂控制',
+        exclusiveFeature: '專為日常隨手拍優化的演算法 (修正盲拍歪斜)',
+        privacySecurity: '拍攝指示燈提示，符合標準隱私防護'
+      },
+      {
+        id: 'meta',
+        isMain: false,
+        brand: 'Meta',
+        country: '美國',
+        model: 'Meta Glasses',
+        shortModel: 'Meta',
+        category: 'AI眼鏡(有鏡頭)',
+        website: 'https://technews.tw/2026/06/24/meta-partners-with-essilorluxottica-to-launch-meta-glasses/',
+        crowdfunding: '',
+        releaseDate: '2026',
+        status: '已發表',
+        releaseTimestamp: 2026.5,
+        price: 'US$299 起 (Kylie Jenner 聯名款 US$399)',
+        priceNumeric: 9500,
+        weight: '',
+        batteryLife: '單次超過 8 小時\n隨附充電盒可額外提供最多 40 小時',
+        cameraSpecs: '內建相機 (畫素未說明)',
+        micSpeaker: '內建麥克風與開放式喇叭\n具備進階風噪抑制功能',
+        display: '無顯示器',
+        positioning: '',
+        aiFeatures: '最新 Meta AI (由 Muse Spark 模型驅動)',
+        voiceAssistant: '有 (具備專屬按鍵快速召喚 Meta AI，支援聲控)',
+        photo: '有 (支援動態照片自動連拍並推薦最佳照片)',
+        video: '開口聲控拍片與最長 3 分鐘錄影',
+        audioRecord: '有 (接聽電話)',
+        translation: '有 (新增支援 14 種語言，含日、中、印地、韓文)',
+        musicCall: '有 (聆聽音樂、接聽電話、Podcast、有聲書)',
+        salesChannel: 'Meta 官網、EssilorLuxottica 旗下通路、Amazon 等',
+        customAi: '否',
+        waveguide: '無',
+        videoRes: '最長 3 分鐘錄影 (支援社群一鍵分享)',
+        prosCons: '優：電池續航力長達 40 小時（含充電盒）、具備進階風噪抑制、26 種款式選擇、售價更親民（US$299 起）。\n缺：無顯示器。',
+        scores: {
+          ai: 9, sdk: 3, weight: 7, battery: 9, price: 10, comfort: 8, scale: 10,
+          ecosystem: 10, brand: 10, b2bMaturity: 6, b2cMaturity: 10, productMaturity: 9,
+          innovation: 9, camera: 8, visionAi: 9, cpValue: 10, privacy: 5
+        },
+        chipset: '',
+        ramRom: '',
+        connectivity: '',
+        ipRating: '',
+        osApp: '',
+        interactionMode: '聲控 + 專屬按鍵',
+        cameraOpt: '動態照片 (自動連拍推薦)、分析理解眼前所見內容',
+        lifeAssistant: '行人導航 (逐步指引行走方向)、體育賽事比分查詢、當地餐廳推薦',
+        exclusiveFeature: 'Kylie Jenner 聯名款 (橢圓窄框設計)、26 種款式選擇',
+        privacySecurity: ''
+      },
+      {
+        id: 'google',
+        isMain: false,
+        brand: 'Google',
+        country: '美國',
+        model: 'Gentle Monster / Warby Parker 聯名款',
+        shortModel: 'Google',
+        category: '語音眼鏡 / 顯示型眼鏡',
+        website: 'https://blog.google/intl/zh-tw/products/android-chrome-play/android-xr-io-2026/',
+        crowdfunding: '',
+        releaseDate: '2026 秋季 (語音眼鏡)',
+        status: '未發表',
+        releaseTimestamp: 2026.75,
+        price: '',
+        priceNumeric: 12000,
+        weight: '',
+        batteryLife: '',
+        cameraSpecs: '支援高畫質拍照與錄影',
+        micSpeaker: '具備隱私保護的耳邊揚聲器',
+        display: '分為無螢幕 (語音眼鏡) 與具螢幕 (顯示型眼鏡)',
+        positioning: '即時生活協助、直覺導航、多元任務處理',
+        aiFeatures: 'Gemini Intelligence (支援多步驟任務處理)',
+        voiceAssistant: '有 (語音喚醒："Hey Google" 或輕觸鏡框側邊)',
+        photo: '有 (結合 Nano Banana 移除背景雜物與創意改造)',
+        video: '有 (高畫質錄影)',
+        audioRecord: '有 (接聽電話、傳送簡訊、摘要錯過訊息)',
+        translation: '有 (語音翻譯保留原說話者語氣，並支援視覺文字翻譯)',
+        musicCall: '有 (耳邊揚聲器獨享音樂、接聽電話)',
+        salesChannel: '',
+        customAi: '否',
+        waveguide: '',
+        videoRes: '',
+        prosCons: '優：與三星、高通共同打造 Android XR 平台，跨 Android/iOS 系統支援。具備強大的 Gemini Intelligence，可串接第三方 App (Uber, Mondly) 並執行多步驟任務，加上 Nano Banana 創意修圖能力。\n缺：目前今年秋季僅推出無螢幕的語音眼鏡，顯示型眼鏡上市時間未定。',
+        scores: {
+          ai: 10, sdk: 7, weight: 6, battery: 4, price: 7, comfort: 6, scale: 10,
+          ecosystem: 10, brand: 10, b2bMaturity: 8, b2cMaturity: 9, productMaturity: 6,
+          innovation: 10, camera: 9, visionAi: 10, cpValue: 8, privacy: 7
+        },
+        chipset: 'Android XR 平台 (與三星、高通共同打造)',
+        ramRom: '',
+        connectivity: '相容 Android 與 iOS',
+        ipRating: '',
+        osApp: '相容 Android 與 iOS / 可串接手機應用程式 (如 Uber, Mondly)',
+        interactionMode: '語音 ("Hey Google") + 鏡框側邊觸控',
+        cameraOpt: 'Nano Banana 移除背景雜物、創意改造 (如：為人像加上搞笑帽子)',
+        lifeAssistant: '視覺即時問答 (尋找餐廳評價、辨識雲朵、解釋標誌)、直覺指路導航 (可自訂新增停靠點)',
+        exclusiveFeature: 'Gemini 背景執行多步驟任務 (如外送平台點咖啡)、自然擬真語音翻譯、跨 App 任務處理',
+        privacySecurity: '具隱私保護的耳邊揚聲器'
+      },
+      {
+        id: 'rokid',
+        isMain: false,
+        brand: 'Rokid',
+        country: '中國',
+        model: '',
+        shortModel: 'Rokid RV101',
+        category: 'AI眼鏡(有鏡頭&顯示)',
+        website: 'https://www.rokid.com.tw/',
+        crowdfunding: 'https://www.zeczec.com/projects/rokid-glasses',
+        releaseDate: '2026 Q1',
+        status: '已開賣',
+        releaseTimestamp: 2026.25,
+        price: 'NT$19,999',
+        priceNumeric: 19999,
+        weight: '約 49g (整機總重)',
+        batteryLife: '210 mAh (快充: 20分充至80%)\n最高達 12 小時',
+        cameraSpecs: '1200 萬畫素廣角鏡頭 (Sony IMX681)',
+        micSpeaker: '4 麥克風陣列 (支援 AI 降噪) 2顆超線性定向高保真揚聲器',
+        display: '雙目衍射光波導 (Micro LED) 最高亮度 1500 nits',
+        positioning: '全天候輕量佩戴、開放 AI 架構',
+        aiFeatures: '搭載阿里通義千問等大模型 (支援端、雲、手機三端架構)',
+        voiceAssistant: '有 (Hi Rokid)',
+        photo: '有',
+        video: '最高 4K @ 30fps 高清錄影',
+        audioRecord: '有',
+        translation: 'AI 多語種翻譯 (即時將翻譯文字投射在眼前畫面上)',
+        musicCall: '開設音樂與藍牙接聽功能',
+        salesChannel: '群眾募資平台 (嘖嘖)、Rokid 官網及線上授權通路',
+        customAi: '可 (ChatGPT, Gemini 等)',
+        waveguide: '雙目衍射光波導, FOV 30°',
+        videoRes: '4K @ 30fps (具 EIS 防手震)',
+        prosCons: '優：具備光波導螢幕下仍維持49g極致輕量、開放接入多種大模型。\n缺：單色顯示區域較小，主要呈現基礎資訊。',
+        scores: {
+          ai: 8, sdk: 10, weight: 9, battery: 9, price: 8, comfort: 9, scale: 5,
+          ecosystem: 7, brand: 6, b2bMaturity: 7, b2cMaturity: 8, productMaturity: 9,
+          innovation: 9, camera: 8, visionAi: 8, cpValue: 8, privacy: 9
+        },
+        chipset: 'Qualcomm Snapdragon AR1 Gen 2',
+        ramRom: '2GB LPDDR5 / 32GB ROM',
+        connectivity: 'Wi-Fi 6 / Bluetooth 5.3',
+        ipRating: 'IPX4 級防潑水 (防汗防輕微潑濺)',
+        osApp: '支援 iOS / Android',
+        interactionMode: '視覺 HUD 疊加+語音 (視覺+聽覺)',
+        cameraOpt: 'EIS 電子防手震、4K 高清錄影、一鍵分享社群',
+        lifeAssistant: 'AI 實時導航 (文字箭頭指引)、AI 拍照答題、會議紀錄/閃記 (轉逐字稿)',
+        exclusiveFeature: 'AR 演講提詞器功能 (直接在眼前看大綱不怯場)',
+        privacySecurity: '聲紋安全支付 (透過聲音識別身份進行部分操作)'
+      },
+      {
+        id: 'asus',
+        isMain: false,
+        brand: '華碩 ASUS',
+        country: '台灣',
+        model: 'AirVision M1',
+        shortModel: 'ASUS AirVision M1',
+        category: 'AR眼鏡',
+        website: 'https://www.asus.com/tw/displays-desktops/glasses/airvision/asus-airvision-m1/',
+        crowdfunding: '',
+        releaseDate: '2025 Q1',
+        status: '已開賣',
+        releaseTimestamp: 2025.25,
+        price: 'NT$11,888 (限時優惠)',
+        priceNumeric: 11888,
+        weight: '87g 極輕量設計',
+        batteryLife: '隨插即用 (依賴主機連線供電)',
+        cameraSpecs: '無相機',
+        micSpeaker: '降噪麥克風陣列 / 內建揚聲器',
+        display: 'Micro OLED 100吋穿戴式顯示器\n1,100 尼特 / 95% DCI-P3\nTÜV 低藍光與無閃爍認證',
+        positioning: '行動辦公多視窗、沉浸式影音娛樂',
+        aiFeatures: '無',
+        voiceAssistant: '無',
+        photo: '無',
+        video: '無',
+        audioRecord: '有 (依賴主機)',
+        translation: '無',
+        musicCall: '有',
+        salesChannel: 'ASUS Store、華碩體驗店、各大 3C 網購 (PChome, Momo 等)',
+        customAi: '否',
+        waveguide: '自由曲面 (Birdbath)\n60% 光學透明度',
+        videoRes: '無',
+        prosCons: '優：高達 60% 透明度安全性高、畫質優異(1100nits)、可自訂多虛擬視窗與螢幕距離、限時大幅降價具吸引力。\n缺：無鏡頭不支援AI視覺辨識，依賴實體連接線。',
+        scores: {
+          ai: 2, sdk: 3, weight: 3, battery: 4, price: 8, comfort: 4, scale: 8,
+          ecosystem: 5, brand: 8, b2bMaturity: 9, b2cMaturity: 5, productMaturity: 9,
+          innovation: 6, camera: 1, visionAi: 1, cpValue: 7, privacy: 10
+        },
+        chipset: '無 (依賴主機)',
+        ramRom: '無 (依賴主機)',
+        connectivity: 'Type-C DP Alt 模式 (相容 ROG Ally、筆電、手機)',
+        ipRating: '',
+        osApp: 'AirVision 應用程式 (Windows 11+ / macOS 12+)',
+        interactionMode: '手勢控制 (單指點按/滑動調整亮度及模式)\n多虛擬視窗版面控制',
+        cameraOpt: '無 (無相機)',
+        lifeAssistant: '無',
+        exclusiveFeature: '手勢操作 / 畫面固定 / 瞳距調整 / 60% 高透明度感知周遭環境',
+        privacySecurity: '無鏡頭設計保障隱私、畫面僅使用者可見'
+      },
+      {
+        id: 'rog',
+        isMain: false,
+        brand: 'ASUS ROG',
+        country: '台灣',
+        model: 'R1',
+        shortModel: 'ROG XREAL R1',
+        category: 'AR眼鏡',
+        website: 'https://rog.asus.com/tw/glasses/rog-xreal-r1/',
+        crowdfunding: 'https://www.zeczec.com/projects/rog-xreal-r1-ar-glasses',
+        releaseDate: '2026 Q3 (7/6 出貨)',
+        status: '已發表',
+        releaseTimestamp: 2026.75,
+        price: 'NT$ 29,990',
+        priceNumeric: 29990,
+        weight: '約 91g (超輕量設計，重心平衡鏡腳)',
+        batteryLife: '隨插即用 (由連接主機或隨附之 ROG Control Dock 供電)',
+        cameraSpecs: '無相機',
+        micSpeaker: 'Sound by Bose 頂級音效\n4 × 降噪麥克風',
+        display: 'Sony 0.55 吋 Micro-OLED\n120Hz / 240Hz 更新率 (開啟Boost)\n模擬 171 吋沉浸式巨幕',
+        positioning: '頂級電競 AR 顯示，專為掌機及主機玩家打造的虛擬大螢幕',
+        aiFeatures: '無',
+        voiceAssistant: '無',
+        photo: '無',
+        video: '無',
+        audioRecord: '無 (內建 4 麥克風降噪)',
+        translation: '無',
+        musicCall: '有 (Sound by Bose 頂級音效)',
+        salesChannel: 'ROG 專賣店、ASUS Store、群眾募資平台 (嘖嘖) 及各大 3C 通路',
+        customAi: '否',
+        waveguide: 'Birdbath / 三段電致變色調光\n57° FOV / 106% sRGB',
+        videoRes: '無',
+        prosCons: '優：全球首創 240Hz 高更新率與 0.01ms 反應時間、原生 3DoF 空間鎖定、電致變色三段調光、Sound by Bose、隨附 ROG Control Dock 擁有多源切換器。\n缺：價格最高且重量 91g 略重、無相機故不支援主動式 AI 視覺分析功能。',
+        scores: {
+          ai: 1, sdk: 4, weight: 2, battery: 4, price: 2, comfort: 5, scale: 8,
+          ecosystem: 6, brand: 9, b2bMaturity: 3, b2cMaturity: 8, productMaturity: 9,
+          innovation: 8, camera: 1, visionAi: 1, cpValue: 5, privacy: 10
+        },
+        chipset: 'XREAL X1 空間計算晶片',
+        ramRom: '無 (依賴直連主機)',
+        connectivity: 'USB-C DP Alt 模式 (支援一線直連 ROG Ally、PC、主機等)',
+        ipRating: '',
+        osApp: 'Armoury Crate SE (ACSE) 掌機整合\nDisplayWidget Center (Windows)',
+        interactionMode: '實體按鍵控制 (ACSE 掌機整合) / 3DoF 原生懸停',
+        cameraOpt: '無 (無相機)',
+        lifeAssistant: '無',
+        exclusiveFeature: '240Hz 更新率 / 即時 2D 轉 3D / 電致變色三段調光 / 隨附 ROG Control Dock 控制底座',
+        privacySecurity: '無鏡頭設計，保障絕佳物理隱私'
+      }
+    ];
+
+    // 表格與核心欄位渲染結構
+    const CATEGORIES = [
+      {
+        title: '市場定位與基本概況',
+        subtitle: '各產品的市場佈局與基本資訊',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-slate-100" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
+        fields: [
+          { label: '品牌', key: 'brand' },
+          { label: '所屬國家', key: 'country', isHighlight: true },
+          { label: '型號', key: 'model', isBold: true },
+          { label: '類別', key: 'category' },
+          { label: '發布時間', key: 'releaseDate' },
+          { label: '市場定價', key: 'price' },
+          { label: '主要銷售通路', key: 'salesChannel' },
+          { label: '官方資訊', key: 'website', isLink: true },
+          { label: '募資平台', key: 'crowdfunding', isLink: true },
+        ]
+      },
+      {
+        title: '硬體架構與規格解析',
+        subtitle: '核心硬體組態與工程設計',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-slate-100" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M9 20v2M15 20v2M20 9h2M20 15h2M9 2v2M15 2v2M2 9h2M2 15h2"></path></svg>`,
+        fields: [
+          { label: '核心晶片', key: 'chipset', isBold: true },
+          { label: '記憶體與儲存', key: 'ramRom' },
+          { label: '無線連線', key: 'connectivity' },
+          { label: '整機重量', key: 'weight' },
+          { label: '電池與快充', key: 'batteryLife' },
+          { label: '耐候防護', key: 'ipRating' },
+          { label: '相機感測器', key: 'cameraSpecs' },
+          { label: '動態錄影', key: 'videoRes' },
+          { label: '聲學系統', key: 'micSpeaker' },
+          { label: '顯示單元', key: 'display' },
+          { label: '光學與波導技術', key: 'waveguide', isHighlight: true },
+        ]
+      },
+      {
+        title: '軟體生態與 AI 應用能力',
+        subtitle: '智能化體驗與系統擴充性',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-slate-100" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6a3 3 0 110 6 3 3 0 010-6z"></path><path d="M12 12v6"></path></svg>`,
+        fields: [
+          { label: '作業系統與 App', key: 'osApp', isBold: true },
+          { label: 'AI 核心大模型', key: 'aiFeatures' },
+          { label: '影像與 AI 視覺應用', key: 'cameraOpt' },
+          { label: '即時翻譯功能', key: 'translation' },
+          { label: '生活助理功能', key: 'lifeAssistant' },
+          { label: '獨家軟體亮點', key: 'exclusiveFeature' },
+          { label: '隱私與安全', key: 'privacySecurity' },
+        ]
+      },
+      {
+        title: 'AI分析綜合評估',
+        subtitle: '產品優劣勢綜合點評',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-slate-100" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>`,
+        fields: [
+          { label: '競爭力摘要', key: 'prosCons', isMultiline: true },
+        ]
+      }
+    ];
+
+    // === SVG 雷達圖元件 ===
+    const RadarChart = ({ scores, shortModel, isMain }) => {
+      const size = 260; 
+      const center = size / 2;
+      const radius = (size / 2) - 40;
+      const metrics = ['AI能力', 'SDK開放度', '輕便度', '電池續航', '價格優勢', '舒適度'];
+      const keys = ['ai', 'sdk', 'weight', 'battery', 'price', 'comfort'];
+      
+      const getCoordinatesForValue = (value, index) => {
+        const angle = (Math.PI * 2 * index) / metrics.length - Math.PI / 2;
+        const distance = (value / 10) * radius;
+        return { x: center + distance * Math.cos(angle), y: center + distance * Math.sin(angle) };
+      };
+
+      const drawGrid = (level) => {
+        let points = '';
+        for (let i = 0; i < metrics.length; i++) {
+          const coord = getCoordinatesForValue(level * 3.33, i);
+          points += coord.x + "," + coord.y + " ";
+        }
+        return points;
+      };
+
+      let dataPoints = '';
+      keys.forEach((key, i) => {
+        const val = scores[key] || 0;
+        const coord = getCoordinatesForValue(val, i);
+        dataPoints += coord.x + "," + coord.y + " ";
+      });
+
+      const mainColor = isMain ? '#F59E0B' : '#3B82F6';
+      const bgColor = isMain ? 'rgba(245, 158, 11, 0.2)' : 'rgba(59, 130, 246, 0.2)';
+
+      return (
+        <div className="flex flex-col items-center w-full">
+          <div className="text-center mb-2 h-12 flex flex-col justify-end pb-1">
+            <div className={"text-sm font-bold uppercase mb-1 " + (isMain ? "text-amber-600" : "text-slate-500")}>
+              {isMain ? '核心目標' : '市場競品'}
+            </div>
+            <div className="text-base sm:text-lg font-bold text-slate-800 leading-tight px-2 break-words">
+              {shortModel}
+            </div>
+          </div>
+          <svg width={size} height={size} viewBox={"0 0 " + size + " " + size} className="max-w-full">
+            {[1, 2, 3].map((level) => (
+              <polygon key={level} points={drawGrid(level)} fill="none" stroke="#E2E8F0" strokeWidth="1" />
+            ))}
+            {metrics.map((_, i) => {
+              const end = getCoordinatesForValue(10, i);
+              return <line key={i} x1={center} y1={center} x2={end.x} y2={end.y} stroke="#E2E8F0" strokeWidth="1" />;
+            })}
+            <polygon points={dataPoints} fill={bgColor} stroke={mainColor} strokeWidth="2" strokeLinejoin="round" />
+            {keys.map((key, i) => {
+              const val = scores[key] || 0;
+              const coord = getCoordinatesForValue(val, i);
+              return <circle key={i} cx={coord.x} cy={coord.y} r="3" fill={mainColor} />;
+            })}
+            {metrics.map((metric, i) => {
+              const coord = getCoordinatesForValue(12.5, i);
+              return (
+                <text key={i} x={coord.x} y={coord.y} fill="#475569" fontSize="14" textAnchor="middle" dominantBaseline="middle" className="font-semibold">
+                  {metric}
+                </text>
+              );
+            })}
+          </svg>
+        </div>
+      );
+    };
+
+    function App() {
+      const [selectedIds, setSelectedIds] = useState(['noya', 'ergo', 'rokid', 'meta', 'vive', 'google', 'asus', 'rog', 'apple']);
+      const [alertMsg, setAlertMsg] = useState('');
+      
+      const [quadrantX, setQuadrantX] = useState('priceNumeric');
+      const [quadrantY, setQuadrantY] = useState('ai');
+      const [activePestelTab, setActivePestelTab] = useState('All');
+      const [pestelNews, setPestelNews] = useState([]);
+      const [pestelUpdatedAt, setPestelUpdatedAt] = useState('2026年7月8日');
+      const [pestelLoadState, setPestelLoadState] = useState('loading');
+
+      useEffect(() => {
+        let cancelled = false;
+        // 相對路徑：GitHub Pages 專案站 /user/repo/ 與根目錄站皆可
+        const dataUrl = new URL('data/pestel-news.json', window.location.href).href;
+        fetch(dataUrl)
+          .then((res) => {
+            if (!res.ok) throw new Error('load failed');
+            return res.json();
+          })
+          .then((data) => {
+            if (cancelled) return;
+            const items = (data.items || [])
+              .filter((item) => item.title && item.title.trim())
+              .map(enrichPestelItem)
+              .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            setPestelNews(items);
+            if (data.updatedAt) {
+              const [y, m, d] = data.updatedAt.split('-').map(Number);
+              setPestelUpdatedAt(`${y}年${m}月${d}日`);
+            }
+            setPestelLoadState('ready');
+          })
+          .catch(() => {
+            if (!cancelled) setPestelLoadState('error');
+          });
+        return () => { cancelled = true; };
+      }, []);
+
+      const selectedProducts = PRODUCT_DATA.filter(p => selectedIds.includes(p.id))
+        .sort((a, b) => (a.isMain === b.isMain ? 0 : a.isMain ? -1 : 1));
+
+      const quadrantData = useMemo(() => {
+        return selectedProducts.map(p => {
+          const getValue = (key) => {
+            if (key === 'priceNumeric') return p.priceNumeric;
+            if (key === 'releaseTimestamp') return p.releaseTimestamp;
+            return p.scores[key] || 0;
+          };
+          return { ...p, xVal: getValue(quadrantX), yVal: getValue(quadrantY) };
+        });
+      }, [selectedProducts, quadrantX, quadrantY]);
+
+      const quadBounds = useMemo(() => {
+        if (quadrantData.length === 0) return { xMin: 0, xMax: 10, yMin: 0, yMax: 10 };
+        const getBounds = (key) => {
+          if (key === 'priceNumeric') return { min: 4000, max: 35000 };
+          if (key === 'releaseTimestamp') return { min: 2025, max: 2028 };
+          return { min: 0, max: 10 };
+        };
+        const xB = getBounds(quadrantX);
+        const yB = getBounds(quadrantY);
+        return {
+          xBounds: xB,
+          yBounds: yB
+        };
+      }, [quadrantData, quadrantX, quadrantY]);
+
+      const handleToggle = (id) => {
+        if (selectedIds.includes(id)) {
+          if (selectedIds.length <= 2) {
+            setAlertMsg('至少需保留 2 款目標設備。');
+            setTimeout(() => setAlertMsg(''), 3000);
+            return;
+          }
+          setSelectedIds(selectedIds.filter(itemId => itemId !== id));
+        } else {
+          setSelectedIds([...selectedIds, id]);
+        }
+      };
+
+      const filteredPestelNews = useMemo(() => {
+        if (activePestelTab === 'All') return pestelNews;
+        return pestelNews.filter(item => item.category === activePestelTab);
+      }, [activePestelTab, pestelNews]);
+
+      const axisOptions = [
+        { value: 'priceNumeric', label: '終端售價' },
+        { value: 'ai', label: 'AI 能力' },
+        { value: 'weight', label: '重量 / 輕便度' },
+        { value: 'battery', label: '電池續航' },
+        { value: 'sdk', label: 'SDK 開放度' },
+        { value: 'ecosystem', label: '生態系完整度' },
+        { value: 'brand', label: '品牌影響力' },
+        { value: 'b2bMaturity', label: '企業應用成熟度' },
+        { value: 'b2cMaturity', label: '消費市場成熟度' },
+        { value: 'productMaturity', label: '產品成熟度' },
+        { value: 'innovation', label: '創新能力' },
+        { value: 'camera', label: '相機能力' },
+        { value: 'visionAi', label: 'Vision AI 能力' },
+        { value: 'cpValue', label: '產品價值 (CP值)' },
+        { value: 'privacy', label: '隱私與安全' },
+        { value: 'scale', label: '公司規模 / 企業規模' }
+      ];
+
+      return (
+        <div className="min-h-screen bg-[#F4F5F7] font-sans text-slate-900 selection:bg-blue-200 pb-12 sm:pb-20">
+          
+          {/* Top Header */}
+          <header className="bg-[#0B1528] border-b-[4px] sm:border-b-[6px] border-[#2563EB] text-white">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 sm:gap-6 w-full">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <svg className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 mr-2 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <ellipse cx="12" cy="5" rx="9" ry="3" />
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                      <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                    </svg>
+                    <span className="text-blue-400 font-bold tracking-[0.1em] sm:tracking-[0.2em] text-sm sm:text-base uppercase inline-block align-middle">
+                      市場情報報告 | 智慧穿戴裝置
+                    </span>
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight mb-2">
+                    AI眼鏡<strong className="font-semibold text-white">市場監測儀表板</strong>
+                  </h1>
+                  <p className="text-slate-400 text-sm sm:text-base">
+                    全球 AI 眼鏡與 AR 設備硬體對標分析
+                  </p>
+                </div>
+                <div className="text-left md:text-right text-sm sm:text-base text-slate-400 space-y-1 bg-slate-800/50 p-3 sm:p-4 rounded-sm border border-slate-700 w-full md:w-auto shrink-0 whitespace-nowrap">
+                  <p><span className="text-slate-500">最後更新日期：</span> {pestelUpdatedAt}</p>
+                  <p><span className="text-slate-500">核心目標：</span> NOYA</p>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
+            
+            {/* 1. 市場總覽 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+              
+              {/* 左欄：上市時程 Timeline */}
+              <div className="col-span-1 bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col">
+                <h3 className="text-lg font-bold text-slate-800 flex items-center mb-6">
+                  <svg className="w-5 h-5 mr-2 text-emerald-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+                  </svg>
+                  上市時程
+                </h3>
+                
+                <div className="relative flex-1 overflow-y-auto pr-2 hide-scrollbar min-h-[300px] max-h-[450px]">
+                  <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-slate-100"></div>
+                  
+                  <div className="space-y-4">
+                    {Object.entries(
+                      [...PRODUCT_DATA].sort((a,b) => a.releaseTimestamp - b.releaseTimestamp).reduce((acc, p) => {
+                        const match = p.releaseDate.match(/\d{4}\s*Q\d/);
+                        const q = match ? match[0] : p.releaseDate;
+                        if (!acc[q]) acc[q] = [];
+                        acc[q].push(p);
+                        return acc;
+                      }, {})
+                    ).map(([quarter, products]) => {
+                      const sortedProducts = [...products].sort((a, b) => {
+                        const statusWeight = { '已開賣': 1, '已發表': 2, '未發表': 3 };
+                        return (statusWeight[a.status] || 99) - (statusWeight[b.status] || 99);
+                      });
+
+                      return (
+                        <div key={quarter} className="relative pl-6">
+                          <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center shadow-sm">
+                             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                          </div>
+                          
+                          <div className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">{quarter || '其他'}</div>
+                          
+                          <div className="flex flex-col gap-2">
+                            {sortedProducts.map((p) => (
+                              <div key={"timeline-" + p.id} className={"flex items-center justify-between p-2 rounded-md border transition-all duration-300 " + (selectedIds.includes(p.id) ? "opacity-100" : "opacity-40 grayscale") + (p.isMain ? " bg-amber-50/50 border-amber-200" : " bg-slate-50 border-slate-100")}>
+                                <div className="flex flex-col overflow-hidden">
+                                  <span className={"text-sm font-bold truncate " + (p.isMain ? "text-amber-700" : "text-slate-800")}>
+                                    {p.shortModel}
+                                  </span>
+                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                    <span className="text-[10px] text-slate-500 truncate">{p.releaseDate || '日期未定'}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
+                                  <span className={"text-[10px] font-bold px-1.5 py-0.5 rounded " + (
+                                    p.status === '已開賣' ? 'bg-emerald-100 text-emerald-700' :
+                                    p.status === '已發表' ? 'bg-blue-100 text-blue-700' :
+                                    'bg-slate-200 text-slate-600'
+                                  )}>{p.status}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* 右欄：定價區間看板 */}
+              <div className="col-span-1 lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col">
+                <h3 className="text-lg font-bold text-slate-800 flex items-center mb-2">
+                  <svg className="w-5 h-5 mr-2 text-blue-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  定價區間
+                </h3>
+                <p className="text-sm text-slate-500 mb-6">依據硬體終端售價區隔市場層級與首購門檻。</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                  
+                  {/* Tier 1: 萬元以下 */}
+                  <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex flex-col">
+                    <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+                      <span className="text-sm font-bold text-slate-700">萬元以下</span>
+                      <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded">入門/破壞者</span>
+                    </div>
+                    <div className="space-y-3 flex-1">
+                      {[...PRODUCT_DATA].filter(p => p.priceNumeric < 10000).map(p => (
+                        <div key={"tier1-" + p.id} className={"p-3 rounded border shadow-sm " + (selectedIds.includes(p.id) ? (p.isMain ? "bg-amber-50 border-amber-300 ring-1 ring-amber-300" : "bg-white border-slate-200") : "opacity-40 grayscale bg-white border-slate-200")}>
+                          <div className={"text-base font-bold mb-1 " + (p.isMain ? "text-amber-700" : "text-slate-800")}>
+                            {p.shortModel} {p.isMain ? '🎯' : ''}
+                          </div>
+                          <div className="text-sm text-slate-500 font-medium">{p.price || '未公開'}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tier 2: 1萬 ~ 2萬 */}
+                  <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex flex-col">
+                    <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+                      <span className="text-sm font-bold text-slate-700">1萬 ~ 2萬</span>
+                      <span className="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded">主流競爭</span>
+                    </div>
+                    <div className="space-y-3 flex-1">
+                      {[...PRODUCT_DATA].filter(p => p.priceNumeric >= 10000 && p.priceNumeric <= 20000).map(p => (
+                        <div key={"tier2-" + p.id} className={"p-3 rounded border shadow-sm " + (selectedIds.includes(p.id) ? "bg-white border-slate-200" : "opacity-40 grayscale bg-white border-slate-200")}>
+                          <div className="text-base font-bold text-slate-800 mb-1">{p.shortModel}</div>
+                          <div className="text-sm text-slate-500 font-medium">{p.price || '未公開'}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tier 3: 2萬以上 */}
+                  <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 flex flex-col">
+                    <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+                      <span className="text-sm font-bold text-slate-700">2萬以上</span>
+                      <span className="text-xs font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded">高階/電競</span>
+                    </div>
+                    <div className="space-y-3 flex-1">
+                      {[...PRODUCT_DATA].filter(p => p.priceNumeric > 20000).map(p => (
+                        <div key={"tier3-" + p.id} className={"p-3 rounded border shadow-sm " + (selectedIds.includes(p.id) ? "bg-white border-slate-200" : "opacity-40 grayscale bg-white border-slate-200")}>
+                          <div className="text-base font-bold text-slate-800 mb-1">{p.shortModel}</div>
+                          <div className="text-sm text-slate-500 font-medium">{p.price || '未公開'}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            {/* 2. 市場發展動態 */}
+            <div className="bg-white shadow-sm border border-slate-200 p-4 sm:p-6 overflow-hidden">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-blue-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                    </svg>
+                    市場發展動態
+                  </h3>
+                  <p className="text-sm sm:text-base text-slate-500 mt-1">
+                    全球智慧穿戴市場關鍵情報要素與 NOYA 戰略防護方向
+                    {pestelLoadState === 'ready' ? ` · 共 ${pestelNews.length} 篇` : ''}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-6 bg-slate-100 p-1.5 rounded-lg w-fit">
+                {[
+                  { code: 'All', label: '全部維度 📋' },
+                  { code: 'P', label: 'P 政治 🔴' },
+                  { code: 'E', label: 'E 經濟 🟠' },
+                  { code: 'S', label: 'S 社會 🟡' },
+                  { code: 'T', label: 'T 科技 🟢' },
+                  { code: 'Env', label: 'Env 環境 🔵' },
+                  { code: 'L', label: 'L 法律 🟣' }
+                ].map((tab) => (
+                  <button
+                    key={tab.code}
+                    onClick={() => setActivePestelTab(tab.code)}
+                    className={"px-3 py-1.5 rounded text-sm font-semibold transition-all " + (activePestelTab === tab.code ? "bg-white text-slate-800 shadow-sm" : "text-slate-600 hover:text-slate-800")}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="overflow-auto max-h-[400px] sm:max-h-[500px] rounded border border-slate-200 relative">
+                <table className="w-full text-left border-collapse min-w-[1100px]">
+                  <thead className="sticky top-0 z-20 shadow-sm">
+                    <tr>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700 w-28 text-center">日期</th>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700 w-40">PESTEL 維度</th>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700 w-28 text-center">影響面向</th>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700">新聞情報標題與摘要</th>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700 w-[260px]">對 NOYA</th>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700 w-24 text-center">影響度</th>
+                      <th className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 text-sm sm:text-base font-bold text-slate-700 w-28 text-center">情報連結</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {pestelLoadState === 'loading' ? (
+                      <tr>
+                        <td colSpan="7" className="p-8 text-center text-slate-400 italic text-sm sm:text-base">
+                          載入市場情報中…
+                        </td>
+                      </tr>
+                    ) : pestelLoadState === 'error' ? (
+                      <tr>
+                        <td colSpan="7" className="p-8 text-center text-slate-500 text-sm sm:text-base">
+                          無法讀取 <code className="bg-slate-100 px-1 rounded">data/pestel-news.json</code>。請確認已與本頁一同上傳，且 GitHub Pages 來源指向倉庫根目錄。
+                        </td>
+                      </tr>
+                    ) : filteredPestelNews.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="p-8 text-center text-slate-400 italic text-sm sm:text-base">
+                          此維度目前尚無累積新聞情報。
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredPestelNews.map((item) => (
+                        <tr key={item.id || item.title} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="p-3 sm:p-4 align-top text-center border-r border-slate-100 whitespace-nowrap">
+                            <span className="text-sm font-semibold text-slate-600 tabular-nums">{item.date || '—'}</span>
+                          </td>
+                          <td className="p-3 sm:p-4 align-top border-r border-slate-100">
+                            <span className={"inline-block px-2 py-0.5 rounded text-sm font-bold " + item.color}>
+                              {item.category === 'Env' ? 'Env' : item.category}
+                            </span>
+                            <div className="text-sm font-semibold text-slate-500 mt-1">{item.cnCategory}</div>
+                          </td>
+                          <td className="p-3 sm:p-4 align-top text-center border-r border-slate-100 whitespace-nowrap">
+                            {item.impactArea ? (
+                              <span className="inline-block bg-slate-100 text-slate-600 px-2.5 py-1 rounded text-sm font-bold border border-slate-200 shadow-sm">
+                                {item.impactArea}
+                              </span>
+                            ) : null}
+                          </td>
+                          <td className="p-3 sm:p-4 align-top border-r border-slate-100">
+                            <div className="text-sm sm:text-base font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+                              {item.title}
+                            </div>
+                            <div className="text-sm sm:text-base text-slate-500 leading-relaxed">{item.summary}</div>
+                          </td>
+                          <td className="p-3 sm:p-4 align-top border-r border-slate-100 text-sm sm:text-base text-slate-700 font-medium whitespace-pre-line">
+                            {item.toNoya || ''}
+                          </td>
+                          <td className="p-3 sm:p-4 align-top text-center border-r border-slate-100">
+                            {item.impact ? (
+                              <span className={"inline-block px-3 py-1 rounded text-sm font-bold border " + (item.impact === '高' ? "bg-red-50 text-red-700 border-red-200 animate-pulse" : item.impact === '中' ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-emerald-50 text-emerald-700 border-emerald-200")}>
+                                {item.impact}
+                              </span>
+                            ) : null}
+                          </td>
+                          <td className="p-3 sm:p-4 align-top text-center">
+                            {item.link ? (
+                              <a 
+                                href={item.link} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-sm px-3 py-1.5 rounded transition-colors w-full border border-blue-100 shadow-sm"
+                              >
+                                🔗 前往 ↗
+                              </a>
+                            ) : (
+                              <span className="text-sm text-slate-400 italic">無資料</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 3. 選擇對標設備 */}
+            <div className="bg-white shadow-sm border border-slate-200 rounded-sm">
+              <div className="bg-slate-50 border-b border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                <div className="flex items-center justify-between w-full sm:w-auto sm:gap-4">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-800 uppercase tracking-wider flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-blue-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    選擇對標設備 ({selectedIds.length}/{PRODUCT_DATA.length})
+                  </h2>
+                  <button
+                    onClick={() => setSelectedIds(PRODUCT_DATA.map(p => p.id))}
+                    className="text-sm sm:text-base bg-blue-100 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-200 transition-colors font-medium flex items-center"
+                  >
+                    全選
+                  </button>
+                </div>
+                {alertMsg && (
+                  <span className="text-sm sm:text-base bg-red-50 text-red-600 px-3 py-1.5 rounded-sm border border-red-200 flex items-center w-full sm:w-auto">
+                    <svg className="w-4 h-4 mr-1.5 shrink-0 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    {alertMsg}
+                  </span>
+                )}
+              </div>
+              
+              <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
+                {PRODUCT_DATA.map((product) => (
+                  <label 
+                    key={product.id} 
+                    className={"relative flex items-center sm:items-start p-3 sm:p-4 rounded-sm border transition-all cursor-pointer " + (selectedIds.includes(product.id) ? (product.isMain ? "border-[#2563EB] bg-blue-50/30" : "border-slate-800 bg-slate-50") : "border-slate-200 lg:hover:border-slate-400 bg-white")}
+                  >
+                    {product.isMain && (
+                      <div className="hidden sm:flex absolute -top-2 -right-2 bg-[#2563EB] text-white text-sm px-2 py-0.5 uppercase tracking-widest font-bold shadow-sm items-center z-10">
+                        <svg className="w-4 h-4 mr-1 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        目標
+                      </div>
+                    )}
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 sm:mt-1 text-slate-900 border-slate-300 rounded-sm focus:ring-slate-900 cursor-pointer shrink-0"
+                      checked={selectedIds.includes(product.id)}
+                      onChange={() => handleToggle(product.id)}
+                    />
+                    <div className="ml-3 flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-start w-full gap-2 sm:gap-0">
+                      <div className="flex flex-col">
+                        <span className={"text-sm uppercase tracking-wider font-semibold flex items-center mb-0.5 " + (product.isMain ? "text-[#2563EB]" : "text-slate-500")}>
+                          <svg className="w-3.5 h-3.5 mr-1 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <circle cx="12" cy="11" r="2" />
+                          </svg>
+                          {product.country}
+                        </span>
+                        <span className="text-base font-bold text-slate-800 leading-tight truncate max-w-full" title={product.shortModel}>
+                          {product.shortModel}
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. 規格比較矩陣 */}
+            <div className="bg-white shadow-xl border border-slate-200 overflow-auto max-h-[75vh] sm:max-h-[80vh] relative rounded-b-lg">
+              <table className="w-full text-left border-collapse min-w-[1300px] lg:min-w-[1600px]">
+                <thead className="sticky top-0 z-40 shadow-sm">
+                  <tr>
+                    <th className="bg-[#0B1528] border-b border-slate-800 p-4 sm:p-5 sticky top-0 left-0 z-50 min-w-[140px] w-[140px] sm:w-[220px] sm:min-w-[220px] outline outline-1 outline-slate-800 shadow-[4px_4px_12px_-4px_rgba(0,0,0,0.5)]">
+                      <div className="text-slate-400 text-sm uppercase tracking-widest mb-1.5">詳細規格</div>
+                      <div className="text-white font-medium text-base sm:text-lg">規格比較矩陣</div>
+                    </th>
+                    {selectedProducts.map((p) => (
+                      <th key={p.id} className={"p-4 sm:p-5 align-bottom sticky top-0 z-30 border-b-2 shadow-sm min-w-[180px] sm:min-w-[220px] " + (p.isMain ? "bg-[#1e3a8a] border-[#3b82f6]" : "bg-[#1C2541] border-slate-600")}>
+                        <div className="flex flex-col h-full justify-end">
+                          <h3 className="text-base sm:text-lg font-bold text-white leading-tight mb-1">
+                            {p.shortModel}
+                          </h3>
+                          {p.isMain && (
+                            <div className="mt-2 sm:mt-3 inline-block bg-blue-500/20 border border-blue-400/50 text-blue-200 text-sm px-2 py-1 uppercase tracking-wider text-center w-fit">
+                              戰略重點
+                            </div>
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {CATEGORIES.map((category, catIndex) => (
+                    <React.Fragment key={catIndex}>
+                      <tr>
+                        <td colSpan={selectedProducts.length + 1} className="bg-[#2B3A55] p-3 sm:p-4 border-y border-slate-700 relative z-20">
+                          <div className="flex items-center text-white sticky left-3 sm:left-5">
+                            <span dangerouslySetInnerHTML={{ __html: category.icon }} />
+                            <div>
+                              <div className="text-base sm:text-lg font-bold tracking-wide">{category.title}</div>
+                              <div className="text-sm text-slate-300 font-normal hidden sm:block mt-0.5">{category.subtitle}</div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      
+                      {category.fields.map((field, fieldIndex) => (
+                        <tr key={fieldIndex} className="lg:hover:bg-[#F8FAFC] transition-colors group">
+                          <td className="p-3 sm:p-5 bg-slate-50 lg:group-hover:bg-[#F1F5F9] border-r border-slate-200 text-sm sm:text-base font-bold text-slate-700 sticky left-0 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] align-middle sm:align-top">
+                            {field.label}
+                          </td>
+                          
+                          {selectedProducts.map((p) => {
+                            const val = p[field.key];
+                            
+                            return (
+                              <td 
+                                key={p.id} 
+                                className={"p-3 sm:p-5 align-middle sm:align-top border-r border-slate-100 " + (p.isMain ? "bg-blue-50/20 border-r-blue-100/50" : "bg-white")}
+                              >
+                                {field.isLink && val && String(val).startsWith('http') ? (
+                                  <a 
+                                    href={val} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="inline-flex items-center justify-center bg-blue-600 text-white lg:hover:bg-blue-700 active:bg-blue-800 font-bold text-sm sm:text-base px-4 py-2.5 rounded shadow-sm transition-all active:scale-95 w-full sm:w-auto text-center"
+                                  >
+                                    {field.key === 'website' ? '🌐 前往官網' : '💡 募資平台'} <span className="ml-1.5 text-sm">↗</span>
+                                  </a>
+                                ) : (
+                                  <div className={"whitespace-pre-line leading-relaxed text-sm sm:text-base font-sans " + (!val ? "" : (p.isMain ? "text-slate-800 font-medium " : "text-slate-600 ")) + (field.isBold && val ? "!font-bold !text-slate-900 " : "") + (field.isHighlight && val && val !== '無' ? "bg-slate-100 px-2 py-1.5 mt-0.5 inline-block rounded-sm font-mono !text-slate-800" : "")}>
+                                    {val || ''}
+                                  </div>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 5. 產品雷達評測 */}
+            <div className="bg-white shadow-sm border border-slate-200 p-4 sm:p-6">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center mb-1">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-rose-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                產品雷達評測
+              </h3>
+              <p className="text-sm sm:text-base text-slate-500 mb-6 sm:mb-8">基於 6 大核心維度的綜合實力評級 (分數越高表現越佳)</p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 sm:gap-10 justify-items-center">
+                {selectedProducts.map(p => (
+                  <RadarChart key={p.id} scores={p.scores} shortModel={p.shortModel} isMain={p.isMain} />
+                ))}
+              </div>
+            </div>
+
+            {/* 6. 策略定位矩陣 */}
+            <div className="bg-white shadow-sm border border-slate-200 p-4 sm:p-6 overflow-hidden">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-8">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-indigo-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 2v20M2 12h20" />
+                    </svg>
+                    策略定位矩陣
+                  </h3>
+                  <p className="text-sm sm:text-base text-slate-500 mt-1">自訂 X 軸與 Y 軸，洞察市場空白帶</p>
+                </div>
+                <div className="flex w-full sm:w-auto gap-3 mt-4 sm:mt-0 bg-slate-50 p-3 rounded border border-slate-100">
+                  <div className="flex flex-col w-1/2 sm:w-auto">
+                    <label className="text-sm uppercase font-bold text-slate-500 mb-1">X 軸</label>
+                    <select 
+                      className="text-sm sm:text-base border-slate-300 rounded focus:ring-indigo-500 focus:border-indigo-500 py-1.5"
+                      value={quadrantX} onChange={(e) => setQuadrantX(e.target.value)}
+                    >
+                      {axisOptions.map(opt => <option key={"x-"+opt.value} value={opt.value}>{opt.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex flex-col w-1/2 sm:w-auto">
+                    <label className="text-sm uppercase font-bold text-slate-500 mb-1">Y 軸</label>
+                    <select 
+                      className="text-sm sm:text-base border-slate-300 rounded focus:ring-indigo-500 focus:border-indigo-500 py-1.5"
+                      value={quadrantY} onChange={(e) => setQuadrantY(e.target.value)}
+                    >
+                      {axisOptions.map(opt => <option key={"y-"+opt.value} value={opt.value}>{opt.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full overflow-x-auto hide-scrollbar pb-4">
+                <div className="min-w-[600px] flex justify-center">
+                  <div className="relative w-full max-w-4xl aspect-[4/3] bg-slate-50 border border-slate-200">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-full h-px bg-slate-300 absolute top-1/2"></div>
+                      <div className="h-full w-px bg-slate-300 absolute left-1/2"></div>
+                    </div>
+                    
+                    <div className="absolute inset-4">
+                      {quadrantData.map(d => {
+                        const xPer = ((d.xVal - quadBounds.xBounds.min) / (quadBounds.xBounds.max - quadBounds.xBounds.min)) * 100;
+                        const yPer = ((d.yVal - quadBounds.yBounds.min) / (quadBounds.yBounds.max - quadBounds.yBounds.min)) * 100;
+                        const top = Math.max(5, Math.min(95, 100 - yPer)); 
+                        const left = Math.max(5, Math.min(95, xPer));
+                        
+                        return (
+                          <div 
+                            key={d.id}
+                            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group transition-all duration-500 ease-out"
+                            style={{ top: top + "%", left: left + "%" }}
+                          >
+                            <div className={"w-4 h-4 sm:w-5 sm:h-5 rounded-full shadow-md z-10 relative " + (d.isMain ? "bg-amber-500 border-2 border-white scale-125" : "bg-indigo-600 border border-white opacity-80")}>
+                              {d.isMain && <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span></span>}
+                            </div>
+                            <div className="mt-1.5 bg-white/90 backdrop-blur-sm px-2 sm:px-2.5 py-1 rounded shadow-sm border border-slate-200 text-sm sm:text-base font-bold text-slate-700 whitespace-nowrap z-20 opacity-100 transition-opacity">
+                              {d.shortModel}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <span className="absolute bottom-2 right-3 text-sm text-slate-400 font-bold uppercase">X 軸高標</span>
+                    <span className="absolute top-2 left-3 text-sm text-slate-400 font-bold uppercase">Y 軸高標</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 7. 戰略分析 */}
+            <div className="bg-white shadow-sm border border-slate-200 p-4 sm:p-6 overflow-hidden">
+              <div className="flex justify-between items-center mb-1">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-amber-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="2" />
+                  </svg>
+                  戰略分析
+                </h3>
+              </div>
+              <p className="text-sm sm:text-base text-slate-500 mb-6 sm:mb-8">基於產品硬體規格與 Top 10 日常 AI 場景深度賦能，解析品牌競爭優勢與行動策略。</p>
+
+              {/* SWOT Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="bg-blue-50/50 border border-blue-200 rounded p-4">
+                  <div className="flex items-center mb-3">
+                    <span className="bg-blue-600 text-white text-base font-bold px-2 py-0.5 rounded mr-2">S</span>
+                    <h4 className="text-base sm:text-lg font-bold text-blue-900">內部優勢 (Strengths)</h4>
+                  </div>
+                  <ul className="space-y-2">
+                    {STRATEGY_DATA.SWOT.S.map((item, idx) => (
+                      <li key={idx} className="flex items-start text-sm sm:text-base text-slate-700">
+                        <svg className="w-4 h-4 text-blue-500 mr-2 shrink-0 mt-0.5 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-orange-50/50 border border-orange-200 rounded p-4">
+                  <div className="flex items-center mb-3">
+                    <span className="bg-orange-500 text-white text-base font-bold px-2 py-0.5 rounded mr-2">W</span>
+                    <h4 className="text-base sm:text-lg font-bold text-orange-900">內部劣勢 (Weaknesses)</h4>
+                  </div>
+                  <ul className="space-y-2">
+                    {STRATEGY_DATA.SWOT.W.map((item, idx) => (
+                      <li key={idx} className="flex items-start text-sm sm:text-base text-slate-700">
+                        <svg className="w-4 h-4 text-orange-400 mr-2 shrink-0 mt-0.5 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-emerald-50/50 border border-emerald-200 rounded p-4">
+                  <div className="flex items-center mb-3">
+                    <span className="bg-emerald-600 text-white text-base font-bold px-2 py-0.5 rounded mr-2">O</span>
+                    <h4 className="text-base sm:text-lg font-bold text-emerald-900">外部機會 (Opportunities)</h4>
+                  </div>
+                  <ul className="space-y-2">
+                    {STRATEGY_DATA.SWOT.O.map((item, idx) => (
+                      <li key={idx} className="flex items-start text-sm sm:text-base text-slate-700">
+                        <svg className="w-4 h-4 text-emerald-500 mr-2 shrink-0 mt-0.5 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.808 13.064a6 6 0 118.516 0" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-red-50/50 border border-red-200 rounded p-4">
+                  <div className="flex items-center mb-3">
+                    <span className="bg-red-600 text-white text-base font-bold px-2 py-0.5 rounded mr-2">T</span>
+                    <h4 className="text-base sm:text-lg font-bold text-red-900">外部威脅 (Threats)</h4>
+                  </div>
+                  <ul className="space-y-2">
+                    {STRATEGY_DATA.SWOT.T.map((item, idx) => (
+                      <li key={idx} className="flex items-start text-sm sm:text-base text-slate-700">
+                        <svg className="w-4 h-4 text-red-500 mr-2 shrink-0 mt-0.5 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M21 3L3 21M16 3L3 16M21 8L8 21" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* TOWS Matrix Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[800px] border border-slate-200">
+                  <thead>
+                    <tr>
+                      <th className="bg-slate-100 border border-slate-200 p-4 w-1/4">
+                        <div className="text-base sm:text-lg font-bold text-slate-800">TOWS 交叉矩陣</div>
+                      </th>
+                      <th className="bg-blue-50 border border-blue-200 p-4 w-[37.5%]">
+                        <div className="text-base font-bold text-blue-900">善用內部優勢 (S)</div>
+                      </th>
+                      <th className="bg-orange-50 border border-orange-200 p-4 w-[37.5%]">
+                        <div className="text-base font-bold text-orange-900">改善內部劣勢 (W)</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="bg-emerald-50 border border-emerald-200 p-4 align-top">
+                        <div className="text-base font-bold text-emerald-900">把握外部機會 (O)</div>
+                      </td>
+                      <td className="border border-slate-200 p-4 align-top hover:bg-slate-50 transition-colors">
+                        <div className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-sm font-bold rounded mb-2">SO 策略</div>
+                        <div className="text-sm sm:text-base font-bold text-slate-800 mb-1">{STRATEGY_DATA.TOWS.SO.title}</div>
+                        <div className="text-sm sm:text-base text-slate-600 leading-relaxed">{STRATEGY_DATA.TOWS.SO.content}</div>
+                      </td>
+                      <td className="border border-slate-200 p-4 align-top hover:bg-slate-50 transition-colors">
+                        <div className="inline-block px-2 py-1 bg-emerald-100 text-emerald-800 text-sm font-bold rounded mb-2">WO 策略</div>
+                        <div className="text-sm sm:text-base font-bold text-slate-800 mb-1">{STRATEGY_DATA.TOWS.WO.title}</div>
+                        <div className="text-sm sm:text-base text-slate-600 leading-relaxed">{STRATEGY_DATA.TOWS.WO.content}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="bg-red-50 border border-red-200 p-4 align-top">
+                        <div className="text-base font-bold text-red-900">避開外部威脅 (T)</div>
+                      </td>
+                      <td className="border border-slate-200 p-4 align-top hover:bg-slate-50 transition-colors">
+                        <div className="inline-block px-2 py-1 bg-amber-100 text-amber-800 text-sm font-bold rounded mb-2">ST 策略</div>
+                        <div className="text-sm sm:text-base font-bold text-slate-800 mb-1">{STRATEGY_DATA.TOWS.ST.title}</div>
+                        <div className="text-sm sm:text-base text-slate-600 leading-relaxed">{STRATEGY_DATA.TOWS.ST.content}</div>
+                      </td>
+                      <td className="border border-slate-200 p-4 align-top hover:bg-slate-50 transition-colors">
+                        <div className="inline-block px-2 py-1 bg-red-100 text-red-800 text-sm font-bold rounded mb-2">WT 策略</div>
+                        <div className="text-sm sm:text-base font-bold text-slate-800 mb-1">{STRATEGY_DATA.TOWS.WT.title}</div>
+                        <div className="text-sm sm:text-base text-slate-600 leading-relaxed">{STRATEGY_DATA.TOWS.WT.content}</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 8. 市場空白機會分析 (移至戰略分析下方) */}
+            <div className="bg-white shadow-sm border border-slate-200 p-4 sm:p-6 overflow-hidden">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-8">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-purple-600 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="M21 21l-4.35-4.35" />
+                    </svg>
+                    市場空白機會分析
+                  </h3>
+                  <p className="text-sm sm:text-base text-slate-500 mt-1">針對現有市場痛點，解析 NOYA 成功切入的關鍵藍海市場。</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                {MARKET_GAPS.map((gap, idx) => (
+                  <div key={idx} className="bg-slate-50 border border-slate-200 rounded-lg p-4 sm:p-5 lg:hover:shadow-md transition-shadow">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-white p-2 sm:p-2.5 rounded-full shadow-sm border border-slate-100 mr-3" dangerouslySetInnerHTML={{ __html: gap.icon }} />
+                      <h4 className="text-base sm:text-lg font-bold text-slate-800 leading-tight">{gap.title}</h4>
+                    </div>
+                    <div className="mb-4">
+                      <div className="text-[10px] sm:text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">現有市場痛點</div>
+                      <p className="text-sm sm:text-base text-slate-600 leading-relaxed">{gap.painPoint}</p>
+                    </div>
+                    <div className="pt-4 border-t border-slate-200">
+                      <div className="text-[10px] sm:text-xs font-bold text-blue-500 mb-1.5 uppercase tracking-wider">NOYA 解決方案</div>
+                      <p className="text-sm sm:text-base font-medium text-slate-800 leading-relaxed">{gap.solution}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer info */}
+            <div className="pt-4 border-t border-slate-200 text-sm sm:text-base text-slate-500 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-0 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-slate-400 shrink-0 inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+                免責聲明：所有產品規格與市場數據皆基於外部官方公開資訊與可驗證來源，無來源之項目皆已嚴格留白。
+              </div>
+              <div className="font-mono text-sm uppercase tracking-widest text-slate-400">
+                機密與專有資料 • 僅供內部使用
+              </div>
+            </div>
+
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

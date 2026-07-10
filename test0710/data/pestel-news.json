@@ -1,0 +1,148 @@
+{
+  "updatedAt": "2026-07-08",
+  "items": [
+    {
+      "id": "pestel-001",
+      "date": "2026-07-07",
+      "category": "E",
+      "title": "你是想短線追題材，還是陪宏達電等數據說話？",
+      "summary": "分析宏達電 AI 智慧眼鏡切入 B2B 企業合作的模式，其雖能帶來高單價合約與可預期現金流，但核心風險在於「客戶集中度高、專案續約率不確定」。硬體一次性出貨難以長出護城河，未來關鍵在於如何透過軟硬整合、AI能力，將合作擴大至永續的平台與軟體生態系。",
+      "toNoya": "🎯 大廠聚焦高單價、客製化的 B2B 工業與專門利基市場，客戶高度集中且面臨續約考驗。這更印證了 NOYA 鎖定大眾消費（B2C）高頻日常剛需場景的定位正確。NOYA 應專注於低首購門檻、高普及率的買斷制生活助理，避開與巨頭在企業級專案進行資源消耗戰。",
+      "impact": "中",
+      "impactArea": "商業模式",
+      "link": "https://readmo.cmoney.tw/article/3230bd21-6f75-41f8-a896-2dceacc2507f"
+    },
+    {
+      "id": "pestel-002",
+      "date": "2026-07-05",
+      "category": "E",
+      "title": "Meta AI 眼鏡要開始向你收訂閱費了，儘管完全本機運算零成本",
+      "summary": "Meta 在 Meta One Premium 訂閱方案中對智慧眼鏡設下全新限制：「對話聚焦」音訊降噪隔離功能即使完全在鏡框本地端運算、不消耗雲端伺服器算力，免費用戶每月也僅能使用 3 小時。若想提高上限至 15 小時，用戶需月付 19.99 美元訂閱，引發數位縮水（shrinkflation）爭議。",
+      "toNoya": "🎯 巨頭強推本地算力付費牆引發市場反彈。NOYA 在行銷上可採取反向戰略，主打「終身買斷、本機生活與輔助功能完全免費、零月租隱藏收費」，精準承接對巨頭套路不滿的用戶。",
+      "impact": "高",
+      "impactArea": "商業模式",
+      "link": "https://www.blocktempo.com/meta-smart-glasses-conversation-focus-subscription-monetize-hardware-users-paywall/"
+    },
+    {
+      "id": "pestel-003",
+      "date": "2026-06-28",
+      "category": "S",
+      "title": "大眾消費市場教育發酵：AI 眼鏡「解放雙手、秒翻譯」成選購新寵",
+      "summary": "主流媒體開始針對一般消費者推出「AI 智慧眼鏡選購指南」，強調「即時翻譯」、「導航」與「解放雙手」等核心生活應用。顯示市場教育已進入普及期，消費者對於智慧穿戴的剛需場景認知逐漸成形。",
+      "toNoya": "🎯 大眾教育由巨頭承擔，整體市場門檻降低。有利於 NOYA 直接以「高性價比生活教練」切入大眾首購市場，縮短首期行銷轉換鏈。",
+      "impact": "中",
+      "impactArea": "市場競爭",
+      "link": "https://tw.news.yahoo.com/%E6%88%91%E8%A9%B2%E5%85%A5%E6%89%8Bai%E7%9C%BC%E9%8F%A1%E5%97%8E%EF%BC%9F2025%E5%B9%B4ai%E6%99%BA%E6%85%A7%E7%9C%BC%E9%8F%A1%E9%81%B8%E8%B3%BC%E6%8C%87%E5%8D%97-%E6%88%B4%E4%B8%8A%E7%A7%92%E7%BF%BB%E8%AD%AF%E5%B0%8E%E8%88%AA%E3%80%81%E8%A7%A3%E6%94%BE%E9%9B%99%E6%89%8B%E6%9C%89%E5%A4%A0%E7%A5%9E-044358917.html"
+    },
+    {
+      "id": "pestel-004",
+      "date": "2026-06-26",
+      "category": "T",
+      "title": "快來了？Meta 智慧眼鏡已備妥「臉部辨識」功能",
+      "summary": "資安研究員拆解 Meta 眼鏡 App 發現，其已內建完整且可運作的「臉部辨識管線」，包含 3 個 Edge AI 模型與本機特徵資料庫。雖尚未對大眾啟用，但顯示 Meta 技術已到位，隨時可開啟「認人」功能，未來恐引發重大隱私爭議。",
+      "toNoya": "🎯 巨頭技術隨時可能引發重度隱私反彈。NOYA 在推廣上可強調「完全去中心化或尊重用戶隱私，配備明晰的實體物理拍攝指示燈」作為賣點。",
+      "impact": "高",
+      "impactArea": "產品技術",
+      "link": "https://www.blocktempo.com/meta-smart-glasses-stella-app-dormant-facial-recognition-nametag-biometric/"
+    },
+    {
+      "id": "pestel-005",
+      "date": "2026-06-25",
+      "category": "T",
+      "title": "去雷朋化！Meta全新自有品牌AI智慧眼鏡融合虛擬與現實世界",
+      "summary": "Meta 推出全新自有品牌 Meta Glasses，首度原生搭載專為硬體打造的 Muse Spark 模型，結合 14 國語言即時翻譯、視覺景物問答與無螢幕行人導航等先進技術，深度融合虛實互動。",
+      "toNoya": "🎯 巨頭全面綁定自有封閉大模型生態。NOYA 堅持的「靈活雲端串接、自由接入多模型」將能為用戶提供更多元、不受架構綁架的智慧優勢。",
+      "impact": "高",
+      "impactArea": "生態系",
+      "link": "https://ec.ltn.com.tw/article/breakingnews/5481960"
+    },
+    {
+      "id": "pestel-006",
+      "date": "2026-06-24",
+      "category": "T",
+      "title": "自有品牌Meta 眼鏡來了！內建最新Meta AI、售價299 美元起",
+      "summary": "Meta Glasses 實測規格曝光：本體具備 8 小時續航，搭配充電盒可達 40 小時。新增專屬實體按鍵一鍵喚醒 Meta AI，並支援最長 3 分鐘影片錄製與進階風噪抑制功能，硬體完成度極高。",
+      "toNoya": "🎯 Meta 硬體規格標竿確立，續航與收音完成度高。NOYA 需突顯其 35g 的極致輕量化護城河，並透過在地化的中文生活場景進行差異化防禦。",
+      "impact": "高",
+      "impactArea": "產品技術",
+      "link": "https://technews.tw/2026/06/24/meta-partners-with-essilorluxottica-to-launch-meta-glasses/"
+    },
+    {
+      "id": "pestel-007",
+      "date": "2026-06-23",
+      "category": "E",
+      "title": "Meta US$299 平價智慧眼鏡上市，穩居 80% 絕對市佔",
+      "summary": "Meta 攜手 EssilorLuxottica 推出自有品牌 Meta Glasses，定價下殺 US$299，更推出 Kylie Jenner 聯名專屬語音款。以 26 種客製組合與強大通路狠甩 Apple、Google，成功將 AI 眼鏡推向大眾日常配件。(台灣首發暫未納入)",
+      "toNoya": "🎯 巨頭平價定位大幅封鎖利基空間。NOYA 預估定價不到萬元 (約 NT$9,900) 必須緊抓此甜點價格帶，並透過台灣本土保固及在地生活化賦能拉高價值感。",
+      "impact": "高",
+      "impactArea": "市場競爭",
+      "link": "https://www.instagram.com/p/DZ87P9lFGlQ/?img_index=3"
+    },
+    {
+      "id": "pestel-008",
+      "date": "2026-06-22",
+      "category": "L",
+      "title": "駕駛禁用智能眼鏡！伊州立法比手機更嚴無豁免",
+      "summary": "美國伊利諾伊州議會通過修訂交通法規，將 AI 智能眼鏡明確列入駕駛禁用電子裝置，且不設免提豁免。若因佩戴引發事故將追究刑責，開創法規監管先例。",
+      "toNoya": "🎯 應及早規劃行車安全機制，例如利用手機端偵測高速移動時自動開啟語音「行車勿擾安全模式」，化法規風險為核心賣點。",
+      "impact": "高",
+      "impactArea": "",
+      "link": "https://unwire.hk/2026/06/22/illinois-smart-glasses-driving-ban/life-tech/"
+    },
+    {
+      "id": "pestel-009",
+      "date": "2026-06-20",
+      "category": "P",
+      "title": "AI眼鏡納入國補帶動熱潮 陸廠搶攻全球市場",
+      "summary": "中國將AI眼鏡納入國家消費補貼範圍，帶動相關供應鏈與消費熱潮，陸廠藉此政策利多積極出海搶攻全球市佔率，恐對全球競爭格局產生深遠影響。",
+      "toNoya": "🎯 陸廠靠補貼優勢可能掀起海外紅海價格戰。NOYA 應深耕高附加價值的在地化「健康生活教練」情境，以在地軟體服務深度形成防禦。",
+      "impact": "高",
+      "impactArea": "供應鏈",
+      "link": "https://money.udn.com/money/story/5603/9549689"
+    },
+    {
+      "id": "pestel-010",
+      "date": "2026-06-18",
+      "category": "E",
+      "title": "AR眼鏡商業模式驗證的核心：先看裝置銷量，還是服務綁定？",
+      "summary": "深入分析AR穿戴硬體裝置商業模式驗證的核心策略，探討應聚焦硬體低成本規模化銷量，或是轉向「硬體普及+軟體服務綁定訂閱」獲取高頻長期變現價值。",
+      "toNoya": "🎯 硬體低成本化與服務綁定已成趨勢。NOYA 專注日常 Top 10 剛需生活場景的「生活教練目標」策略，極度符合當前商業模式演進。",
+      "impact": "高",
+      "impactArea": "商業模式",
+      "link": "https://readmo.cmoney.tw/article/4072ef9a-775f-4390-8a5c-8f0274357ce1?title=AR%E7%9C%BC%E9%8F%A1%E5%95%86%E6%A5%AD%E6%A8%A1%E5%BC%8F%E9%A9%97%E8%AD%89%E7%9A%84%E6%A0%B8%E5%BF%83%EF%BC%9A%E5%85%88%E7%9C%8B%E8%A3%9D%E7%BD%AE%E9%8A%B7%E9%87%8F%EF%BC%8C%E9%82%84%E6%98%AF%E6%9C%8D%E5%8B%99%E7%B6%81%E5%AE%9A%EF%BC%9F"
+    },
+    {
+      "id": "pestel-011",
+      "date": "2026-06-15",
+      "category": "E",
+      "title": "穿戴裝置商機爆發，台廠光學核心供應鏈獲利看旺",
+      "summary": "大廠AI眼鏡新品戰鼓齊鳴，台廠光學鏡頭元件（如亞光、玉晶光等）與波導晶片供應鏈在技術及良率上喜迎商機，有望於新年度創造數十億美元級別的核心產值與爆發力。",
+      "toNoya": "🎯 台灣光學鏡頭良率全球領先，NOYA 可就近尋求台廠供應鏈的深度工程良率合作，降低開發與採購的固定工程成本。",
+      "impact": "高",
+      "impactArea": "供應鏈",
+      "link": "https://readmo.cmoney.tw/article/19a56340-b7f5-4887-b199-e2a00656ca93"
+    },
+    {
+      "id": "pestel-012",
+      "date": "2026-06-11",
+      "category": "S",
+      "title": "科技始終來自人性？！「AI眼鏡作弊」台灣首見",
+      "summary": "台灣大學入學考試首度查獲考生使用具備即時影像傳輸與 AI 掃描解題功能的智慧眼鏡作弊。此案凸顯新興穿戴科技對教育公平性與社會規範帶來的全新挑戰。",
+      "toNoya": "🎯 需緊密注意產品在公眾及教育考場法規的法規與道德限制，行銷策略應嚴格聚焦在「生活/健康輔助助理」，防止品牌被貼上標籤。",
+      "impact": "中",
+      "impactArea": "",
+      "link": "https://newtalk.tw/news/view/2026-06-11/1040733"
+    },
+    {
+      "id": "pestel-013",
+      "date": "2026-06-10",
+      "category": "T",
+      "title": "智慧穿戴科技突破：AI 眼鏡融入日常創新應用",
+      "summary": "結合多模態大型語言模型與輕量化光學技術，AI 眼鏡正快速拓展至語音助理、即時翻譯與日常健康監測等多元場景，展現次世代硬體的技術突破。",
+      "toNoya": "🎯 大模型與 AI 的演進完全符合 NOYA 的雲端模型外接方向，大模型能力越強，NOYA 終端的附加智慧上限越高。",
+      "impact": "中",
+      "impactArea": "產品技術",
+      "link": "https://leho.com.tw/archives/330096"
+    }
+  ]
+}
