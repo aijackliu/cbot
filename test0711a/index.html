@@ -789,29 +789,88 @@
             <li>• 只走 outbox，業務不直連 LINE API</li>
           </ul>`
       },
+      agents: {
+        title: "F · Agent 層 · 5 Agents Collaborative",
+        badge: "AI 專家團隊",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">五位 Agent 共讀 SSOT + 精算結果，Qwen 轉管理語言；執行前人審。</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>店長</strong>：今日異常 · 熱賣/低迷 · 排班 · 備貨</li>
+            <li>• <strong>行銷</strong>：流失挽回 · 高價值促銷 · LINE 文案 · 券效益</li>
+            <li>• <strong>商品</strong>：新品 · 滯銷 · 高毛利組合 · 關聯銷售</li>
+            <li>• <strong>庫存</strong>：斷貨 · 即期報廢 · 節慶物料 · 跨店調撥</li>
+            <li>• <strong>老闆</strong>：多店損益 · 選址 · 停賣 · 擴張戰略</li>
+          </ul>`
+      },
+      "agent-store": {
+        title: "店長 Agent",
+        badge: "現場營運",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>今日營運異常</strong>：營收/客單/件數偏離，下探時段與品類</li>
+            <li>• <strong>熱賣 / 低迷商品</strong>：榜單 + 補貨或促出清建議</li>
+            <li>• <strong>智能排班調度</strong>：依尖峰與預購量建議人力</li>
+            <li>• <strong>原料備貨指令</strong>：今日/明日備料清單</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">輸入：精算日報 + 門市日報 + 預購 · 輸出：店長備忘錄（Qwen）</p>`
+      },
+      "agent-mkt": {
+        title: "行銷 Agent",
+        badge: "會員 · LINE · 券",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>流失會員挽回</strong>：RFM 沉默名單 + 券建議（有 cap）</li>
+            <li>• <strong>高價值會員促銷</strong>：整模/禮盒客權益建議</li>
+            <li>• <strong>LINE 推播文案</strong>：交易/行銷分通道模板</li>
+            <li>• <strong>優惠券效益精算</strong>：核銷率、折讓成本、增量回購（程式先算）</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">Growth 加送草稿+人審；不直接改點餘額。含生日/節慶西點劇本。</p>`
+      },
+      "agent-product": {
+        title: "商品 Agent",
+        badge: "品項 · 組合",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>新上市產品追蹤</strong>：上市 N 日銷速 vs 標竿</li>
+            <li>• <strong>滯銷品優化調整</strong>：降量、改時段、淘汰候選</li>
+            <li>• <strong>高毛利套餐組合</strong>：咖啡+小點、切片+飲品等</li>
+            <li>• <strong>關聯銷售挖掘</strong>：同籃/同客共購規則</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">滯銷可觸發出清券草稿，交行銷 Agent，仍人審。</p>`
+      },
+      "agent-inv": {
+        title: "庫存 Agent",
+        badge: "斷貨 · 報廢 · 調撥",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>材料斷貨預警</strong>：銷速 × 在庫 × 補貨提前期</li>
+            <li>• <strong>即期品報廢預警</strong>：鮮食/西點賞味與預計剩餘</li>
+            <li>• <strong>節慶原物料估算</strong>：母親節/中秋備料 vs 歷史預購</li>
+            <li>• <strong>跨店智能調發單</strong>：過剩店 → 缺貨店建議調撥</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">風險數字由精算引擎；Agent 負責下探與行動建議。</p>`
+      },
+      "agent-boss": {
+        title: "老闆 Agent",
+        badge: "戰略 · 多店",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>多分店損益異常</strong>：店別毛利/費用/人效偏離</li>
+            <li>• <strong>新分店選址建議</strong>：商圈代理指標與既有店密度（輔助）</li>
+            <li>• <strong>品項停賣評估</strong>：滯銷 + 低毛利 + 佔產能</li>
+            <li>• <strong>下週核心擴張戰略</strong>：優先門市、品類、行銷預算焦點</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">週報級備忘錄；重大決策一律人審，不自動執行。</p>`
+      },
       marketing: {
         title: "行銷 Agent · 西點時令",
         badge: "活動",
-        html: `
-          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-            <li>• 母親節 / 中秋：T-21 預購喚醒（去年買過禮盒）</li>
-            <li>• 生日：D-7 切片或整模折（二選一防疊）</li>
-            <li>• 即期出清：附近店小範圍，嚴格日上限</li>
-            <li>• 入會禮：綁 LINE 送點或小可頌券</li>
-            <li>• 所有活動可追溯核銷率與折讓率</li>
-          </ul>`
+        html: `<p class="text-sm text-slate-600 dark:text-slate-400">見「行銷 Agent」詳情（agent-mkt）。</p>`
       },
       boss: {
-        title: "老闆視角 · KPI",
-        badge: "治理",
-        html: `
-          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-            <li>• 會員消費占比（全通路 + 分通路）</li>
-            <li>• 30/60 日復購 · 節慶預購件數與客單</li>
-            <li>• 券核銷率 / 折讓率（防亂送）</li>
-            <li>• 跨通路有 member 的訂單占比</li>
-            <li>• 跨店點爭議工單 → 0</li>
-          </ul>`
+        title: "老闆 Agent",
+        badge: "戰略",
+        html: `<p class="text-sm text-slate-600 dark:text-slate-400">見「老闆 Agent」詳情（agent-boss）。</p>`
       },
       governance: {
         title: "G · 治理與稽核",
