@@ -77,9 +77,9 @@
       <!-- 導言 -->
       <div class="text-center mb-8 max-w-3xl mx-auto">
         <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
-          定時採集打通壁壘 → 整理成<strong class="text-slate-900 dark:text-slate-100">標準業務模型 + Entity Graph</strong>（唯一事實）→
-          驅動<strong class="text-slate-900 dark:text-slate-100">點數 · CRM · AI Agent</strong>共讀同一真相。<br />
-          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 點擊節點展開 · 對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1</a> 資料層思維。</span>
+          採集破壁壘 → <strong class="text-slate-900 dark:text-slate-100">標準模型 / Entity Graph</strong> →
+          <strong class="text-slate-900 dark:text-slate-100">程式精算指標</strong> → <strong class="text-slate-900 dark:text-slate-100">Qwen 譯成行動備忘錄</strong> → 點數 · CRM · 人審決策。<br />
+          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 先算後解釋 · 對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1</a> 分析規則層 + 營運大腦。</span>
         </p>
       </div>
 
@@ -264,10 +264,46 @@
             <div class="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">資料表 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
 
-          <!-- C 點數帳本 -->
+          <!-- C 精算 + Qwen 解釋 -->
+          <div onclick="openDetail('calc')" class="group cursor-pointer rounded-2xl border border-fuchsia-200 bg-fuchsia-50/40 hover:bg-fuchsia-50/70 p-5 shadow-sm transition-all dark:border-fuchsia-500/20 dark:bg-fuchsia-950/10 dark:hover:bg-fuchsia-950/20">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-100 text-fuchsia-600 dark:bg-fuchsia-950 dark:text-fuchsia-400 font-black text-xl shrink-0">C</div>
+                <div>
+                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
+                    精算引擎 + LLM 解釋層
+                    <span class="text-xs font-bold bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-300 px-2 py-0.5 rounded-full">先算 · 後解釋</span>
+                    <span class="text-xs font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 px-2 py-0.5 rounded-full">Qwen</span>
+                  </h2>
+                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+                    用<strong class="text-slate-800 dark:text-slate-200">高性能程式</strong>算出精密營運指標，再由 <strong class="text-slate-800 dark:text-slate-200">LLM（Qwen）</strong>把冰冷數字解釋成決策背景、影響與下一個行動建議。
+                  </p>
+                  <div class="mt-3 grid sm:grid-cols-3 gap-2 text-[11px]">
+                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
+                      <p class="font-black text-fuchsia-600 dark:text-fuchsia-400 mb-1">① 精算引擎</p>
+                      <p class="text-slate-500 dark:text-slate-400">LTV · 客單 · 回購 · RFM · 券使用率</p>
+                    </div>
+                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
+                      <p class="font-black text-rose-600 dark:text-rose-400 mb-1">② 風險挖掘</p>
+                      <p class="text-slate-500 dark:text-slate-400">毛利異常 · 斷貨 · 鮮食報廢預估</p>
+                    </div>
+                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
+                      <p class="font-black text-violet-600 dark:text-violet-400 mb-1">③ 管理語言</p>
+                      <p class="text-slate-500 dark:text-slate-400">店長 / 老闆可讀行動備忘錄</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400 flex items-center gap-1 shrink-0">
+                精算細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- D 點數帳本 -->
           <div onclick="openDetail('points')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/30 hover:bg-amber-50/60 p-5 shadow-sm transition-all dark:border-amber-500/20 dark:bg-amber-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0">C</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0">D</div>
               <div>
                 <h2 class="text-lg font-extrabold flex items-center gap-2">
                   會員點數層
@@ -279,10 +315,10 @@
             <div class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">展開帳本 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
 
-          <!-- D CRM -->
+          <!-- E CRM -->
           <div onclick="openDetail('crm')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/30 hover:bg-blue-50/60 p-5 shadow-sm transition-all dark:border-blue-500/20 dark:bg-blue-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0">D</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0">E</div>
               <div>
                 <h2 class="text-lg font-extrabold flex items-center gap-2">
                   CRM 經營層
@@ -294,13 +330,13 @@
             <div class="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">展開 CRM <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
 
-          <!-- E AI + LINE Agents -->
+          <!-- F AI + LINE Agents -->
           <div class="rounded-2xl border border-purple-200 bg-white p-5 shadow-sm dark:border-purple-500/20 dark:bg-slate-900/50">
             <div class="flex items-center gap-3 mb-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">E</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">F</div>
               <div>
                 <h2 class="text-lg font-extrabold">AI 決策 + LINE 觸達</h2>
-                <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">看整池資料 · 非單一系統 · 人審優先</p>
+                <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">吃精算指標 + Qwen 備忘錄 · 人審後執行</p>
               </div>
             </div>
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -339,13 +375,13 @@
             </div>
           </div>
 
-          <!-- F 治理 -->
+          <!-- G 治理 -->
           <div onclick="openDetail('governance')" class="group cursor-pointer rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm transition-all dark:border-slate-700 dark:bg-slate-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-black text-xl shrink-0">F</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-black text-xl shrink-0">G</div>
               <div>
                 <h2 class="text-lg font-extrabold">治理與稽核層</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">同步日誌 · 失敗重試 · AI 建議追蹤 · 調帳審計 · 退訂與頻控</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">同步日誌 · 精算版本 · Qwen 建議追蹤 · 調帳審計 · 退訂與頻控</p>
               </div>
             </div>
             <div class="text-xs font-bold text-slate-500 flex items-center gap-1">展開治理 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
@@ -355,19 +391,19 @@
 
       <!-- 流程箭頭示意 -->
       <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 overflow-x-auto">
-        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端：採集 → 標準模型 / Entity Graph → 唯一事實 → Agent</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端：採集 → SSOT → 程式精算 → Qwen 解釋 → 人審行動</p>
         <div class="flex flex-wrap items-center gap-2 text-xs font-semibold min-w-max">
-          <span class="px-3 py-2 rounded-xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">多系統原始資料</span>
+          <span class="px-3 py-2 rounded-xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">多系統採集</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">標準實體 + Graph</span>
+          <span class="px-3 py-2 rounded-xl bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">Entity Graph</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">SSOT 資料池</span>
+          <span class="px-3 py-2 rounded-xl bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-300">精算引擎</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數</span>
+          <span class="px-3 py-2 rounded-xl bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">Qwen 解釋</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">CRM</span>
+          <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數 / CRM</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">AI / Agents</span>
+          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">決策草稿</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE</span>
         </div>
@@ -452,9 +488,9 @@
         <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-emerald-500"></i> 30 / 60 / 90 流程</h3>
           <ol class="space-y-3 text-sm">
-            <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 標準模型</strong>：POS/日報映射到 Member/Order，點數流水、LINE 到帳</span></li>
-            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>Entity Graph 補齊</strong>：商城/外送/商品/門市關聯、CRM 分群</span></li>
-            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>Agent 共讀 SSOT</strong>：庫存入圖、AI 跨實體推理、節慶人審</span></li>
+            <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 模型 + 基礎精算</strong>：日同步、Member/Order、點數、每日 KPI 報表</span></li>
+            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>Graph + 風險指標</strong>：商城/外送/庫存、RFM/券率、毛利與斷貨預警</span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>Qwen 備忘錄 + 決策</strong>：管理語言輸出、節慶草稿人審、LINE 執行</span></li>
           </ol>
           <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
         </div>
@@ -613,6 +649,47 @@
           </ul>
           <p class="mt-4 text-sm text-slate-600 dark:text-slate-400">指標由此計算：營收、回購、LTV、RFM、券使用率、分通路占比等——與 Entity Graph 同一真相。</p>`
       },
+      calc: {
+        title: "C · 精算引擎 + LLM（Qwen）解釋",
+        badge: "先算 · 後解釋",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+            用<strong>高性能程式</strong>計算精密營運指標，再由 <strong>LLM（Qwen）</strong>把冰冷數字解釋成：
+            <strong>決策背景 · 影響 · 下一個行動建議</strong>。數字不靠模型「估」，解釋不代替公式。
+          </p>
+          <div class="rounded-xl border border-fuchsia-200 dark:border-fuchsia-800 bg-fuchsia-50/50 dark:bg-fuchsia-950/20 p-4 mb-4 text-sm">
+            <p class="font-black text-fuchsia-700 dark:text-fuchsia-300 mb-2">原則</p>
+            <ul class="space-y-1 text-slate-600 dark:text-slate-400">
+              <li>1. <strong>程式先算</strong>：可重現、可對帳、可版本化</li>
+              <li>2. <strong>Qwen 後解釋</strong>：不編造指標，只解讀已算出的結果</li>
+              <li>3. <strong>輸出行動備忘錄</strong>：給店長 / 決策者，不是給工程師看的公式牆</li>
+            </ul>
+          </div>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">① 精算引擎（先算）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• <strong>LTV</strong> 顧客終身價值（分店 / 分群 / 通路）</li>
+            <li>• <strong>客單價 AOV</strong> 與件數、時段結構</li>
+            <li>• <strong>回購率</strong> 30/60/90 日</li>
+            <li>• <strong>RFM</strong> 分群與遷移（升沉）</li>
+            <li>• <strong>券使用率</strong> 核銷 / 過期 / 折讓成本</li>
+            <li>• 可延伸：點數活躍率、跨店消費占比、節慶 vs 日常結構</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">② 風險挖掘</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• <strong>商品毛利異常</strong>：下探品類 / SKU / 門市，預估影響金額</li>
+            <li>• <strong>庫存斷貨預估</strong>：銷速 × 在庫 × 補貨提前期</li>
+            <li>• <strong>鮮食 / 西點報廢預估</strong>：即期、天氣、節慶備料偏差</li>
+            <li>• 異常門檻可配置；觸發告警進治理層</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">③ 管理語言翻譯（Qwen 後解釋）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 輸入：精算結果 JSON + 對比期 + 門市語境</li>
+            <li>• 輸出結構：<em>發生什麼 → 為什麼重要 → 影響誰/多少錢 → 建議 1～3 步 → 需誰核准</em></li>
+            <li>• 範例：「B 店回購率連兩週下滑 8%，主因週末高客單客沉默；建議對 RFM=高價值沉默發切片券（草稿已產，待人審）」</li>
+            <li>• 禁止：改寫公式數字、在沒有精算結果時捏造 KPI</li>
+          </ul>
+          <p class="text-xs text-slate-500">與 ai1「分析規則層 / 營運大腦」同構：程式算指標，模型寫人話與行動。</p>`
+      },
       points: {
         title: "會員點數 · SoR 帳本",
         badge: "引擎 1",
@@ -713,17 +790,17 @@
           </ul>`
       },
       governance: {
-        title: "F · 治理與稽核",
-        badge: "合規 · 同步品質",
+        title: "G · 治理與稽核",
+        badge: "合規 · 同步 · 精算版本",
         html: `
           <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
             <li>• <strong>採集日誌</strong>：來源系統 · 筆數 · 成功/失敗 · 延遲</li>
+            <li>• <strong>精算版本</strong>：公式版本號 · 計算時間 · 輸入資料窗口</li>
+            <li>• <strong>Qwen 輸出</strong>：綁定精算結果 ID，可回放「數字→解釋」</li>
             <li>• 同步失敗重試與人工補傳軌跡</li>
-            <li>• 每次 AI 建議：來源特徵 · 時間 · 理由 · 採納 · 結果</li>
+            <li>• 每次決策建議：來源指標 · 理由 · 採納 · 結果</li>
             <li>• 人工調帳：操作者 + 原因 + 日誌</li>
-            <li>• 行銷 opt-in · 退訂 · 頻控</li>
-            <li>• 租戶隔離 · 數據可匯出 · 所有權歸品牌</li>
-            <li>• 對齊 ai1「可追蹤、可人審、可修正」精神</li>
+            <li>• 行銷 opt-in · 退訂 · 頻控 · 資料所有權歸品牌</li>
           </ul>`
       },
       pain: {
@@ -745,12 +822,11 @@
         badge: "話術",
         html: `
           <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 text-sm text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
-            系統壁壘先拆：<strong>多通路資料採集 → 標準業務模型（Entity Graph）→ 唯一事實</strong>，
-            再做<strong>點數、CRM、AI 決策</strong>。各 Agent 共讀同一份 SSOT。
-            不換 POS/商城/外送。會員核心約 Ocard 七成，Growth 加送 AI 決策基礎。
+            <strong>採集 → 標準模型 → 程式精算（LTV/RFM/券率/風險）→ Qwen 寫成店長備忘錄 → 人審後推播</strong>。
+            數字不靠模型瞎估。不換 POS/商城/外送。會員核心約 Ocard 七成，Growth 加送 AI 決策基礎。
           </div>
           <p class="text-sm font-bold mb-2">Demo 順序</p>
-          <p class="text-sm text-slate-600 dark:text-slate-400">採集 → 標準實體/Graph → 給點 → CRM → AI 草稿 → 核准 → LINE → 核銷</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">採集 → Graph → 精算儀表 → Qwen 備忘錄 → 給點/CRM → 決策草稿 → 核准 → LINE</p>
           <p class="text-sm font-bold mt-4 mb-2">逼定</p>
           <p class="text-sm text-slate-600 dark:text-slate-400">① 技術對接 45 分（P0 POS）　② 下一檔節慶试点</p>`
       },
