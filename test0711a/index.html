@@ -330,49 +330,71 @@
             <div class="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">展開 CRM <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
 
-          <!-- F AI + LINE Agents -->
+          <!-- F Agent 專家團隊 -->
           <div class="rounded-2xl border border-purple-200 bg-white p-5 shadow-sm dark:border-purple-500/20 dark:bg-slate-900/50">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">F</div>
-              <div>
-                <h2 class="text-lg font-extrabold">AI 決策 + LINE 觸達</h2>
-                <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">吃精算指標 + Qwen 備忘錄 · 人審後執行</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">F</div>
+                <div>
+                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
+                    Agent 層 · AI 專家團隊系統
+                    <span class="text-xs font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 px-2 py-0.5 rounded-full">5 Agents Collaborative</span>
+                  </h2>
+                  <p class="text-xs text-purple-600 dark:text-purple-400 font-bold mt-0.5">共讀 SSOT + 精算指標 · Qwen 寫備忘錄 · 人審後執行（含 LINE）</p>
+                </div>
               </div>
+              <button type="button" onclick="openDetail('agents')" class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1 shrink-0">
+                團隊總覽 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <button type="button" onclick="openDetail('ai')" class="text-left rounded-xl border border-purple-100 dark:border-purple-800/40 p-4 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="sparkles" class="w-4 h-4 text-purple-500"></i> 決策 Agent</div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <button type="button" onclick="openDetail('agent-store')" class="text-left rounded-xl border border-emerald-100 dark:border-emerald-800/40 p-4 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="clipboard-list" class="w-4 h-4 text-emerald-500"></i> 店長 Agent</div>
                 <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>沉睡 / 高價值名單</li>
-                  <li>節慶券面額建議</li>
-                  <li>草稿 + 人審</li>
+                  <li>今日營運異常</li>
+                  <li>熱賣 / 低迷商品</li>
+                  <li>智能排班調度</li>
+                  <li>原料備貨指令</li>
                 </ul>
               </button>
-              <button type="button" onclick="openDetail('line')" class="text-left rounded-xl border border-green-100 dark:border-green-800/40 p-4 hover:bg-green-50 dark:hover:bg-green-950/20 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="message-circle" class="w-4 h-4 text-green-500"></i> LINE Agent</div>
-                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>到帳 / 取貨提醒</li>
-                  <li>生日 · 節慶推播</li>
-                  <li>交易 vs 行銷分通道</li>
-                </ul>
-              </button>
-              <button type="button" onclick="openDetail('marketing')" class="text-left rounded-xl border border-rose-100 dark:border-rose-800/40 p-4 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition">
+              <button type="button" onclick="openDetail('agent-mkt')" class="text-left rounded-xl border border-rose-100 dark:border-rose-800/40 p-4 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition">
                 <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="megaphone" class="w-4 h-4 text-rose-500"></i> 行銷 Agent</div>
                 <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>母親節預購喚醒</li>
-                  <li>即期出清小範圍</li>
-                  <li>折讓 cap 護欄</li>
+                  <li>流失會員挽回</li>
+                  <li>高價值會員促銷</li>
+                  <li>LINE 推播文案</li>
+                  <li>優惠券效益精算</li>
                 </ul>
               </button>
-              <button type="button" onclick="openDetail('boss')" class="text-left rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="briefcase" class="w-4 h-4 text-slate-500"></i> 老闆視角</div>
+              <button type="button" onclick="openDetail('agent-product')" class="text-left rounded-xl border border-amber-100 dark:border-amber-800/40 p-4 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="package" class="w-4 h-4 text-amber-500"></i> 商品 Agent</div>
                 <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>分通路 KPI</li>
-                  <li>折讓率 · 核銷率</li>
-                  <li>跨店爭議 → 0</li>
+                  <li>新上市產品追蹤</li>
+                  <li>滯銷品優化調整</li>
+                  <li>高毛利套餐組合</li>
+                  <li>關聯銷售挖掘</li>
+                </ul>
+              </button>
+              <button type="button" onclick="openDetail('agent-inv')" class="text-left rounded-xl border border-cyan-100 dark:border-cyan-800/40 p-4 hover:bg-cyan-50 dark:hover:bg-cyan-950/20 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="warehouse" class="w-4 h-4 text-cyan-500"></i> 庫存 Agent</div>
+                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <li>材料斷貨預警</li>
+                  <li>即期品報廢預警</li>
+                  <li>節慶原物料估算</li>
+                  <li>跨店智能調發單</li>
+                </ul>
+              </button>
+              <button type="button" onclick="openDetail('agent-boss')" class="text-left rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition sm:col-span-2 lg:col-span-1">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="briefcase" class="w-4 h-4 text-slate-500"></i> 老闆 Agent</div>
+                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <li>多分店損益異常</li>
+                  <li>新分店選址建議</li>
+                  <li>品項停賣評估</li>
+                  <li>下週核心擴張戰略</li>
                 </ul>
               </button>
             </div>
+            <p class="mt-3 text-[11px] text-slate-500 dark:text-slate-400">協作：精算引擎出數字 → 各 Agent 領任務 → Qwen 寫店長/老闆備忘錄 → 人審 → LINE / 調撥 / 活動草稿落地</p>
           </div>
 
           <!-- G 治理 -->
@@ -403,9 +425,11 @@
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數 / CRM</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">決策草稿</span>
+          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">5 Agents</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE</span>
+          <span class="px-3 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">人審</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE / 調撥</span>
         </div>
       </div>
 
@@ -490,7 +514,7 @@
           <ol class="space-y-3 text-sm">
             <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 模型 + 基礎精算</strong>：日同步、Member/Order、點數、每日 KPI 報表</span></li>
             <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>Graph + 風險指標</strong>：商城/外送/庫存、RFM/券率、毛利與斷貨預警</span></li>
-            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>Qwen 備忘錄 + 決策</strong>：管理語言輸出、節慶草稿人審、LINE 執行</span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>五 Agent 上線</strong>：店長/行銷/商品/庫存/老闆共讀 SSOT、Qwen 備忘錄、人審執行</span></li>
           </ol>
           <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
         </div>
