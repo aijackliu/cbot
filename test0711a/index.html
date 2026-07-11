@@ -77,9 +77,9 @@
       <!-- 導言 -->
       <div class="text-center mb-8 max-w-3xl mx-auto">
         <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
-          採集破壁壘 → <strong class="text-slate-900 dark:text-slate-100">標準模型 / Entity Graph</strong> →
-          <strong class="text-slate-900 dark:text-slate-100">程式精算指標</strong> → <strong class="text-slate-900 dark:text-slate-100">Qwen 譯成行動備忘錄</strong> → 點數 · CRM · 人審決策。<br />
-          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 先算後解釋 · 對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1</a> 分析規則層 + 營運大腦。</span>
+          採集 → 模型 → 精算 → Qwen → <strong class="text-slate-900 dark:text-slate-100">五 Agent</strong> →
+          <strong class="text-slate-900 dark:text-slate-100">透明稽核 + 人工反饋（RLHF）+ 加盟規則複製</strong>。<br />
+          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 高透明 · 合規 · 可進化 · 對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1</a> 治理層。</span>
         </p>
       </div>
 
@@ -397,16 +397,42 @@
             <p class="mt-3 text-[11px] text-slate-500 dark:text-slate-400">協作：精算引擎出數字 → 各 Agent 領任務 → Qwen 寫店長/老闆備忘錄 → 人審 → LINE / 調撥 / 活動草稿落地</p>
           </div>
 
-          <!-- G 治理 -->
-          <div onclick="openDetail('governance')" class="group cursor-pointer rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm transition-all dark:border-slate-700 dark:bg-slate-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-black text-xl shrink-0">G</div>
-              <div>
-                <h2 class="text-lg font-extrabold">治理與稽核層</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">同步日誌 · 精算版本 · Qwen 建議追蹤 · 調帳審計 · 退訂與頻控</p>
+          <!-- G 治理 · 透明 · RLHF · 加盟複製 -->
+          <div onclick="openDetail('governance')" class="group cursor-pointer rounded-2xl border border-teal-200 bg-teal-50/40 hover:bg-teal-50/70 p-5 shadow-sm transition-all dark:border-teal-500/20 dark:bg-teal-950/10 dark:hover:bg-teal-950/20">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-400 font-black text-xl shrink-0">G</div>
+                <div>
+                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
+                    治理 · 透明稽核 · 人工反饋進化
+                    <span class="text-xs font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 px-2 py-0.5 rounded-full">可信 AI</span>
+                    <span class="text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 px-2 py-0.5 rounded-full">RLHF</span>
+                    <span class="text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 px-2 py-0.5 rounded-full">加盟複製</span>
+                  </h2>
+                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+                    所有 AI 決策與建議<strong class="text-slate-800 dark:text-slate-200">高透明度</strong>：在保障業務合規與品牌定位的同時，
+                    藉由<strong class="text-slate-800 dark:text-slate-200">人工反饋持續進化</strong>大腦推理權重。
+                  </p>
+                  <div class="mt-3 grid sm:grid-cols-3 gap-2 text-[11px]">
+                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
+                      <p class="font-black text-teal-600 dark:text-teal-400 mb-1">① 可信稽核</p>
+                      <p class="text-slate-500 dark:text-slate-400">追溯每次 AI 行動的資料來源與推理邏輯</p>
+                    </div>
+                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
+                      <p class="font-black text-violet-600 dark:text-violet-400 mb-1">② 反饋更新</p>
+                      <p class="text-slate-500 dark:text-slate-400">採納/駁回理由 → RLHF 監督訊號</p>
+                    </div>
+                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
+                      <p class="font-black text-amber-600 dark:text-amber-400 mb-1">③ 組織複製</p>
+                      <p class="text-slate-500 dark:text-slate-400">優異 Agent 規則一鍵派發加盟店</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-xs font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1 shrink-0">
+                治理細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
               </div>
             </div>
-            <div class="text-xs font-bold text-slate-500 flex items-center gap-1">展開治理 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
         </section>
       </div>
@@ -430,6 +456,8 @@
           <span class="px-3 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">人審</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE / 調撥</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300">稽核 · RLHF · 加盟複製</span>
         </div>
       </div>
 
@@ -514,7 +542,7 @@
           <ol class="space-y-3 text-sm">
             <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 模型 + 基礎精算</strong>：日同步、Member/Order、點數、每日 KPI 報表</span></li>
             <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>Graph + 風險指標</strong>：商城/外送/庫存、RFM/券率、毛利與斷貨預警</span></li>
-            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>五 Agent 上線</strong>：店長/行銷/商品/庫存/老闆共讀 SSOT、Qwen 備忘錄、人審執行</span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>五 Agent + 治理閉環</strong>：人審反饋入 RLHF、優異規則派發加盟、全鏈路可稽核</span></li>
           </ol>
           <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
         </div>
@@ -873,18 +901,43 @@
         html: `<p class="text-sm text-slate-600 dark:text-slate-400">見「老闆 Agent」詳情（agent-boss）。</p>`
       },
       governance: {
-        title: "G · 治理與稽核",
-        badge: "合規 · 同步 · 精算版本",
+        title: "G · 治理 · 透明稽核 · 反饋進化 · 加盟複製",
+        badge: "可信 AI · RLHF · 合規",
         html: `
-          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-            <li>• <strong>採集日誌</strong>：來源系統 · 筆數 · 成功/失敗 · 延遲</li>
-            <li>• <strong>精算版本</strong>：公式版本號 · 計算時間 · 輸入資料窗口</li>
-            <li>• <strong>Qwen 輸出</strong>：綁定精算結果 ID，可回放「數字→解釋」</li>
-            <li>• 同步失敗重試與人工補傳軌跡</li>
-            <li>• 每次決策建議：來源指標 · 理由 · 採納 · 結果</li>
-            <li>• 人工調帳：操作者 + 原因 + 日誌</li>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+            讓所有 AI 決策與建議都具備<strong>高透明度</strong>：在保障業務合規與品牌定位的同時，
+            藉由<strong>人工反饋持續進化</strong>大腦神經權重（以 RLHF / 規則權重更新為監督訊號）。
+          </p>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">① 可信稽核（Traceability）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 完整追溯每一次 AI 行動：<strong>資料來源</strong>（表/欄位/時間窗/來源系統）</li>
+            <li>• <strong>精算結果 ID</strong> + 公式版本（數字可重算）</li>
+            <li>• <strong>推理邏輯</strong>：Agent 角色 · 觸發規則 · Qwen 提示版本 · 輸出摘要</li>
+            <li>• 可回放：誰在何時建議什麼、依據哪些實體（Entity Graph 邊）</li>
+            <li>• 合規欄位：是否觸及個資、行銷 opt-in、折讓 cap、品牌禁詞/禁促</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">② 反饋更新（RLHF 監督訊號）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 記錄人工<strong>採納 / 修改後採納 / 駁回</strong></li>
+            <li>• 必填或選填<strong>駁回理由</strong>（例：毛利過低、品牌調性不符、庫存不足、時段不宜）</li>
+            <li>• 採納後追蹤<strong>執行結果</strong>（核銷、回購、報廢是否下降）作為成效標籤</li>
+            <li>• 匯入訓練/規則優化管線：調整 Agent 提示、門檻、優先權重（非黑箱改點數）</li>
+            <li>• 人仍是閘門：反饋優化建議，不自動放寬合規護欄</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">③ 組織複製（加盟 / 多店）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 將經人工驗證、成效優異的 <strong>Agent 營運規則</strong>（閾值、劇本、券 cap、備料係數）打包</li>
+            <li>• <strong>一鍵派發複製</strong>至其他加盟店 / 直營店群</li>
+            <li>• 支援店群覆寫：區域物價、禁售 SKU、品牌定位差異</li>
+            <li>• 派發紀錄可稽核：誰核准、派到哪、版本號、回滾</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">④ 基礎設施稽核（仍保留）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 採集日誌 · 同步失敗重試 · 人工補傳</li>
+            <li>• 調帳：操作者 + 原因 + 日誌</li>
             <li>• 行銷 opt-in · 退訂 · 頻控 · 資料所有權歸品牌</li>
-          </ul>`
+          </ul>
+          <p class="mt-4 text-xs text-slate-500">對齊 ai1「E 治理與稽核 / RLHF」：可追蹤、可人審、可自我強化。</p>`
       },
       pain: {
         title: "銷售時問的 6 題",
