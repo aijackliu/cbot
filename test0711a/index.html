@@ -1,609 +1,412 @@
 <!DOCTYPE html>
-<html lang="zh-TW" class="h-full">
+<html lang="zh-TW" class="h-full scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>西點會員中台 · 點數 + CRM + AI 決策</title>
-  <meta name="description" content="蛋糕西點業：會員點數、CRM、AI 決策三引擎；POS · 線上商城 · 外送同一帳。約 Ocard 7 成 + AI 基礎加送。" />
+  <title>西點營運中台 · 採集 · 模型 · 精算 · Agent · 治理</title>
+  <meta name="description" content="蛋糕西點：跨系統採集、標準模型、精算+Qwen、五 Agent、透明治理。會員點數+CRM+AI 決策。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: "class",
+      darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: { sans: ['Inter', 'Noto Sans TC', 'system-ui', 'sans-serif'] },
           colors: {
-            brand: {
-              blue: "#3b82f6",
-              green: "#10b981",
-              amber: "#f59e0b",
-              purple: "#8b5cf6",
-              rose: "#f43f5e",
-              slate: "#0f172a",
-            },
+            ink: { 50:'#faf8f5', 100:'#f3efe8', 200:'#e5ddd0', 800:'#3d3428', 900:'#1c1814', 950:'#0f0d0b' },
+            cream: { DEFAULT:'#f7f1e8', soft:'#fffaf3' },
+            caramel: { DEFAULT:'#c47a3a', dark:'#9a5c28', light:'#e8a86a' },
+            sage: { DEFAULT:'#5b8a72', soft:'#e8f2ec' },
           },
-        },
-      },
-    };
+          boxShadow: {
+            glow: '0 0 0 1px rgba(196,122,58,0.12), 0 20px 50px -20px rgba(28,24,20,0.35)',
+            card: '0 1px 0 rgba(255,255,255,0.6) inset, 0 12px 40px -16px rgba(28,24,20,0.18)',
+            'card-dark': '0 1px 0 rgba(255,255,255,0.04) inset, 0 16px 48px -16px rgba(0,0,0,0.55)',
+          },
+          keyframes: {
+            fadeUp: { '0%': { opacity:'0', transform:'translateY(12px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+            pulseSoft: { '0%,100%': { opacity:'1' }, '50%': { opacity:'0.55' } },
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.5s ease-out both',
+            'pulse-soft': 'pulseSoft 2.5s ease-in-out infinite',
+          },
+        }
+      }
+    }
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    .dark ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.1); border-radius: 4px; }
-    @keyframes dash { to { stroke-dashoffset: -40; } }
-    .flow-line { stroke-dasharray: 8, 8; animation: dash 2s linear infinite; }
-    .modal-open { overflow: hidden; }
+    body { font-feature-settings: "ss01" on, "cv11" on; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(61,52,40,0.2); border-radius: 8px; }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(247,241,232,0.15); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    .mesh {
+      background-image:
+        radial-gradient(ellipse 80% 60% at 0% -10%, rgba(196,122,58,0.18), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 0%, rgba(91,138,114,0.12), transparent 50%),
+        radial-gradient(ellipse 50% 40% at 50% 100%, rgba(232,168,106,0.1), transparent 45%);
+    }
+    .dark .mesh {
+      background-image:
+        radial-gradient(ellipse 80% 60% at 0% -10%, rgba(196,122,58,0.12), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 0%, rgba(91,138,114,0.08), transparent 50%);
+    }
+    .glass {
+      background: rgba(255,250,243,0.78);
+      backdrop-filter: blur(16px) saturate(1.2);
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    }
+    .dark .glass { background: rgba(28,24,20,0.75); }
+    .bento-card { transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; }
+    .bento-card:hover {
+      border-color: rgba(196,122,58,0.45);
+      box-shadow: 0 16px 40px -20px rgba(196,122,58,0.25);
+    }
+    .layer-num { font-variant-numeric: tabular-nums; }
   </style>
 </head>
-<body class="h-full flex flex-col font-sans transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+<body class="h-full flex flex-col font-sans bg-cream-soft text-ink-900 dark:bg-ink-950 dark:text-cream mesh transition-colors duration-300">
 
-  <!-- Header — 對齊 ai1 風格 -->
-  <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0 dark:bg-slate-900 dark:border-slate-800">
-    <div class="flex items-center space-x-3 w-full sm:w-auto">
-      <div class="bg-amber-500 p-2.5 rounded-2xl text-white shadow-md shadow-amber-500/20">
-        <i data-lucide="cake" class="w-6 h-6"></i>
-      </div>
-      <div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Bakery Ops Data + Loyalty</span>
-          <span class="text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-500/20 font-bold">每日資料池</span>
-          <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">AI 加送</span>
+  <header class="sticky top-0 z-40 px-3 sm:px-5 pt-3 sm:pt-4 pb-2">
+    <div class="mx-auto max-w-6xl glass rounded-2xl border border-ink-200/80 dark:border-white/10 shadow-card dark:shadow-card-dark px-3 sm:px-5 py-3 flex flex-wrap items-center gap-3 justify-between">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-caramel to-caramel-dark text-white flex items-center justify-center shadow-md shrink-0">
+          <i data-lucide="cake-slice" class="w-5 h-5"></i>
         </div>
-        <h1 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">採集破壁壘 · 點數 + CRM + AI 決策</h1>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-caramel dark:text-caramel-light">Bakery Ops OS</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sage-soft text-sage dark:bg-sage/20 dark:text-sage">SSOT</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-caramel/10 text-caramel dark:bg-caramel/20">5 Agents</span>
+          </div>
+          <p class="text-sm font-extrabold tracking-tight truncate">西點營運中台 · 採集到治理一體</p>
+        </div>
       </div>
-    </div>
-    <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-      <div class="hidden lg:flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400">
-        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>精算 Online</span>
-        <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
-        <span>解釋：Qwen</span>
+      <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-ink-800/70 dark:text-cream/60" aria-label="主選單">
+        <a href="#architecture" class="px-2.5 py-1.5 rounded-lg hover:bg-ink-100 dark:hover:bg-white/5 hover:text-ink-900 dark:hover:text-cream transition-colors cursor-pointer">架構</a>
+        <a href="#agents" class="px-2.5 py-1.5 rounded-lg hover:bg-ink-100 dark:hover:bg-white/5 transition-colors cursor-pointer">Agents</a>
+        <a href="#pricing" class="px-2.5 py-1.5 rounded-lg hover:bg-ink-100 dark:hover:bg-white/5 transition-colors cursor-pointer">報價</a>
+        <a href="#playbook" class="px-2.5 py-1.5 rounded-lg hover:bg-ink-100 dark:hover:bg-white/5 transition-colors cursor-pointer">銷售</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href="https://www.cbots.ai/ai1.html" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10 hover:border-caramel/40 transition-colors cursor-pointer text-ink-800/80 dark:text-cream/70">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i> ai1
+        </a>
+        <button type="button" onclick="toggleTheme()" class="p-2.5 rounded-xl border border-ink-200 dark:border-white/10 hover:bg-ink-100 dark:hover:bg-white/5 transition-colors cursor-pointer" aria-label="切換主題">
+          <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+        <button type="button" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})" class="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-ink-900 text-cream dark:bg-caramel dark:text-ink-950 hover:opacity-90 transition-opacity cursor-pointer shadow-md">
+          看報價
+        </button>
       </div>
-      <a href="https://www.cbots.ai/ai1.html" target="_blank" rel="noopener" class="text-xs flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> 參考 ai1
-      </a>
-      <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition" title="切換色彩模式">
-        <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
-      </button>
-      <button type="button" onclick="document.getElementById('sec-pricing').scrollIntoView({behavior:'smooth'})" class="text-xs font-bold flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-900 px-4 py-2 rounded-xl transition shadow-sm">
-        <i data-lucide="tag" class="w-3.5 h-3.5"></i> 報價
-      </button>
     </div>
   </header>
 
-  <main class="flex-1 overflow-y-auto p-4 md:p-8">
-    <div class="mx-auto max-w-7xl">
+  <main class="flex-1 px-3 sm:px-5 pb-16">
+    <div class="mx-auto max-w-6xl">
 
-      <!-- 導言 -->
-      <div class="text-center mb-8 max-w-3xl mx-auto">
-        <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
-          採集 → 模型 → 精算 → Qwen → <strong class="text-slate-900 dark:text-slate-100">五 Agent</strong> →
-          <strong class="text-slate-900 dark:text-slate-100">透明稽核 + 人工反饋（RLHF）+ 加盟規則複製</strong>。<br />
-          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 高透明 · 合規 · 可進化 · 對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1</a> 治理層。</span>
-        </p>
-      </div>
-
-      <div class="grid gap-6 lg:grid-cols-12 items-start">
-
-        <!-- 左側：三引擎 -->
-        <aside class="lg:col-span-3 space-y-4">
-          <div onclick="openDetail('points')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-amber-500/20 dark:bg-amber-950/10">
-            <div class="mb-3 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="bg-amber-100 dark:bg-amber-950 p-2 rounded-xl text-amber-600 dark:text-amber-400">
-                  <i data-lucide="coins" class="w-6 h-6"></i>
-                </div>
-                <div>
-                  <h3 class="font-extrabold text-slate-900 dark:text-slate-100">會員點數</h3>
-                  <p class="text-xs text-amber-600 dark:text-amber-400 font-bold">引擎 1 · SoR 帳本</p>
-                </div>
-              </div>
-              <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-            </div>
-            <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
-              <li>• 給點 / 兌獎 / 沖正 / 過期</li>
-              <li>• 多店 · 多通路同一流水</li>
-              <li>• 禮券與點分帳</li>
-              <li>• 冪等 · 可審計 · 可匯出</li>
-            </ul>
-            <div class="mt-4 pt-3 border-t border-amber-200/50 dark:border-amber-800/30 flex justify-between text-[11px] text-amber-600 dark:text-amber-400 font-bold">
-              <span>查看帳本細節</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
-            </div>
-          </div>
-
-          <div onclick="openDetail('crm')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-blue-500/20 dark:bg-blue-950/10">
-            <div class="mb-3 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="bg-blue-100 dark:bg-blue-950 p-2 rounded-xl text-blue-600 dark:text-blue-400">
-                  <i data-lucide="users" class="w-6 h-6"></i>
-                </div>
-                <div>
-                  <h3 class="font-extrabold text-slate-900 dark:text-slate-100">CRM</h3>
-                  <p class="text-xs text-blue-600 dark:text-blue-400 font-bold">引擎 2 · 認得客人</p>
-                </div>
-              </div>
-              <span class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
-            </div>
-            <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
-              <li>• 會員 360 · 等級 · 標籤</li>
-              <li>• RFM 分群 · 旅程</li>
-              <li>• 通路消費歷程</li>
-              <li>• LINE 綁定 · opt-in</li>
-            </ul>
-            <div class="mt-4 pt-3 border-t border-blue-200/50 dark:border-blue-800/30 flex justify-between text-[11px] text-blue-600 dark:text-blue-400 font-bold">
-              <span>查看 CRM 細節</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
-            </div>
-          </div>
-
-          <div onclick="openDetail('ai')" class="group cursor-pointer rounded-2xl border border-purple-200 bg-purple-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-purple-500/20 dark:bg-purple-950/10">
-            <div class="mb-3 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="bg-purple-100 dark:bg-purple-950 p-2 rounded-xl text-purple-600 dark:text-purple-400">
-                  <i data-lucide="brain" class="w-6 h-6"></i>
-                </div>
-                <div>
-                  <h3 class="font-extrabold text-slate-900 dark:text-slate-100">AI 決策</h3>
-                  <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">引擎 3 · 加送基礎版</p>
-                </div>
-              </div>
-              <span class="h-2 w-2 rounded-full bg-purple-500 animate-pulse"></span>
-            </div>
-            <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
-              <li>• 給誰 / 什麼券 / 何時</li>
-              <li>• 可解釋原因說明</li>
-              <li>• 預設草稿 + 人審</li>
-              <li>• 不直接改點餘額</li>
-            </ul>
-            <div class="mt-4 pt-3 border-t border-purple-200/50 dark:border-purple-800/30 flex justify-between text-[11px] text-purple-600 dark:text-purple-400 font-bold">
-              <span>查看 AI 細節</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
-            </div>
-          </div>
-        </aside>
-
-        <!-- 右側：分層 -->
-        <section class="lg:col-span-9 space-y-4">
-
-          <!-- A 資料採集 -->
-          <div onclick="openDetail('ingest')" class="group cursor-pointer rounded-2xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-50/70 p-5 shadow-sm transition-all dark:border-cyan-500/20 dark:bg-cyan-950/10 dark:hover:bg-cyan-950/20">
-            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div class="flex items-start gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-950 dark:text-cyan-400 font-black text-xl shrink-0">A</div>
-                <div>
-                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
-                    資料採集與接入層
-                    <span class="text-xs font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 px-2 py-0.5 rounded-full">每日同步</span>
-                    <span class="text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 px-2 py-0.5 rounded-full">消除系統壁壘</span>
-                  </h2>
-                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-                    品牌分散在不同系統的資料<strong class="text-slate-800 dark:text-slate-200">定時採集接回來</strong>，形成<strong class="text-slate-800 dark:text-slate-200">每日可分析的營運資料池</strong>。
-                    讓 AI 不只看單一系統，而是理解整體營運。
-                  </p>
-                  <div class="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">POS 交易</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">CRM 會員</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">點數</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">電商</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">外送</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">庫存</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">門市日報</span>
-                  </div>
-                  <p class="mt-2 text-xs text-cyan-700 dark:text-cyan-400 font-medium">接入方式：API · CSV · Excel · 資料庫直連 · 人工上傳</p>
-                </div>
-              </div>
-              <div class="text-xs font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1 shrink-0">
-                採集細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- A2 通路 -->
-          <div onclick="openDetail('channels')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50/60 p-5 shadow-sm transition-all dark:border-emerald-500/20 dark:bg-emerald-950/5 dark:hover:bg-emerald-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 font-black text-sm shrink-0">A2</div>
-              <div>
-                <h2 class="text-lg font-extrabold flex items-center gap-2">
-                  通路與訂單場景
-                  <span class="text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded-full">POS · 商城 · 外送</span>
-                </h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">採集進來後如何給點 / 用券；不取代既有 POS、開店、外送平台</p>
-              </div>
-            </div>
-            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-              通路策略 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-            </div>
-          </div>
-
-          <!-- B 標準業務模型 + Entity Graph -->
-          <div onclick="openDetail('model')" class="group cursor-pointer rounded-2xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-50/70 p-5 shadow-sm transition-all dark:border-indigo-500/20 dark:bg-indigo-950/10 dark:hover:bg-indigo-950/20">
-            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div class="flex items-start gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 font-black text-xl shrink-0">B</div>
-                <div>
-                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
-                    標準業務資料模型
-                    <span class="text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 px-2 py-0.5 rounded-full">Single Source of Truth</span>
-                    <span class="text-xs font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 px-2 py-0.5 rounded-full">Entity Graph</span>
-                  </h2>
-                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-                    將原始多通路資料整理成<strong class="text-slate-800 dark:text-slate-200">標準、AI 能理解、可即時查詢與追蹤關聯</strong>的業務資料模型。
-                    各異欄位統一成核心實體表；建立會員、商品、門市、交易、活動與庫存之間的關聯。
-                  </p>
-                  <div class="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">會員 Member</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">商品 Product</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">門市 Store</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">交易 Order</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">活動 Campaign</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">庫存 Inventory</span>
-                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">點數 Ledger</span>
-                  </div>
-                  <p class="mt-2 text-xs text-indigo-700 dark:text-indigo-400 font-medium">後續各 Agent 基於同一份「唯一事實」推理，而非各讀各的孤島表</p>
-                </div>
-              </div>
-              <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 shrink-0">
-                模型細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- B2 資料池落地 -->
-          <div onclick="openDetail('pool')" class="group cursor-pointer rounded-2xl border border-sky-200 bg-sky-50/30 hover:bg-sky-50/60 p-5 shadow-sm transition-all dark:border-sky-500/20 dark:bg-sky-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400 font-black text-sm shrink-0">B2</div>
-              <div>
-                <h2 class="text-lg font-extrabold flex items-center gap-2">
-                  每日營運資料池（落地）
-                  <span class="text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 px-2 py-0.5 rounded-full">可查詢</span>
-                </h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">標準實體表實例化存放 · 即時查詢 · 關聯追蹤 · 供 Agent 讀取</p>
-              </div>
-            </div>
-            <div class="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">資料表 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
-          </div>
-
-          <!-- C 精算 + Qwen 解釋 -->
-          <div onclick="openDetail('calc')" class="group cursor-pointer rounded-2xl border border-fuchsia-200 bg-fuchsia-50/40 hover:bg-fuchsia-50/70 p-5 shadow-sm transition-all dark:border-fuchsia-500/20 dark:bg-fuchsia-950/10 dark:hover:bg-fuchsia-950/20">
-            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div class="flex items-start gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-100 text-fuchsia-600 dark:bg-fuchsia-950 dark:text-fuchsia-400 font-black text-xl shrink-0">C</div>
-                <div>
-                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
-                    精算引擎 + LLM 解釋層
-                    <span class="text-xs font-bold bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-300 px-2 py-0.5 rounded-full">先算 · 後解釋</span>
-                    <span class="text-xs font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 px-2 py-0.5 rounded-full">Qwen</span>
-                  </h2>
-                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-                    用<strong class="text-slate-800 dark:text-slate-200">高性能程式</strong>算出精密營運指標，再由 <strong class="text-slate-800 dark:text-slate-200">LLM（Qwen）</strong>把冰冷數字解釋成決策背景、影響與下一個行動建議。
-                  </p>
-                  <div class="mt-3 grid sm:grid-cols-3 gap-2 text-[11px]">
-                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
-                      <p class="font-black text-fuchsia-600 dark:text-fuchsia-400 mb-1">① 精算引擎</p>
-                      <p class="text-slate-500 dark:text-slate-400">LTV · 客單 · 回購 · RFM · 券使用率</p>
-                    </div>
-                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
-                      <p class="font-black text-rose-600 dark:text-rose-400 mb-1">② 風險挖掘</p>
-                      <p class="text-slate-500 dark:text-slate-400">毛利異常 · 斷貨 · 鮮食報廢預估</p>
-                    </div>
-                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
-                      <p class="font-black text-violet-600 dark:text-violet-400 mb-1">③ 管理語言</p>
-                      <p class="text-slate-500 dark:text-slate-400">店長 / 老闆可讀行動備忘錄</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400 flex items-center gap-1 shrink-0">
-                精算細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- D 點數帳本 -->
-          <div onclick="openDetail('points')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/30 hover:bg-amber-50/60 p-5 shadow-sm transition-all dark:border-amber-500/20 dark:bg-amber-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0">D</div>
-              <div>
-                <h2 class="text-lg font-extrabold flex items-center gap-2">
-                  會員點數層
-                  <span class="text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 px-2 py-0.5 rounded-full">Ledger SoR</span>
-                </h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">給點 · 兌獎 · 禮券 · 倍率 · 沖正 · 過期 · 多店對帳</p>
-              </div>
-            </div>
-            <div class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">展開帳本 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
-          </div>
-
-          <!-- E CRM -->
-          <div onclick="openDetail('crm')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/30 hover:bg-blue-50/60 p-5 shadow-sm transition-all dark:border-blue-500/20 dark:bg-blue-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0">E</div>
-              <div>
-                <h2 class="text-lg font-extrabold flex items-center gap-2">
-                  CRM 經營層
-                  <span class="text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 px-2 py-0.5 rounded-full">360°</span>
-                </h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">檔案 · RFM · 旅程 · 標籤 · 券匣 · 客服查詢</p>
-              </div>
-            </div>
-            <div class="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">展開 CRM <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
-          </div>
-
-          <!-- F Agent 專家團隊 -->
-          <div class="rounded-2xl border border-purple-200 bg-white p-5 shadow-sm dark:border-purple-500/20 dark:bg-slate-900/50">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <div class="flex items-center gap-3">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">F</div>
-                <div>
-                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
-                    Agent 層 · AI 專家團隊系統
-                    <span class="text-xs font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 px-2 py-0.5 rounded-full">5 Agents Collaborative</span>
-                  </h2>
-                  <p class="text-xs text-purple-600 dark:text-purple-400 font-bold mt-0.5">共讀 SSOT + 精算指標 · Qwen 寫備忘錄 · 人審後執行（含 LINE）</p>
-                </div>
-              </div>
-              <button type="button" onclick="openDetail('agents')" class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1 shrink-0">
-                團隊總覽 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      <section class="pt-8 sm:pt-12 pb-10 sm:pb-14 animate-fade-up">
+        <div class="grid lg:grid-cols-12 gap-8 lg:gap-10 items-end">
+          <div class="lg:col-span-7">
+            <p class="inline-flex items-center gap-2 text-xs font-bold text-sage mb-4">
+              <span class="relative flex h-2 w-2"><span class="animate-pulse-soft absolute inline-flex h-full w-full rounded-full bg-sage opacity-60"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-sage"></span></span>
+              先算後解釋 · 人審閘門 · 加盟可複製
+            </p>
+            <h1 class="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight leading-[1.15] text-ink-900 dark:text-cream">
+              把分散系統收成<br class="hidden sm:block" />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-caramel via-caramel-dark to-sage">一份營運真相</span>
+            </h1>
+            <p class="mt-5 text-base sm:text-lg text-ink-800/70 dark:text-cream/65 max-w-xl leading-relaxed">
+              定時採集破壁壘 → 標準模型與 Entity Graph → 程式精算指標 → Qwen 寫成行動備忘錄 → 五 Agent 協作 → 透明稽核與 RLHF。
+            </p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <button type="button" onclick="document.getElementById('architecture').scrollIntoView({behavior:'smooth'})" class="cursor-pointer inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-ink-900 text-cream dark:bg-cream dark:text-ink-900 font-bold text-sm hover:opacity-90 transition-opacity">
+                探索架構 <i data-lucide="arrow-down" class="w-4 h-4"></i>
+              </button>
+              <button type="button" onclick="openDetail('agents')" class="cursor-pointer inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-ink-200 dark:border-white/15 font-bold text-sm hover:border-caramel/50 transition-colors">
+                五 Agent 總覽
               </button>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              <button type="button" onclick="openDetail('agent-store')" class="text-left rounded-xl border border-emerald-100 dark:border-emerald-800/40 p-4 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="clipboard-list" class="w-4 h-4 text-emerald-500"></i> 店長 Agent</div>
-                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>今日營運異常</li>
-                  <li>熱賣 / 低迷商品</li>
-                  <li>智能排班調度</li>
-                  <li>原料備貨指令</li>
-                </ul>
-              </button>
-              <button type="button" onclick="openDetail('agent-mkt')" class="text-left rounded-xl border border-rose-100 dark:border-rose-800/40 p-4 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="megaphone" class="w-4 h-4 text-rose-500"></i> 行銷 Agent</div>
-                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>流失會員挽回</li>
-                  <li>高價值會員促銷</li>
-                  <li>LINE 推播文案</li>
-                  <li>優惠券效益精算</li>
-                </ul>
-              </button>
-              <button type="button" onclick="openDetail('agent-product')" class="text-left rounded-xl border border-amber-100 dark:border-amber-800/40 p-4 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="package" class="w-4 h-4 text-amber-500"></i> 商品 Agent</div>
-                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>新上市產品追蹤</li>
-                  <li>滯銷品優化調整</li>
-                  <li>高毛利套餐組合</li>
-                  <li>關聯銷售挖掘</li>
-                </ul>
-              </button>
-              <button type="button" onclick="openDetail('agent-inv')" class="text-left rounded-xl border border-cyan-100 dark:border-cyan-800/40 p-4 hover:bg-cyan-50 dark:hover:bg-cyan-950/20 transition">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="warehouse" class="w-4 h-4 text-cyan-500"></i> 庫存 Agent</div>
-                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>材料斷貨預警</li>
-                  <li>即期品報廢預警</li>
-                  <li>節慶原物料估算</li>
-                  <li>跨店智能調發單</li>
-                </ul>
-              </button>
-              <button type="button" onclick="openDetail('agent-boss')" class="text-left rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition sm:col-span-2 lg:col-span-1">
-                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="briefcase" class="w-4 h-4 text-slate-500"></i> 老闆 Agent</div>
-                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                  <li>多分店損益異常</li>
-                  <li>新分店選址建議</li>
-                  <li>品項停賣評估</li>
-                  <li>下週核心擴張戰略</li>
-                </ul>
-              </button>
-            </div>
-            <p class="mt-3 text-[11px] text-slate-500 dark:text-slate-400">協作：精算引擎出數字 → 各 Agent 領任務 → Qwen 寫店長/老闆備忘錄 → 人審 → LINE / 調撥 / 活動草稿落地</p>
           </div>
-
-          <!-- G 治理 · 透明 · RLHF · 加盟複製 -->
-          <div onclick="openDetail('governance')" class="group cursor-pointer rounded-2xl border border-teal-200 bg-teal-50/40 hover:bg-teal-50/70 p-5 shadow-sm transition-all dark:border-teal-500/20 dark:bg-teal-950/10 dark:hover:bg-teal-950/20">
-            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div class="flex items-start gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-400 font-black text-xl shrink-0">G</div>
-                <div>
-                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
-                    治理 · 透明稽核 · 人工反饋進化
-                    <span class="text-xs font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 px-2 py-0.5 rounded-full">可信 AI</span>
-                    <span class="text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 px-2 py-0.5 rounded-full">RLHF</span>
-                    <span class="text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 px-2 py-0.5 rounded-full">加盟複製</span>
-                  </h2>
-                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-                    所有 AI 決策與建議<strong class="text-slate-800 dark:text-slate-200">高透明度</strong>：在保障業務合規與品牌定位的同時，
-                    藉由<strong class="text-slate-800 dark:text-slate-200">人工反饋持續進化</strong>大腦推理權重。
-                  </p>
-                  <div class="mt-3 grid sm:grid-cols-3 gap-2 text-[11px]">
-                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
-                      <p class="font-black text-teal-600 dark:text-teal-400 mb-1">① 可信稽核</p>
-                      <p class="text-slate-500 dark:text-slate-400">追溯每次 AI 行動的資料來源與推理邏輯</p>
-                    </div>
-                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
-                      <p class="font-black text-violet-600 dark:text-violet-400 mb-1">② 反饋更新</p>
-                      <p class="text-slate-500 dark:text-slate-400">採納/駁回理由 → RLHF 監督訊號</p>
-                    </div>
-                    <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5">
-                      <p class="font-black text-amber-600 dark:text-amber-400 mb-1">③ 組織複製</p>
-                      <p class="text-slate-500 dark:text-slate-400">優異 Agent 規則一鍵派發加盟店</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="text-xs font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1 shrink-0">
-                治理細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-              </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-3xl border border-ink-200/80 dark:border-white/10 bg-white/70 dark:bg-ink-900/60 p-5 sm:p-6 shadow-glow">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-ink-800/45 dark:text-cream/40 mb-3">Pipeline</p>
+              <ol class="space-y-3 text-sm">
+                <li class="flex gap-3 items-start"><span class="layer-num h-7 w-7 rounded-lg bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-black text-xs flex items-center justify-center shrink-0">A</span><span><strong class="text-ink-900 dark:text-cream">採集</strong><span class="text-ink-800/60 dark:text-cream/50"> · API / CSV / DB / 上傳</span></span></li>
+                <li class="flex gap-3 items-start"><span class="layer-num h-7 w-7 rounded-lg bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-black text-xs flex items-center justify-center shrink-0">B</span><span><strong class="text-ink-900 dark:text-cream">模型 Graph</strong><span class="text-ink-800/60 dark:text-cream/50"> · 唯一事實 SSOT</span></span></li>
+                <li class="flex gap-3 items-start"><span class="layer-num h-7 w-7 rounded-lg bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-300 font-black text-xs flex items-center justify-center shrink-0">C</span><span><strong class="text-ink-900 dark:text-cream">精算 + Qwen</strong><span class="text-ink-800/60 dark:text-cream/50"> · 先算後解釋</span></span></li>
+                <li class="flex gap-3 items-start"><span class="layer-num h-7 w-7 rounded-lg bg-amber-500/15 text-amber-800 dark:text-amber-300 font-black text-xs flex items-center justify-center shrink-0">D–E</span><span><strong class="text-ink-900 dark:text-cream">點數 · CRM</strong><span class="text-ink-800/60 dark:text-cream/50"> · 帳準客清</span></span></li>
+                <li class="flex gap-3 items-start"><span class="layer-num h-7 w-7 rounded-lg bg-purple-500/15 text-purple-700 dark:text-purple-300 font-black text-xs flex items-center justify-center shrink-0">F</span><span><strong class="text-ink-900 dark:text-cream">5 Agents</strong><span class="text-ink-800/60 dark:text-cream/50"> · 店長到老闆</span></span></li>
+                <li class="flex gap-3 items-start"><span class="layer-num h-7 w-7 rounded-lg bg-teal-500/15 text-teal-700 dark:text-teal-300 font-black text-xs flex items-center justify-center shrink-0">G</span><span><strong class="text-ink-900 dark:text-cream">治理</strong><span class="text-ink-800/60 dark:text-cream/50"> · 稽核 · RLHF · 加盟複製</span></span></li>
+              </ol>
             </div>
           </div>
-        </section>
-      </div>
-
-      <!-- 流程箭頭示意 -->
-      <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 overflow-x-auto">
-        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端：採集 → SSOT → 程式精算 → Qwen 解釋 → 人審行動</p>
-        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold min-w-max">
-          <span class="px-3 py-2 rounded-xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">多系統採集</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">Entity Graph</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-300">精算引擎</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">Qwen 解釋</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數 / CRM</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">5 Agents</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">人審</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE / 調撥</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300">稽核 · RLHF · 加盟複製</span>
         </div>
-      </div>
+      </section>
 
-      <!-- 行業 / ICP / 痛點 快卡 -->
-      <div class="mt-8 grid md:grid-cols-3 gap-4">
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-          <h3 class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="store" class="w-4 h-4 text-amber-500"></i> 行業畫像</h3>
-          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
-            <li>高頻小點 + 節慶大單</li>
-            <li>強 LINE / 預購 / 多店</li>
-            <li>損耗敏感 → 勿亂發券</li>
-          </ul>
-        </div>
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-          <h3 class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-4 h-4 text-blue-500"></i> ICP</h3>
-          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
-            <li><strong>主戰場</strong> 3–30 店連鎖</li>
-            <li>有 POS + LINE OA</li>
-            <li>可選商城 / 外送</li>
-          </ul>
-        </div>
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-          <h3 class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="help-circle" class="w-4 h-4 text-rose-500"></i> 銷售 6 題</h3>
-          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
-            <li>跨店點對不對？</li>
-            <li>節慶是否全民折？</li>
-            <li>POS/商城/外送斷帳？</li>
-          </ul>
-          <button type="button" onclick="openDetail('pain')" class="mt-3 text-xs font-bold text-rose-600 dark:text-rose-400">看完整 6 題 →</button>
-        </div>
-      </div>
-
-      <!-- 報價 -->
-      <div id="sec-pricing" class="mt-10 scroll-mt-24">
-        <div class="flex items-end justify-between gap-4 mb-4 flex-wrap">
+      <section id="architecture" class="scroll-mt-28">
+        <div class="flex items-end justify-between gap-4 mb-5 flex-wrap">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pricing</p>
-            <h2 class="text-2xl font-extrabold">報價 · 約 Ocard 7 成 + AI 加送</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">7 折只打會員核心年費；實施 / 通路加購 / AI Pro 另計。公式：max(牌價, 客戶可比價×0.7) ≥ 底價</p>
+            <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-caramel">Architecture</p>
+            <h2 class="text-2xl font-extrabold tracking-tight mt-1">點擊卡片展開細節</h2>
           </div>
+          <p class="text-xs text-ink-800/50 dark:text-cream/45 max-w-xs text-right">對齊 ai1 中控層 · 西點語境</p>
         </div>
-        <div class="grid md:grid-cols-3 gap-4">
-          <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <p class="text-xs font-bold text-slate-400">Starter · 1–2 店</p>
-            <p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">18k–24k<span class="text-sm font-bold text-slate-400">/年</span></p>
-            <ul class="mt-4 text-sm text-slate-600 dark:text-slate-400 space-y-2">
-              <li>✓ 點數帳本 + 基礎 CRM</li>
-              <li>✓ LINE 到帳推播</li>
-              <li>△ AI 不含或極簡</li>
-              <li>實施 8k–15k 一次</li>
-            </ul>
-          </div>
-          <div class="rounded-2xl border-2 border-amber-400 dark:border-amber-500 bg-amber-50/40 dark:bg-amber-950/20 p-6 shadow-lg shadow-amber-500/10 relative">
-            <span class="absolute -top-3 left-4 text-[10px] font-black uppercase bg-amber-500 text-white px-2 py-1 rounded-full">主推 Growth</span>
-            <p class="text-xs font-bold text-amber-700 dark:text-amber-400">3–15 店 · 點數+CRM+AI</p>
-            <p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">28k 起<span class="text-sm font-bold text-slate-400">/年</span></p>
-            <p class="text-xs text-slate-500 mt-1">3–5 店 28–40k · 6–10 店 45–70k</p>
-            <ul class="mt-4 text-sm text-slate-700 dark:text-slate-300 space-y-2">
-              <li>✓ 會員點數 + CRM 分群</li>
-              <li>✓ LINE 交易/行銷推播</li>
-              <li>✓ <strong>加送 AI 決策基礎（草稿+人審）</strong></li>
-              <li>實施 25k–60k · 可對 Ocard×0.7</li>
-            </ul>
-          </div>
-          <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <p class="text-xs font-bold text-slate-400">Pro · 自動 AI</p>
-            <p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">+30–50%<span class="text-sm font-bold text-slate-400">/年</span></p>
-            <ul class="mt-4 text-sm text-slate-600 dark:text-slate-400 space-y-2">
-              <li>✓ 守衛內自動發券</li>
-              <li>✓ A/B · 更高配額</li>
-              <li>✓ 多品牌共點專案</li>
-              <li>第二商城/自外送加購</li>
-            </ul>
-          </div>
-        </div>
-      </div>
 
-      <!-- 流程 + KPI -->
-      <div class="mt-10 grid lg:grid-cols-2 gap-6">
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-emerald-500"></i> 30 / 60 / 90 流程</h3>
-          <ol class="space-y-3 text-sm">
-            <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 模型 + 基礎精算</strong>：日同步、Member/Order、點數、每日 KPI 報表</span></li>
-            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>Graph + 風險指標</strong>：商城/外送/庫存、RFM/券率、毛利與斷貨預警</span></li>
-            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>五 Agent + 治理閉環</strong>：人審反饋入 RLHF、優異規則派發加盟、全鏈路可稽核</span></li>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4">
+          <button type="button" onclick="openDetail('points')" class="bento-card cursor-pointer text-left lg:col-span-4 rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-5 shadow-card dark:shadow-card-dark">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="h-10 w-10 rounded-2xl bg-amber-500/15 text-amber-700 dark:text-amber-300 flex items-center justify-center"><i data-lucide="coins" class="w-5 h-5"></i></span>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-amber-700/80 dark:text-amber-300/80">引擎 1</p>
+                <h3 class="font-extrabold">會員點數</h3>
+              </div>
+            </div>
+            <p class="text-sm text-ink-800/65 dark:text-cream/55 leading-relaxed">給點 · 兌獎 · 多店流水 · 禮券分帳 · 唯一可改餘額</p>
+          </button>
+          <button type="button" onclick="openDetail('crm')" class="bento-card cursor-pointer text-left lg:col-span-4 rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-5 shadow-card dark:shadow-card-dark">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="h-10 w-10 rounded-2xl bg-blue-500/15 text-blue-700 dark:text-blue-300 flex items-center justify-center"><i data-lucide="users" class="w-5 h-5"></i></span>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-blue-700/80 dark:text-blue-300/80">引擎 2</p>
+                <h3 class="font-extrabold">CRM</h3>
+              </div>
+            </div>
+            <p class="text-sm text-ink-800/65 dark:text-cream/55 leading-relaxed">360 檔案 · RFM · 旅程 · 標籤 · LINE 綁定</p>
+          </button>
+          <button type="button" onclick="openDetail('ai')" class="bento-card cursor-pointer text-left lg:col-span-4 rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-5 shadow-card dark:shadow-card-dark">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="h-10 w-10 rounded-2xl bg-purple-500/15 text-purple-700 dark:text-purple-300 flex items-center justify-center"><i data-lucide="sparkles" class="w-5 h-5"></i></span>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-purple-700/80 dark:text-purple-300/80">引擎 3 · 加送</p>
+                <h3 class="font-extrabold">AI 決策</h3>
+              </div>
+            </div>
+            <p class="text-sm text-ink-800/65 dark:text-cream/55 leading-relaxed">草稿 + 人審 · 不直接改點 · Growth 加送</p>
+          </button>
+
+          <button type="button" onclick="openDetail('ingest')" class="bento-card cursor-pointer text-left sm:col-span-2 lg:col-span-12 rounded-3xl border border-cyan-200/80 dark:border-cyan-500/20 bg-gradient-to-br from-cyan-50/90 to-white dark:from-cyan-950/30 dark:to-ink-900/40 p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+              <div class="flex gap-4 items-start">
+                <span class="layer-num h-11 w-11 rounded-2xl bg-cyan-600 text-white font-black flex items-center justify-center shrink-0">A</span>
+                <div>
+                  <h3 class="font-extrabold text-lg">資料採集 · 消除系統壁壘</h3>
+                  <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-1 max-w-2xl">分散系統定時採集 → 每日營運資料池。POS · CRM · 點數 · 電商 · 外送 · 庫存 · 日報</p>
+                  <div class="mt-3 flex flex-wrap gap-1.5">
+                    <span class="text-[11px] font-semibold px-2 py-1 rounded-lg bg-white/80 dark:bg-ink-900/50 border border-ink-200/60 dark:border-white/10">API</span>
+                    <span class="text-[11px] font-semibold px-2 py-1 rounded-lg bg-white/80 dark:bg-ink-900/50 border border-ink-200/60 dark:border-white/10">CSV / Excel</span>
+                    <span class="text-[11px] font-semibold px-2 py-1 rounded-lg bg-white/80 dark:bg-ink-900/50 border border-ink-200/60 dark:border-white/10">DB 直連</span>
+                    <span class="text-[11px] font-semibold px-2 py-1 rounded-lg bg-white/80 dark:bg-ink-900/50 border border-ink-200/60 dark:border-white/10">人工上傳</span>
+                  </div>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-cyan-600/60 hidden sm:block"></i>
+            </div>
+          </button>
+
+          <button type="button" onclick="openDetail('model')" class="bento-card cursor-pointer text-left lg:col-span-7 rounded-3xl border border-indigo-200/80 dark:border-indigo-500/20 bg-white/80 dark:bg-ink-900/50 p-5 sm:p-6">
+            <div class="flex gap-4 items-start">
+              <span class="layer-num h-11 w-11 rounded-2xl bg-indigo-600 text-white font-black flex items-center justify-center shrink-0">B</span>
+              <div>
+                <h3 class="font-extrabold text-lg">標準模型 + Entity Graph</h3>
+                <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-1">各異欄位 → 核心實體 · 會員–商品–門市–交易–活動–庫存 · <strong class="text-ink-900 dark:text-cream">SSOT</strong></p>
+              </div>
+            </div>
+          </button>
+          <button type="button" onclick="openDetail('pool')" class="bento-card cursor-pointer text-left lg:col-span-5 rounded-3xl border border-sky-200/80 dark:border-sky-500/20 bg-white/80 dark:bg-ink-900/50 p-5 sm:p-6">
+            <div class="flex gap-4 items-start">
+              <span class="layer-num h-11 w-11 rounded-2xl bg-sky-600 text-white font-black text-sm flex items-center justify-center shrink-0">B2</span>
+              <div>
+                <h3 class="font-extrabold text-lg">營運資料池</h3>
+                <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-1">即時查詢 · 關聯追蹤 · Agent 共讀</p>
+              </div>
+            </div>
+          </button>
+
+          <button type="button" onclick="openDetail('calc')" class="bento-card cursor-pointer text-left sm:col-span-2 lg:col-span-12 rounded-3xl border border-fuchsia-200/80 dark:border-fuchsia-500/25 bg-gradient-to-r from-fuchsia-50/90 via-white to-violet-50/50 dark:from-fuchsia-950/25 dark:via-ink-900/50 dark:to-violet-950/20 p-5 sm:p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-5 justify-between">
+              <div class="flex gap-4 items-start">
+                <span class="layer-num h-11 w-11 rounded-2xl bg-fuchsia-600 text-white font-black flex items-center justify-center shrink-0">C</span>
+                <div>
+                  <h3 class="font-extrabold text-lg">精算引擎 + Qwen 解釋</h3>
+                  <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-1 max-w-xl">程式先算 LTV / 客單 / 回購 / RFM / 券率 · 風險：毛利異常 · 斷貨 · 報廢 · LLM 譯成店長備忘錄</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2 text-[11px] font-bold">
+                <span class="px-3 py-1.5 rounded-full bg-white dark:bg-ink-900 border border-fuchsia-200/60 dark:border-fuchsia-500/30">先算</span>
+                <span class="px-3 py-1.5 rounded-full bg-white dark:bg-ink-900 border border-violet-200/60 dark:border-violet-500/30">後解釋</span>
+                <span class="px-3 py-1.5 rounded-full bg-white dark:bg-ink-900 border border-ink-200/60 dark:border-white/10">不編造 KPI</span>
+              </div>
+            </div>
+          </button>
+
+          <button type="button" onclick="openDetail('channels')" class="bento-card cursor-pointer text-left lg:col-span-4 rounded-3xl border border-emerald-200/80 dark:border-emerald-500/20 bg-white/80 dark:bg-ink-900/50 p-5">
+            <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">通路</span>
+            <h3 class="font-extrabold mt-1">POS · 商城 · 外送</h3>
+            <p class="text-sm text-ink-800/60 dark:text-cream/50 mt-2">不取代既有系統 · 三通路進同一帳</p>
+          </button>
+          <button type="button" onclick="openDetail('points')" class="bento-card cursor-pointer text-left lg:col-span-4 rounded-3xl border border-amber-200/80 dark:border-amber-500/20 bg-white/80 dark:bg-ink-900/50 p-5">
+            <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">D · Ledger</span>
+            <h3 class="font-extrabold mt-1">會員點數層</h3>
+            <p class="text-sm text-ink-800/60 dark:text-cream/50 mt-2">SoR · 沖正 · 過期 · 審計</p>
+          </button>
+          <button type="button" onclick="openDetail('crm')" class="bento-card cursor-pointer text-left lg:col-span-4 rounded-3xl border border-blue-200/80 dark:border-blue-500/20 bg-white/80 dark:bg-ink-900/50 p-5">
+            <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">E · CRM</span>
+            <h3 class="font-extrabold mt-1">經營 360°</h3>
+            <p class="text-sm text-ink-800/60 dark:text-cream/50 mt-2">分群 · 旅程 · 客服可查</p>
+          </button>
+        </div>
+      </section>
+
+      <section id="agents" class="mt-12 sm:mt-16 scroll-mt-28">
+        <div class="flex items-end justify-between gap-4 mb-5 flex-wrap">
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-purple-600 dark:text-purple-400">F · Agent Layer</p>
+            <h2 class="text-2xl font-extrabold tracking-tight mt-1">5 Agents Collaborative</h2>
+            <p class="text-sm text-ink-800/55 dark:text-cream/50 mt-1">共讀 SSOT + 精算 · Qwen 備忘錄 · 人審後執行</p>
+          </div>
+          <button type="button" onclick="openDetail('agents')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10 hover:border-purple-400/50 transition-colors">團隊總覽</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <button type="button" onclick="openDetail('agent-store')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5">
+            <div class="h-9 w-9 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 flex items-center justify-center mb-3"><i data-lucide="clipboard-list" class="w-4 h-4"></i></div>
+            <h3 class="font-extrabold">店長</h3>
+            <ul class="mt-2 space-y-1 text-xs text-ink-800/60 dark:text-cream/50"><li>今日營運異常</li><li>熱賣 / 低迷</li><li>智能排班</li><li>原料備貨</li></ul>
+          </button>
+          <button type="button" onclick="openDetail('agent-mkt')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5">
+            <div class="h-9 w-9 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-300 flex items-center justify-center mb-3"><i data-lucide="megaphone" class="w-4 h-4"></i></div>
+            <h3 class="font-extrabold">行銷</h3>
+            <ul class="mt-2 space-y-1 text-xs text-ink-800/60 dark:text-cream/50"><li>流失挽回</li><li>高價值促銷</li><li>LINE 文案</li><li>券效益精算</li></ul>
+          </button>
+          <button type="button" onclick="openDetail('agent-product')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5">
+            <div class="h-9 w-9 rounded-xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center mb-3"><i data-lucide="package" class="w-4 h-4"></i></div>
+            <h3 class="font-extrabold">商品</h3>
+            <ul class="mt-2 space-y-1 text-xs text-ink-800/60 dark:text-cream/50"><li>新品追蹤</li><li>滯銷優化</li><li>高毛利組合</li><li>關聯銷售</li></ul>
+          </button>
+          <button type="button" onclick="openDetail('agent-inv')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5">
+            <div class="h-9 w-9 rounded-xl bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 flex items-center justify-center mb-3"><i data-lucide="warehouse" class="w-4 h-4"></i></div>
+            <h3 class="font-extrabold">庫存</h3>
+            <ul class="mt-2 space-y-1 text-xs text-ink-800/60 dark:text-cream/50"><li>斷貨預警</li><li>即期報廢</li><li>節慶物料</li><li>跨店調撥</li></ul>
+          </button>
+          <button type="button" onclick="openDetail('agent-boss')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5 sm:col-span-2 lg:col-span-1">
+            <div class="h-9 w-9 rounded-xl bg-ink-900/10 dark:bg-cream/10 text-ink-800 dark:text-cream flex items-center justify-center mb-3"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+            <h3 class="font-extrabold">老闆</h3>
+            <ul class="mt-2 space-y-1 text-xs text-ink-800/60 dark:text-cream/50"><li>多店損益</li><li>選址建議</li><li>停賣評估</li><li>擴張戰略</li></ul>
+          </button>
+        </div>
+      </section>
+
+      <section class="mt-8">
+        <button type="button" onclick="openDetail('governance')" class="bento-card cursor-pointer text-left w-full rounded-3xl border border-teal-200/90 dark:border-teal-500/25 bg-gradient-to-br from-teal-50/90 to-white dark:from-teal-950/30 dark:to-ink-900/50 p-6 sm:p-8">
+          <div class="flex flex-col lg:flex-row gap-6 lg:items-center justify-between">
+            <div class="flex gap-4 items-start">
+              <span class="layer-num h-12 w-12 rounded-2xl bg-teal-600 text-white font-black flex items-center justify-center shrink-0">G</span>
+              <div>
+                <h2 class="text-xl font-extrabold">治理 · 可信稽核 · RLHF · 加盟複製</h2>
+                <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-2 max-w-2xl">高透明：資料來源與推理可回放 · 採納/駁回理由進監督訊號 · 優異 Agent 規則一鍵派發加盟店</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 text-[11px] font-bold shrink-0">
+              <span class="px-3 py-1.5 rounded-full bg-white/90 dark:bg-ink-900 border border-teal-200/50">Trace</span>
+              <span class="px-3 py-1.5 rounded-full bg-white/90 dark:bg-ink-900 border border-violet-200/50">RLHF</span>
+              <span class="px-3 py-1.5 rounded-full bg-white/90 dark:bg-ink-900 border border-amber-200/50">Clone</span>
+            </div>
+          </div>
+        </button>
+      </section>
+
+      <section id="pricing" class="mt-14 sm:mt-20 scroll-mt-28">
+        <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-caramel">Pricing</p>
+        <h2 class="text-2xl font-extrabold tracking-tight mt-1">約 Ocard 7 成 · Growth 加送 AI</h2>
+        <p class="text-sm text-ink-800/55 dark:text-cream/50 mt-2 max-w-2xl">7 折只打會員核心年費；實施 / 通路加購 / AI Pro 另計</p>
+        <div class="mt-6 grid md:grid-cols-3 gap-4">
+          <div class="rounded-3xl border border-ink-200 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-6">
+            <p class="text-xs font-bold text-ink-800/45 dark:text-cream/40">Starter · 1–2 店</p>
+            <p class="mt-2 text-3xl font-black tracking-tight">18–24k<span class="text-sm font-bold text-ink-800/40">/年</span></p>
+            <ul class="mt-5 space-y-2 text-sm text-ink-800/70 dark:text-cream/60">
+              <li>點數 + 基礎 CRM</li>
+              <li>LINE 到帳</li>
+              <li>AI 不含或極簡</li>
+              <li>實施 8–15k</li>
+            </ul>
+          </div>
+          <div class="rounded-3xl border-2 border-caramel bg-gradient-to-b from-caramel/10 to-white dark:to-ink-900 p-6 shadow-glow relative">
+            <span class="absolute -top-3 left-5 text-[10px] font-black uppercase tracking-wide bg-caramel text-white px-2.5 py-1 rounded-full">主推 Growth</span>
+            <p class="text-xs font-bold text-caramel">3–15 店 · 點數+CRM+AI</p>
+            <p class="mt-2 text-3xl font-black tracking-tight">28k 起<span class="text-sm font-bold text-ink-800/40">/年</span></p>
+            <p class="text-xs text-ink-800/50 mt-1">3–5 店 28–40k · 6–10 店 45–70k</p>
+            <ul class="mt-5 space-y-2 text-sm text-ink-900 dark:text-cream/80 font-medium">
+              <li>會員點數 + CRM 分群</li>
+              <li>LINE 交易/行銷推播</li>
+              <li class="text-caramel dark:text-caramel-light">★ 加送 AI 決策基礎（草稿+人審）</li>
+              <li>實施 25–60k · 可對 Ocard×0.7</li>
+            </ul>
+          </div>
+          <div class="rounded-3xl border border-ink-200 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-6">
+            <p class="text-xs font-bold text-ink-800/45 dark:text-cream/40">Pro · 自動 AI</p>
+            <p class="mt-2 text-3xl font-black tracking-tight">+30–50%<span class="text-sm font-bold text-ink-800/40">/年</span></p>
+            <ul class="mt-5 space-y-2 text-sm text-ink-800/70 dark:text-cream/60">
+              <li>守衛內自動發券</li>
+              <li>A/B · 更高配額</li>
+              <li>多品牌 · 通路加購</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="playbook" class="mt-14 sm:mt-20 scroll-mt-28 grid lg:grid-cols-2 gap-4">
+        <div class="rounded-3xl border border-ink-200 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-6">
+          <h3 class="font-extrabold text-lg flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-sage"></i> 30 / 60 / 90</h3>
+          <ol class="mt-4 space-y-4 text-sm">
+            <li class="flex gap-3"><span class="font-black text-cyan-600 dark:text-cyan-400 w-8">30</span><span><strong>採集+模型+精算</strong><br/><span class="text-ink-800/55 dark:text-cream/45">日同步 · Member/Order · 點數 · 每日 KPI</span></span></li>
+            <li class="flex gap-3"><span class="font-black text-blue-600 dark:text-blue-400 w-8">60</span><span><strong>Graph+風險</strong><br/><span class="text-ink-800/55 dark:text-cream/45">商城/外送/庫存 · RFM/券 · 斷貨預警</span></span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600 dark:text-purple-400 w-8">90</span><span><strong>五 Agent+治理</strong><br/><span class="text-ink-800/55 dark:text-cream/45">RLHF · 加盟複製 · 人審執行</span></span></li>
           </ol>
-          <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
+          <button type="button" onclick="openDetail('script')" class="mt-5 cursor-pointer text-xs font-bold text-caramel hover:underline">銷售 Script →</button>
         </div>
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-blue-500"></i> KPI</h3>
-          <div class="grid grid-cols-2 gap-3 text-sm">
-            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">會員消費占比</p><p class="text-xs text-slate-500">拆 POS / 商城 / 外送</p></div>
-            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">30/60 日復購</p><p class="text-xs text-slate-500">小點高頻</p></div>
-            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">節慶預購 × 客單</p><p class="text-xs text-slate-500">大單</p></div>
-            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">折讓率 / 核銷率</p><p class="text-xs text-slate-500">防亂送</p></div>
-            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">跨通路 member 率</p><p class="text-xs text-slate-500">斷帳改善</p></div>
-            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">跨店爭議單</p><p class="text-xs text-slate-500">→ 0</p></div>
+        <div class="rounded-3xl border border-ink-200 dark:border-white/10 bg-white/80 dark:bg-ink-900/50 p-6">
+          <h3 class="font-extrabold text-lg flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-blue-500"></i> KPI</h3>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
+            <div class="rounded-2xl bg-ink-50 dark:bg-ink-950/50 p-3 border border-ink-100 dark:border-white/5"><p class="font-bold">會員消費占比</p><p class="text-xs text-ink-800/45 mt-0.5">分通路</p></div>
+            <div class="rounded-2xl bg-ink-50 dark:bg-ink-950/50 p-3 border border-ink-100 dark:border-white/5"><p class="font-bold">30/60 日復購</p><p class="text-xs text-ink-800/45 mt-0.5">小點高頻</p></div>
+            <div class="rounded-2xl bg-ink-50 dark:bg-ink-950/50 p-3 border border-ink-100 dark:border-white/5"><p class="font-bold">折讓 / 核銷率</p><p class="text-xs text-ink-800/45 mt-0.5">防亂送</p></div>
+            <div class="rounded-2xl bg-ink-50 dark:bg-ink-950/50 p-3 border border-ink-100 dark:border-white/5"><p class="font-bold">跨店爭議</p><p class="text-xs text-ink-800/45 mt-0.5">→ 0</p></div>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button type="button" onclick="openDetail('pain')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10 hover:border-caramel/40 transition-colors">痛點 6 題</button>
+            <button type="button" onclick="openDetail('objection')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10 hover:border-caramel/40 transition-colors">異議表</button>
+            <button type="button" onclick="openDetail('line')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10 hover:border-caramel/40 transition-colors">LINE</button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- 案例 -->
-      <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-amber-50 to-white dark:from-amber-950/20 dark:to-slate-900 p-6">
-        <h3 class="font-extrabold text-lg mb-3 flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-amber-500"></i> 示意案例 · 北中南 12 店</h3>
-        <div class="grid md:grid-cols-3 gap-4 text-sm">
-          <div><p class="font-bold text-rose-600 dark:text-rose-400 mb-1">痛點</p><p class="text-slate-600 dark:text-slate-400">門市/官網/外送三本帳；母親節全民 8 折；跨店爭議。</p></div>
-          <div><p class="font-bold text-blue-600 dark:text-blue-400 mb-1">做法</p><p class="text-slate-600 dark:text-slate-400">點數統一 → CRM 分群 → AI 節慶人審 → LINE；P0 POS → P1 商城 → P2 外送。</p></div>
-          <div><p class="font-bold text-emerald-600 dark:text-emerald-400 mb-1">結果（示意）</p><p class="text-slate-600 dark:text-slate-400">member 訂單占比↑；爭議→0；折讓可控；分通路可報。</p></div>
+      <section class="mt-8 rounded-3xl border border-caramel/25 bg-gradient-to-br from-caramel/10 via-white/80 to-sage/10 dark:from-caramel/10 dark:via-ink-900/60 dark:to-sage/5 p-6 sm:p-8">
+        <h3 class="font-extrabold text-lg">示意案例 · 12 店烘焙</h3>
+        <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm">
+          <div><p class="font-bold text-rose-600 dark:text-rose-400 text-xs uppercase tracking-wide">痛點</p><p class="mt-1 text-ink-800/70 dark:text-cream/60">三本帳 · 節慶亂折 · 跨店爭議</p></div>
+          <div><p class="font-bold text-blue-600 dark:text-blue-400 text-xs uppercase tracking-wide">做法</p><p class="mt-1 text-ink-800/70 dark:text-cream/60">採集→Graph→精算→五 Agent 人審→LINE</p></div>
+          <div><p class="font-bold text-sage text-xs uppercase tracking-wide">結果</p><p class="mt-1 text-ink-800/70 dark:text-cream/60">member 率↑ · 爭議→0 · 折讓可控</p></div>
         </div>
-      </div>
+      </section>
 
-      <!-- 條件 / 清單 -->
-      <div class="mt-8 grid md:grid-cols-2 gap-4">
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-          <h3 class="font-extrabold mb-3">條件與紅線</h3>
-          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-2">
-            <li>• 年約；數據所有權歸品牌、可匯出</li>
-            <li>• 7 折只打核心年費；AI 加送 = 草稿+人審</li>
-            <li>• 低於底價不接或砍 Starter 範圍</li>
-            <li>• &gt;15 店專案價；不換 POS/商城/外送</li>
-          </ul>
-        </div>
-        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-          <h3 class="font-extrabold mb-3">拜訪清單</h3>
-          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-2">
-            <li>☐ 門市數 · POS · 商城 · 外送</li>
-            <li>☐ 下一檔節慶（倒推 6–8 週）</li>
-            <li>☐ Ocard / 官方集點現況</li>
-            <li>☐ 決策者在場 · Demo 帳就緒</li>
-          </ul>
-          <button type="button" onclick="openDetail('objection')" class="mt-3 text-xs font-bold text-slate-600 dark:text-slate-300">異議處理表 →</button>
-        </div>
-      </div>
-
-      <p class="text-center text-xs text-slate-400 mt-10 mb-4">
-        視覺與分層參考 <a href="https://www.cbots.ai/ai1.html" class="underline hover:text-amber-500" target="_blank" rel="noopener">cbots.ai/ai1.html</a>
-        · CATCH AI Command Layer 風格 · 內容為西點會員中台提案
-      </p>
+      <footer class="mt-14 pt-8 border-t border-ink-200/60 dark:border-white/10 text-center text-xs text-ink-800/40 dark:text-cream/35">
+        UI/UX 重設計 · 烘焙質感 + SaaS 層級 · 參考
+        <a href="https://www.cbots.ai/ai1.html" class="underline hover:text-caramel" target="_blank" rel="noopener">cbots.ai/ai1</a>
+      </footer>
     </div>
   </main>
 
-  <!-- Modal -->
-  <div id="modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeDetail()"></div>
-    <div class="relative w-full sm:max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl p-6 md:p-8">
-      <button type="button" onclick="closeDetail()" class="absolute top-4 right-4 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+  <div id="modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 bg-ink-950/50 dark:bg-black/60 backdrop-blur-sm cursor-pointer" onclick="closeDetail()"></div>
+    <div class="relative w-full sm:max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl bg-cream-soft dark:bg-ink-900 border border-ink-200 dark:border-white/10 shadow-2xl p-6 md:p-8">
+      <button type="button" onclick="closeDetail()" class="absolute top-4 right-4 p-2.5 rounded-xl border border-ink-200 dark:border-white/10 hover:bg-ink-100 dark:hover:bg-white/5 cursor-pointer" aria-label="關閉">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
       <div id="modal-body"></div>
@@ -611,7 +414,8 @@
   </div>
 
   <script>
-    const DETAILS = {
+
+const DETAILS = {
       ingest: {
         title: "A · 資料採集與接入層",
         badge: "消除系統壁壘 · 每日同步",
@@ -984,42 +788,36 @@
     function openDetail(key) {
       const d = DETAILS[key];
       if (!d) return;
-      const body = document.getElementById("modal-body");
-      body.innerHTML = `
-        <span class="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">${d.badge}</span>
-        <h2 class="text-xl font-extrabold mt-3 mb-2 pr-8">${d.title}</h2>
-        ${d.html}
-        <button type="button" onclick="closeDetail()" class="mt-6 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-amber-500 dark:text-slate-900 text-sm font-bold">關閉</button>
+      document.getElementById('modal-body').innerHTML = `
+        <span class="inline-flex text-[10px] font-black uppercase tracking-wider text-caramel bg-caramel/10 px-2.5 py-1 rounded-full">${d.badge}</span>
+        <h2 class="text-xl sm:text-2xl font-extrabold mt-3 mb-3 pr-10 tracking-tight">${d.title}</h2>
+        <div class="detail-body">${d.html}</div>
+        <button type="button" onclick="closeDetail()" class="mt-8 w-full sm:w-auto cursor-pointer px-6 py-3 rounded-2xl bg-ink-900 text-cream dark:bg-caramel dark:text-ink-950 text-sm font-bold hover:opacity-90 transition-opacity">關閉</button>
       `;
-      document.getElementById("modal").classList.remove("hidden");
-      document.body.classList.add("modal-open");
+      document.getElementById('modal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
       lucide.createIcons();
     }
-
     function closeDetail() {
-      document.getElementById("modal").classList.add("hidden");
-      document.body.classList.remove("modal-open");
+      document.getElementById('modal').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
     }
-
     function toggleTheme() {
       const html = document.documentElement;
-      const dark = html.classList.toggle("dark");
-      localStorage.setItem("bakery-theme", dark ? "dark" : "light");
-      const icon = document.getElementById("theme-icon");
-      icon.setAttribute("data-lucide", dark ? "sun" : "moon");
+      const dark = html.classList.toggle('dark');
+      localStorage.setItem('bakery-ux-theme', dark ? 'dark' : 'light');
+      document.getElementById('theme-icon').setAttribute('data-lucide', dark ? 'sun' : 'moon');
       lucide.createIcons();
     }
-
     (function init() {
-      if (localStorage.getItem("bakery-theme") === "dark" ||
-          (!localStorage.getItem("bakery-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-        document.documentElement.classList.add("dark");
-        document.getElementById("theme-icon").setAttribute("data-lucide", "sun");
+      const saved = localStorage.getItem('bakery-ux-theme');
+      if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
       }
       lucide.createIcons();
     })();
-
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDetail(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
   </script>
 </body>
 </html>
