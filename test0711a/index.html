@@ -406,8 +406,31 @@
           </div>
           <div class="mt-4 flex flex-wrap gap-2">
             <button type="button" onclick="openDetail('gtm-ocard-churn')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl bg-ink-900 text-cream dark:bg-caramel dark:text-ink-950">Ocard 退戶完整打法</button>
+            <button type="button" onclick="openDetail('gtm-find-churn')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10">如何查到退戶</button>
+            <button type="button" onclick="openDetail('gtm-list-csv')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10">名單表欄位 CSV</button>
+            <button type="button" onclick="openDetail('gtm-weekly-kpi')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10">每週 KPI</button>
             <button type="button" onclick="openDetail('gtm-script-churn')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10">開場話術</button>
             <button type="button" onclick="openDetail('objection')" class="cursor-pointer text-xs font-bold px-3 py-2 rounded-xl border border-ink-200 dark:border-white/10">異議表</button>
+          </div>
+        </div>
+
+        <div class="mt-4 grid md:grid-cols-2 gap-3">
+          <div class="rounded-3xl border border-ink-200 dark:border-white/10 bg-white/70 dark:bg-ink-900/40 p-5">
+            <h3 class="font-extrabold mb-2 flex items-center gap-2 text-sm"><i data-lucide="table" class="w-4 h-4 text-caramel"></i> 名單表（建議欄位）</h3>
+            <p class="text-xs text-ink-800/55 dark:text-cream/45 mb-3">可匯出 Google 試算表 / Excel。點右側看完整 CSV 表頭與範例列。</p>
+            <code class="block text-[10px] sm:text-[11px] leading-relaxed p-3 rounded-xl bg-ink-50 dark:bg-ink-950/60 border border-ink-100 dark:border-white/5 overflow-x-auto text-ink-800/80 dark:text-cream/70">store_name,region,segment,ocard_status,current_system,churn_reason,contact,next_action,owner,week</code>
+            <button type="button" onclick="openDetail('gtm-list-csv')" class="mt-3 cursor-pointer text-xs font-bold text-caramel hover:underline">複製用完整說明 →</button>
+          </div>
+          <div class="rounded-3xl border border-ink-200 dark:border-white/10 bg-white/70 dark:bg-ink-900/40 p-5">
+            <h3 class="font-extrabold mb-2 flex items-center gap-2 text-sm"><i data-lucide="target" class="w-4 h-4 text-sage"></i> 每週 KPI（退戶戰線）</h3>
+            <ul class="text-xs text-ink-800/65 dark:text-cream/55 space-y-1.5">
+              <li>• 新驗證名單 ≥ <strong class="text-ink-900 dark:text-cream">10</strong></li>
+              <li>• 確認「曾用/已退」≥ <strong class="text-ink-900 dark:text-cream">3</strong></li>
+              <li>• 有效通話/進店 ≥ <strong class="text-ink-900 dark:text-cream">5</strong></li>
+              <li>• Demo 約成 ≥ <strong class="text-ink-900 dark:text-cream">1</strong></li>
+              <li>• 试点報價發出 ≥ <strong class="text-ink-900 dark:text-cream">1</strong>（可跨週）</li>
+            </ul>
+            <button type="button" onclick="openDetail('gtm-weekly-kpi')" class="mt-3 cursor-pointer text-xs font-bold text-sage hover:underline">漏斗與定義 →</button>
           </div>
         </div>
       </section>
@@ -868,6 +891,75 @@ const DETAILS = {
             <li><strong>對帳證明</strong>：跨店/跨通路零爭議</li>
             <li><strong>年約</strong>：Growth + AI 加送；再談 Agent 擴充</li>
           </ol>`
+      },
+      "gtm-find-churn": {
+        title: "如何查到 Ocard 退戶",
+        badge: "名單來源",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">沒有公開退訂庫。目標是建「曾用 / 高機率流失」名單再驗證。</p>
+          <p class="text-sm font-bold mb-2">公開訊號</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 消費端 App / 特約店列表：隔季對照消失的店</li>
+            <li>• 官網 / LINE / IG 曾寫 Ocard，現改官方集點或連結失效</li>
+            <li>• Google 評論提過 Ocard，進店問「還用嗎」</li>
+            <li>• 徵才曾寫「會 Ocard」</li>
+          </ul>
+          <p class="text-sm font-bold mb-2">人脈（轉化最高）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• POS 經銷、會計、加盟總部、行銷公司轉介</li>
+            <li>• 老闆社團 / 展會吐槽「砍了 Ocard」</li>
+          </ul>
+          <p class="text-sm font-bold mb-2">進店 2 分鐘</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">問集點方式 → 看結帳 →「以前有用過 Ocard 嗎？為什麼換？」</p>
+          <p class="text-xs text-slate-500">禁止：買來路不明名單、爬需登入後台、索取官方客戶資料。</p>`
+      },
+      "gtm-list-csv": {
+        title: "Ocard 退戶名單表 · CSV 欄位",
+        badge: "可複製",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">第一列貼到試算表當表頭；每列一家店。</p>
+          <pre class="text-[11px] p-3 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-x-auto mb-4 whitespace-pre-wrap break-all">store_name,region,segment,store_count,ocard_status,current_system,churn_reason,pain_money,pain_ledger,pain_promo,contact_name,contact_phone,contact_line,source,confidence,next_action,owner,week,demo_date,notes</pre>
+          <p class="text-sm font-bold mb-2">欄位說明</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• <strong>ocard_status</strong>：using / churned / suspected / never / unknown</li>
+            <li>• <strong>current_system</strong>：line_stamp / paper / excel / other / none</li>
+            <li>• <strong>churn_reason</strong>：price / ledger / unused / support / f_and_b_fit / data_lock / other</li>
+            <li>• <strong>pain_*</strong>：0/1 是否主訴錢、帳、推播</li>
+            <li>• <strong>source</strong>：pos_partner / visit / web / referral / job_ad / self_crm</li>
+            <li>• <strong>confidence</strong>：1–5（5=店員親口確認已退）</li>
+            <li>• <strong>next_action</strong>：call / visit / demo / pilot_quote / nurture / drop</li>
+            <li>• <strong>week</strong>：ISO 週，例 2026-W28</li>
+          </ul>
+          <p class="text-sm font-bold mb-2">範例列</p>
+          <pre class="text-[11px] p-3 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-x-auto whitespace-pre-wrap break-all">金黃麵包,台北,bakery,5,churned,line_stamp,price,1,1,0,王店長,09xx,lineid,pos_partner,5,demo,業務A,2026-W28,,跨店點對過</pre>
+          <p class="mt-3 text-xs text-slate-500">建議另建工作表「每週匯總」用 COUNTIF 對 status / next_action 統計。</p>`
+      },
+      "gtm-weekly-kpi": {
+        title: "每週 KPI · Ocard 退戶戰線",
+        badge: "漏斗",
+        html: `
+          <p class="text-sm font-bold mb-2">漏斗（每週重置或累計看趨勢）</p>
+          <ol class="space-y-2 text-sm text-slate-700 dark:text-slate-300 list-decimal pl-5 mb-4">
+            <li><strong>新進線索</strong>：本週新列進表的店數</li>
+            <li><strong>新驗證</strong>：confidence 從 ≤2 升到 ≥3（有查過現況）</li>
+            <li><strong>確認曾用/已退</strong>：ocard_status = churned 或 using 且表達想換</li>
+            <li><strong>有效接觸</strong>：通話≥3 分 或 進店問到決策相關人</li>
+            <li><strong>Demo 約成</strong>：有 demo_date</li>
+            <li><strong>试点/報價</strong>：next_action 含 pilot_quote 且已寄出</li>
+            <li><strong>贏單</strong>：簽約（另表）</li>
+          </ol>
+          <p class="text-sm font-bold mb-2">建議下限（1 位業務）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 新驗證 ≥ 10　·　確認退戶/曾用 ≥ 3</li>
+            <li>• 有效接觸 ≥ 5　·　Demo ≥ 1</li>
+            <li>• 报價/试点 ≥ 1（可隔週）</li>
+          </ul>
+          <p class="text-sm font-bold mb-2">健康度</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 驗證→確認 轉換 &lt; 20%：訊號品質差，改走人脈</li>
+            <li>• 接觸→Demo &lt; 15%：開場/挖因要改</li>
+            <li>• Demo→报价 &lt; 30%：Demo 沒對準痛點</li>
+          </ul>`
       },
       "gtm-script-churn": {
         title: "Ocard 退戶 · 開場話術",

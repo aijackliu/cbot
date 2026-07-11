@@ -1,0 +1,3 @@
+store_name,region,segment,store_count,ocard_status,current_system,churn_reason,pain_money,pain_ledger,pain_promo,contact_name,contact_phone,contact_line,source,confidence,next_action,owner,week,demo_date,notes
+金黃麵包,台北,bakery,5,churned,line_stamp,price,1,1,0,王店長,09xxxxxxxx,,pos_partner,5,demo,業務A,2026-W28,,跨店點曾對過
+示例蛋糕,新北,cake,2,suspected,paper,unknown,0,0,0,,,ig,2,visit,業務A,2026-W28,,LINE選單還有Ocard死連結
