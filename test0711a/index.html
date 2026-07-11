@@ -1,1222 +1,639 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>蛋糕西點業 · 會員點數 + CRM + AI 決策</title>
-  <meta name="description" content="西點連鎖：會員點數帳本 + CRM 經營 + AI 決策；POS / 線上商城 / 外送同一人。約 Ocard 7 成 + AI 決策基礎加送。" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>西點會員中台 · 點數 + CRM + AI 決策</title>
+  <meta name="description" content="蛋糕西點業：會員點數、CRM、AI 決策三引擎；POS · 線上商城 · 外送同一帳。約 Ocard 7 成 + AI 基礎加送。" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: "#3b82f6",
+              green: "#10b981",
+              amber: "#f59e0b",
+              purple: "#8b5cf6",
+              rose: "#f43f5e",
+              slate: "#0f172a",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    :root {
-      --bg: #0f0e0c;
-      --bg-card: #1a1814;
-      --bg-elevated: #242018;
-      --border: rgba(245, 230, 200, 0.12);
-      --text: #f5f0e8;
-      --muted: #a89f90;
-      --cream: #f3e6d0;
-      --accent: #e8a87c;
-      --accent-2: #c4785a;
-      --gold: #d4a84b;
-      --green: #7dcea0;
-      --blue: #7eb8d4;
-      --radius: 14px;
-      --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-      --max: 1080px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: "Noto Sans TC", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      font-size: 15.5px;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(232, 168, 124, 0.18), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(212, 168, 75, 0.1), transparent 45%),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(196, 120, 90, 0.08), transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .wrap {
-      position: relative;
-      z-index: 1;
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 20px 80px;
-    }
-
-    /* Nav */
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(14px);
-      background: rgba(15, 14, 12, 0.85);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .logo {
-      font-weight: 800;
-      font-size: 0.95rem;
-      letter-spacing: 0.02em;
-      color: var(--cream);
-      white-space: nowrap;
-    }
-    .logo span { color: var(--accent); }
-    .nav-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 10px;
-      flex: 1;
-    }
-    .nav-links a {
-      color: var(--muted);
-      font-size: 0.78rem;
-      padding: 4px 8px;
-      border-radius: 999px;
-      text-decoration: none;
-    }
-    .nav-links a:hover {
-      color: var(--cream);
-      background: var(--bg-elevated);
-    }
-    .nav-cta {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #1a120c !important;
-      font-weight: 700;
-      font-size: 0.8rem !important;
-      padding: 8px 14px !important;
-      border-radius: 999px !important;
-      text-decoration: none !important;
-    }
-
-    /* Hero */
-    .hero {
-      padding: 56px 0 40px;
-      text-align: left;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--gold);
-      background: rgba(212, 168, 75, 0.12);
-      border: 1px solid rgba(212, 168, 75, 0.3);
-      padding: 6px 12px;
-      border-radius: 999px;
-      margin-bottom: 18px;
-    }
-    h1 {
-      font-size: clamp(1.75rem, 4vw, 2.45rem);
-      font-weight: 800;
-      line-height: 1.25;
-      letter-spacing: -0.02em;
-      color: var(--cream);
-      max-width: 18em;
-    }
-    h1 em {
-      font-style: normal;
-      background: linear-gradient(120deg, var(--accent), var(--gold));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .hero-lead {
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 38em;
-    }
-    .hero-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 22px;
-    }
-    .pill {
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--cream);
-    }
-    .pill strong { color: var(--accent); }
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      text-decoration: none !important;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .btn:hover { transform: translateY(-1px); opacity: 0.95; }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #1a120c !important;
-    }
-    .btn-ghost {
-      background: transparent;
-      color: var(--cream) !important;
-      border: 1px solid var(--border);
-    }
-
-    /* Sections */
-    section {
-      padding: 48px 0 8px;
-      scroll-margin-top: 64px;
-    }
-    .sec-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    h2 {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--cream);
-      margin-bottom: 8px;
-    }
-    .sec-desc {
-      color: var(--muted);
-      margin-bottom: 22px;
-      max-width: 40em;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      box-shadow: var(--shadow);
-    }
-    .card + .card { margin-top: 14px; }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-    @media (max-width: 800px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
-    }
-
-    .card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--cream);
-      margin-bottom: 8px;
-    }
-    .card p, .card li { color: var(--muted); font-size: 0.9rem; }
-    .card ul { padding-left: 1.15em; }
-    .card li { margin: 4px 0; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
-    }
-    th, td {
-      text-align: left;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    th {
-      color: var(--gold);
-      font-weight: 700;
-      font-size: 0.78rem;
-      letter-spacing: 0.04em;
-      background: rgba(0,0,0,0.25);
-    }
-    td { color: var(--muted); }
-    td strong { color: var(--cream); font-weight: 600; }
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-    }
-
-    .quote-box {
-      border-left: 3px solid var(--accent);
-      padding: 14px 18px;
-      background: var(--bg-elevated);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      color: var(--cream);
-      font-size: 0.95rem;
-      margin: 12px 0;
-    }
-
-    .price-tag {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--accent);
-      margin: 8px 0 4px;
-    }
-    .price-note { font-size: 0.8rem; color: var(--muted); }
-
-    .tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-right: 6px;
-    }
-    .tag-green { background: rgba(125, 206, 160, 0.15); color: var(--green); }
-    .tag-blue { background: rgba(126, 184, 212, 0.15); color: var(--blue); }
-    .tag-gold { background: rgba(212, 168, 75, 0.15); color: var(--gold); }
-    .tag-accent { background: rgba(232, 168, 124, 0.15); color: var(--accent); }
-
-    .steps {
-      counter-reset: step;
-      list-style: none;
-    }
-    .steps li {
-      position: relative;
-      padding: 14px 14px 14px 52px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--bg-card);
-      margin-bottom: 10px;
-      color: var(--muted);
-    }
-    .steps li::before {
-      counter-increment: step;
-      content: counter(step);
-      position: absolute;
-      left: 14px;
-      top: 14px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #1a120c;
-      font-weight: 800;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .steps li strong { color: var(--cream); display: block; margin-bottom: 4px; }
-
-    .check-list {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 8px;
-    }
-    .check-list li {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-    .check-list li::before {
-      content: "☐ ";
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    .kpi-num {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--cream);
-    }
-
-    footer {
-      margin-top: 64px;
-      padding: 28px 0;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.8rem;
-      text-align: center;
-    }
-
-    .toc-card {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 8px;
-    }
-    .toc-card a {
-      display: block;
-      padding: 10px 12px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--cream);
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .toc-card a:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .flow {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-    .flow span {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 10px;
-      color: var(--cream);
-    }
-    .flow i {
-      font-style: normal;
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    .warn {
-      background: rgba(232, 168, 124, 0.08);
-      border: 1px solid rgba(232, 168, 124, 0.25);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-top: 12px;
-    }
-    .warn strong { color: var(--accent); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.1); border-radius: 4px; }
+    @keyframes dash { to { stroke-dashoffset: -40; } }
+    .flow-line { stroke-dasharray: 8, 8; animation: dash 2s linear infinite; }
+    .modal-open { overflow: hidden; }
   </style>
 </head>
-<body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <div class="logo">Point<span>Line</span> · 西點業</div>
-      <div class="nav-links">
-        <a href="#profile">行業畫像</a>
-        <a href="#pain">痛點</a>
-        <a href="#icp">ICP</a>
-        <a href="#engines">三引擎</a>
-        <a href="#product">產品</a>
-        <a href="#channels">三通路</a>
-        <a href="#line">LINE</a>
-        <a href="#ai">AI 決策</a>
-        <a href="#pricing">報價</a>
-        <a href="#script">話術</a>
-        <a href="#flow">流程</a>
-        <a href="#kpi">KPI</a>
-        <a href="#case">案例</a>
-        <a href="#checklist">清單</a>
+<body class="h-full flex flex-col font-sans transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+
+  <!-- Header — 對齊 ai1 風格 -->
+  <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0 dark:bg-slate-900 dark:border-slate-800">
+    <div class="flex items-center space-x-3 w-full sm:w-auto">
+      <div class="bg-amber-500 p-2.5 rounded-2xl text-white shadow-md shadow-amber-500/20">
+        <i data-lucide="cake" class="w-6 h-6"></i>
       </div>
-      <a class="nav-cta" href="#pricing">看報價</a>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Bakery Loyalty Command</span>
+          <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">Growth · AI 加送</span>
+        </div>
+        <h1 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">蛋糕西點 · 會員點數 + CRM + AI 決策</h1>
+      </div>
     </div>
-  </nav>
-
-  <div class="wrap">
-    <header class="hero">
-      <div class="badge">蛋糕西點業 · 會員點數 × CRM × AI 決策</div>
-      <h1>會員點數 + CRM + <em>AI 決策</em></h1>
-      <p class="hero-lead">
-        三引擎一體：<strong style="color:var(--cream)">點數算得準</strong>（帳本）、
-        <strong style="color:var(--cream)">客人認得清</strong>（CRM）、
-        <strong style="color:var(--cream)">活動推得準</strong>（AI 決策，預設人審）。
-        訂單來自 <strong style="color:var(--cream)">POS · 線上商城 · 外送</strong>，LINE 負責觸達。
-        會員核心約 <strong style="color:var(--accent)">Ocard 7 成</strong>，Growth <strong style="color:var(--accent)">加送 AI 決策基礎版</strong>。
-      </p>
-      <div class="hero-pills">
-        <div class="pill"><strong>點數</strong> 給點 · 兌獎 · 多店帳本</div>
-        <div class="pill"><strong>CRM</strong> 檔案 · 分群 · 旅程</div>
-        <div class="pill"><strong>AI 決策</strong> 草稿 + 人審</div>
-        <div class="pill"><strong>通路</strong> POS · 商城 · 外送</div>
+    <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+      <div class="hidden lg:flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400">
+        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>帳本 Online</span>
+        <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
+        <span>通路：POS · 商城 · 外送</span>
       </div>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#pricing">方案與報價</a>
-        <a class="btn btn-ghost" href="#script">銷售 Script</a>
-        <a class="btn btn-ghost" href="#flow">30 / 60 / 90 流程</a>
-      </div>
-    </header>
+      <a href="https://www.cbots.ai/ai1.html" target="_blank" rel="noopener" class="text-xs flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> 參考 ai1
+      </a>
+      <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition" title="切換色彩模式">
+        <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+      </button>
+      <button type="button" onclick="document.getElementById('sec-pricing').scrollIntoView({behavior:'smooth'})" class="text-xs font-bold flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-900 px-4 py-2 rounded-xl transition shadow-sm">
+        <i data-lucide="tag" class="w-3.5 h-3.5"></i> 報價
+      </button>
+    </div>
+  </header>
 
-    <section>
-      <div class="sec-label">目錄</div>
-      <h2>本頁內容</h2>
-      <div class="toc-card" style="margin-top:16px">
-        <a href="#engines">1 三引擎</a>
-        <a href="#profile">2 行業畫像</a>
-        <a href="#pain">3 核心痛點</a>
-        <a href="#icp">4 ICP</a>
-        <a href="#product">5 產品清單</a>
-        <a href="#channels">6 POS·商城·外送</a>
-        <a href="#line">7 LINE</a>
-        <a href="#ai">8 AI 決策</a>
-        <a href="#pricing">9 報價</a>
-        <a href="#script">10 話術</a>
-        <a href="#flow">11 流程</a>
-        <a href="#conditions">12 條件</a>
-        <a href="#kpi">13 KPI</a>
-        <a href="#case">14 案例</a>
-        <a href="#checklist">15 清單</a>
-        <a href="#objection">16 異議</a>
-      </div>
-    </section>
+  <main class="flex-1 overflow-y-auto p-4 md:p-8">
+    <div class="mx-auto max-w-7xl">
 
-    <!-- 0 三引擎 -->
-    <section id="engines">
-      <div class="sec-label">00 · Product Core</div>
-      <h2>三引擎：會員點數 + CRM + AI 決策</h2>
-      <p class="sec-desc">產品主軸只有這三塊；POS / 商城 / 外送是<strong>進單通路</strong>，LINE 是<strong>觸達通道</strong>。</p>
-
-      <div class="grid-3">
-        <div class="card" style="border-color: rgba(232,168,124,0.4);">
-          <span class="tag tag-accent">引擎 1</span>
-          <h3 style="margin-top:8px">會員點數</h3>
-          <p style="margin-bottom:10px"><strong style="color:var(--cream)">系統 of Record · 算得準</strong></p>
-          <ul>
-            <li>給點 / 兌獎 / 沖正 / 過期</li>
-            <li>多店、多通路同一流水</li>
-            <li>禮券、提貨券與點分帳</li>
-            <li>品類倍率、排除 SKU</li>
-            <li>冪等入帳、可審計、可匯出</li>
-          </ul>
-          <p style="margin-top:12px;font-size:0.85rem">沒有準帳本 → CRM 與 AI 都是空談。</p>
-        </div>
-        <div class="card" style="border-color: rgba(126,184,212,0.4);">
-          <span class="tag tag-blue">引擎 2</span>
-          <h3 style="margin-top:8px">CRM</h3>
-          <p style="margin-bottom:10px"><strong style="color:var(--cream)">客人認得清 · 經營得動</strong></p>
-          <ul>
-            <li>會員 360：基本檔 + 點餘額 + 券</li>
-            <li>標籤、等級、RFM 分群</li>
-            <li>旅程：入會 → 首購 → 復購 → 沉睡</li>
-            <li>門市/通路消費歷程</li>
-            <li>LINE 綁定、opt-in、客服備註</li>
-            <li>活動與券發放紀錄</li>
-          </ul>
-          <p style="margin-top:12px;font-size:0.85rem">CRM 讀帳本、寫標籤；不另開第二套點數。</p>
-        </div>
-        <div class="card" style="border-color: rgba(212,168,75,0.4);">
-          <span class="tag tag-gold">引擎 3</span>
-          <h3 style="margin-top:8px">AI 決策</h3>
-          <p style="margin-bottom:10px"><strong style="color:var(--cream)">推得準 · 預設人審</strong></p>
-          <ul>
-            <li>給誰：沉睡 / 高價值 / 節慶名單</li>
-            <li>給什麼：券面額、點倍率建議</li>
-            <li>何時：節慶 T-21、生日 D-7</li>
-            <li>原因說明（可解釋）</li>
-            <li>Growth <strong>加送</strong>草稿版</li>
-            <li>Pro：守衛內自動執行</li>
-          </ul>
-          <p style="margin-top:12px;font-size:0.85rem">AI 只建活動/券草稿，<strong>不直接改點餘額</strong>。</p>
-        </div>
+      <!-- 導言 -->
+      <div class="text-center mb-8 max-w-3xl mx-auto">
+        <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+          以<strong class="text-slate-900 dark:text-slate-100">會員點數帳本</strong>為核心，疊加<strong class="text-slate-900 dark:text-slate-100">CRM 經營</strong>與<strong class="text-slate-900 dark:text-slate-100">AI 決策</strong>（預設人審）；
+          POS · 線上商城 · 外送同一會員，LINE 負責觸達。<br />
+          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 點擊下方節點可展開細節；風格對齊 CATCH AI 中控層（ai1）。</span>
+        </p>
       </div>
 
-      <div class="card" style="margin-top:14px">
-        <h3>資料怎麼流</h3>
-        <div class="flow" style="margin-top:12px">
-          <span>POS / 商城 / 外送</span><i>→</i>
-          <span>會員點數（Ledger）</span><i>→</i>
-          <span>CRM 檔案與分群</span><i>→</i>
-          <span>AI 決策草稿</span><i>→</i>
-          <span>人審</span><i>→</i>
-          <span>LINE 推播</span><i>→</i>
-          <span>核銷回流</span>
-        </div>
-      </div>
+      <div class="grid gap-6 lg:grid-cols-12 items-start">
 
-      <div class="table-wrap" style="margin-top:14px">
-        <table>
-          <thead>
-            <tr><th>能力</th><th>點數</th><th>CRM</th><th>AI 決策</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>主問題</strong></td><td>帳對不對？</td><td>這人是誰、值不值得經營？</td><td>下一個動作做什麼？</td></tr>
-            <tr><td><strong>寫入</strong></td><td>流水、餘額</td><td>標籤、等級、備註</td><td>活動草稿、分數</td></tr>
-            <tr><td><strong>誰用</strong></td><td>門市、財務、營運</td><td>行銷、店長、客服</td><td>行銷、總部</td></tr>
-            <tr><td><strong>失敗長相</strong></td><td>跨店爭議、重複給點</td><td>名單髒、重複推</td><td>亂撒券、毛利爆</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="quote-box" style="margin-top:14px">
-        對外一句話：<strong>會員點數算準 + CRM 認得客人 + AI 決定該推誰（您點頭才發）</strong>。
-      </div>
-    </section>
-
-    <!-- 1 行業畫像 -->
-    <section id="profile">
-      <div class="sec-label">01 · Industry</div>
-      <h2>行業畫像：為什麼適合你</h2>
-      <p class="sec-desc">西點同時有高頻小點與節慶大單——需要準點數、CRM 分群、AI 控毛利。</p>
-      <div class="grid-2">
-        <div class="card">
-          <h3>業態特徵</h3>
-          <ul>
-            <li><strong>高頻零食 + 低頻大單</strong>：麵包小點週復購；整模生日/節慶蛋糕高客單</li>
-            <li><strong>強時令</strong>：母親節、情人節、中秋、聖誕、畢業季 → 預購高峰</li>
-            <li><strong>高度 LINE 化</strong>：預購常走官方帳號；集點從紙本→LINE</li>
-            <li><strong>多店 / 加盟常見</strong>：中央廚房 + 多門市取貨，要統一會員</li>
-            <li><strong>損耗敏感</strong>：亂發券傷毛利 → 需要人審 AI，不是狂撒</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>定位一句話</h3>
-          <div class="quote-box">
-            西點連鎖的 <strong>會員點數 + CRM + AI 決策</strong> 中台；POS / 商城 / 外送同一人，LINE 觸達。
-          </div>
-          <p style="margin-top:12px">與 Ocard 重疊在會員，差異在<strong>三通路帳本 + CRM 深度 + 可解釋 AI 人審</strong>。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2 痛點 -->
-    <section id="pain">
-      <div class="sec-label">02 · Discovery</div>
-      <h2>核心痛點：銷售時問的 6 題</h2>
-      <p class="sec-desc">每題一句追問；目標讓老闆自己說出「帳」與「推」的問題。</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>#</th><th>銷售怎麼問</th><th>你在挖什麼</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td><strong>紙本集點 / 各店規則不一，客人換店點數對不上嗎？</strong></td><td>多店帳本</td></tr>
-            <tr><td>2</td><td><strong>生日/節慶是不是只能群發，毛利被全民折吃掉？</strong></td><td>分眾 vs 亂撒</td></tr>
-            <tr><td>3</td><td><strong>預購在 LINE、付款在門市/電商，會員身份會斷嗎？</strong></td><td>OMO 斷點</td></tr>
-            <tr><td>4</td><td><strong>即期品、午后空櫃，有沒有辦法精準推附近客？</strong></td><td>時段/損耗</td></tr>
-            <tr><td>5</td><td><strong>禮券/提貨券核銷月底對帳吵不吵？</strong></td><td>券與點分帳</td></tr>
-            <tr><td>6</td><td><strong>想做會員分級，是不是還在 Excel？</strong></td><td>經營成熟度</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="quote-box" style="margin-top:16px">
-        金句：問題不只在「有沒有會員」，而在<strong>帳準不準、推得準不準</strong>。
-      </div>
-    </section>
-
-    <!-- 3 ICP -->
-    <section id="icp">
-      <div class="sec-label">03 · ICP</div>
-      <h2>客戶分層（ICP）</h2>
-      <div class="grid-2">
-        <div class="card">
-          <span class="tag tag-green">主戰場</span>
-          <h3 style="margin-top:8px">A. 區域連鎖 3–30 店</h3>
-          <p>自有品牌、有 POS、已有 LINE OA。統一帳本 + 節慶 AI，年約 Growth 主推。</p>
-        </div>
-        <div class="card">
-          <span class="tag tag-blue">可接</span>
-          <h3 style="margin-top:8px">B. 單店爆款 / 網紅店</h3>
-          <p>預購強。輕量：集點 + 生日 + LINE 到帳（Starter）。</p>
-        </div>
-        <div class="card">
-          <span class="tag tag-gold">進階</span>
-          <h3 style="margin-top:8px">C. 集團多品牌西點</h3>
-          <p>共點 / 分點規則、多 brand_id。專案報價。</p>
-        </div>
-        <div class="card">
-          <span class="tag tag-accent">後做</span>
-          <h3 style="margin-top:8px">D. 僅電商禮盒</h3>
-          <p>節慶脈衝、弱門市 OMO。可後接，非首發主力。</p>
-        </div>
-      </div>
-      <div class="warn">
-        <strong>不合格先放：</strong>只要 LINE 官方免費集點卡的超微單店（客單與實施不匹配）。結案句：「等要跨店對帳或節慶控毛利時再找我們最划算。」
-      </div>
-    </section>
-
-    <!-- 4 產品 -->
-    <section id="product">
-      <div class="sec-label">04 · Product</div>
-      <h2>產品清單（對應三引擎）</h2>
-      <p class="sec-desc">點數 = 帳本 · CRM = 檔案與旅程 · AI = 決策。LINE 是觸達，不是第四引擎。</p>
-
-      <div class="grid-3">
-        <div class="card">
-          <h3>會員點數</h3>
-          <ul>
-            <li>消費給點（可排除已折價/禮券）</li>
-            <li>品類倍率（小點 1x / 整模 1.5x）</li>
-            <li>禮券、提貨券獨立券種</li>
-            <li>預購付清才入帳、取消沖正</li>
-            <li>跨店 / 跨通路同一 member</li>
-            <li>點/券過期與流水審計</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>CRM</h3>
-          <ul>
-            <li>會員卡：姓名/電話/LINE/等級</li>
-            <li>標籤與 RFM 分群</li>
-            <li>消費歷程（POS/商城/外送）</li>
-            <li>券匣、點餘額、opt-in</li>
-            <li>旅程節點與活動紀錄</li>
-            <li>店長備註、客服查詢</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>AI 決策 + 規則預設</h3>
-          <ul>
-            <li>每滿 NT$50 → 1 點（可調）</li>
-            <li>10 點 → NT$50 或指定小點</li>
-            <li>綁 LINE → 入會禮</li>
-            <li>生日：切片或整模折（防疊）</li>
-            <li>銀/金級：近 12 月消費</li>
-            <li>AI：名單草稿 + 人審</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5 POS + 商城 + 外送 -->
-    <section id="channels">
-      <div class="sec-label">05 · Channels</div>
-      <h2>POS + 線上商城 + 外送</h2>
-      <p class="sec-desc">三條<strong>進單通路</strong>餵養「點數 + CRM + AI」。我們<strong>不取代</strong> POS / 開店 / 外送，只做會員中台。</p>
-
-      <div class="grid-3">
-        <div class="card">
-          <span class="tag tag-accent">通路 1</span>
-          <h3 style="margin-top:8px">POS 門市</h3>
-          <ul>
-            <li>結帳掃會員碼 / 手機號 → 給點</li>
-            <li>現場兌獎、核銷券</li>
-            <li>預購取貨掃碼確認</li>
-            <li>多店共用同一 member</li>
-          </ul>
-          <p style="margin-top:10px"><strong>對接：</strong>POS Webhook / 日結檔 / 中間件</p>
-        </div>
-        <div class="card">
-          <span class="tag tag-blue">通路 2</span>
-          <h3 style="margin-top:8px">線上商城</h3>
-          <ul>
-            <li>官網 / App / 91 / SHOPLINE 等</li>
-            <li>登入即綁會員，下單給點</li>
-            <li>購物車點數折抵、券折</li>
-            <li>禮盒預購、鑑賞期後入帳</li>
-          </ul>
-          <p style="margin-top:10px"><strong>對接：</strong>訂單 Webhook + 會員 SSO/綁定</p>
-        </div>
-        <div class="card">
-          <span class="tag tag-gold">通路 3</span>
-          <h3 style="margin-top:8px">外送</h3>
-          <ul>
-            <li><strong>自外送 / 品牌外送：</strong>訂單可帶 member，正常給點</li>
-            <li><strong>第三方（Uber/foodpanda 等）：</strong>平台常吃掉會員身份</li>
-            <li>策略：外送單附「回門市/LINE 補登」或僅品牌自外送給點</li>
-            <li>外送運費是否給點：規則可關</li>
-          </ul>
-          <p style="margin-top:10px"><strong>對接：</strong>自有外送 API；三方靠補登/券引導</p>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>統一訂單模型（入帳必填）</h3>
-        <div class="table-wrap" style="border:none;margin-top:8px">
-          <table>
-            <thead>
-              <tr><th>欄位</th><th>說明</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><strong>channel</strong></td><td><code>pos</code> | <code>web</code> | <code>app</code> | <code>delivery_own</code> | <code>delivery_3p</code></td></tr>
-              <tr><td><strong>store_id</strong></td><td>門市 / 出貨店（外送指派店）</td></tr>
-              <tr><td><strong>order_id</strong></td><td>來源系統唯一單號（冪等鍵）</td></tr>
-              <tr><td><strong>member_id</strong></td><td>可空（訪客）；有則給點</td></tr>
-              <tr><td><strong>amount_eligible</strong></td><td>可計點金額（已扣券/運費策略後）</td></tr>
-              <tr><td><strong>lines</strong></td><td>SKU / 品類（倍率、排除用）</td></tr>
-              <tr><td><strong>status</strong></td><td>paid / cancelled / refunded → 沖正</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="table-wrap" style="margin-top:14px">
-        <table>
-          <thead>
-            <tr><th>場景</th><th>給點？</th><th>兌獎/用券？</th><th>注意</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>POS 門市</strong></td><td>是（綁會員）</td><td>是</td><td>主力；教育掃碼 15 分</td></tr>
-            <tr><td><strong>線上商城自取</strong></td><td>付清後 / 鑑賞期後</td><td>是</td><td>取貨提醒走 LINE 交易</td></tr>
-            <tr><td><strong>線上商城宅配</strong></td><td>出貨或簽收後（可配置）</td><td>是</td><td>退貨沖正</td></tr>
-            <tr><td><strong>品牌自外送</strong></td><td>是（若已登入）</td><td>是</td><td>運費是否計點可關</td></tr>
-            <tr><td><strong>第三方外送</strong></td><td>預設否或僅補登</td><td>難</td><td>用 LINE 券導回官網/門市</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="grid-2" style="margin-top:14px">
-        <div class="card">
-          <h3>架構原則</h3>
-          <ul>
-            <li>POS / 商城 / 外送 = <strong>訂單來源</strong></li>
-            <li>本系統 = <strong>會員帳本 + 券 + LINE + AI</strong></li>
-            <li>同一人：手機 / LINE user / 商城帳號綁定</li>
-            <li>失敗可補登，必有操作者審計</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>與誰共存（不搶位置）</h3>
-          <ul>
-            <li><strong>POS：</strong>原廠或既有收銀</li>
-            <li><strong>線上：</strong>91APP / SHOPLINE / 自建官網</li>
-            <li><strong>外送：</strong>Uber Eats / foodpanda / 自外送</li>
-            <li>話術：「開店與外送繼續用您的；我們讓<strong>三通路點算在同一本帳</strong>。」</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>實施分期（含三通路）</h3>
-        <ol class="steps" style="margin-top:10px">
-          <li><strong>P0 · POS</strong>門市給點 + LINE 到帳（必做，價值最快）</li>
-          <li><strong>P1 · 線上商城</strong>訂單 Webhook + 購物車用點/券</li>
-          <li><strong>P2 · 自外送</strong>帶 member 的外送單入帳</li>
-          <li><strong>P3 · 三方外送</strong>補登流程 + AI 導流券（不強求平台原生積分）</li>
-        </ol>
-      </div>
-
-      <div class="warn">
-        <strong>報價提示：</strong>三通路對接工時不同。POS 基礎含在實施費；第二個商城平台、自外送 API、三方特殊串接可列「通路加購」。Growth 年費含<strong>帳本能力</strong>，不含無限客製接三家 POS。
-      </div>
-    </section>
-
-    <!-- 6 LINE -->
-    <section id="line">
-      <div class="sec-label">06 · LINE</div>
-      <h2>LINE 推播模板</h2>
-      <p class="sec-desc">三通路共用模板；payload 帶 channel（pos / web / delivery）方便歸因。</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>模板</th><th>時機</th><th>類型</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>到帳 / 兌獎</strong></td><td>結帳後</td><td>交易通知</td></tr>
-            <tr><td><strong>生日蛋糕券</strong></td><td>D-7 / D-3 / 當日</td><td>行銷（opt-in）</td></tr>
-            <tr><td><strong>節慶預購開跑</strong></td><td>母親節 T-21 等</td><td>行銷</td></tr>
-            <tr><td><strong>取貨提醒</strong></td><td>預購日前 1 天</td><td>交易</td></tr>
-            <tr><td><strong>即期 / 午后出清</strong></td><td>當日 14:00 附近門市</td><td>行銷 + 頻控</td></tr>
-            <tr><td><strong>沉睡召回</strong></td><td>45/60 天未消費</td><td>AI 決策 → 人審</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="warn">
-        <strong>合規：</strong>交易 vs 行銷分通道；日/週上限；靜默時段；退訂一鍵；推播只走 outbox，業務不直連 LINE API。
-      </div>
-    </section>
-
-    <!-- 6 AI -->
-    <section id="ai">
-      <div class="sec-label">07 · AI Decision</div>
-      <h2>AI 決策系統</h2>
-      <p class="sec-desc">Growth <strong>加送基礎版</strong>：只出草稿與解釋，預設人審。Pro 才開守衛內自動。</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>決策</th><th>輸入</th><th>輸出（預設草稿）</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>生日高價值</strong></td><td>生日月 + 歷史整模訂單</td><td>切片免費 vs 整模折 檔位建議</td></tr>
-            <tr><td><strong>節慶預購喚醒</strong></td><td>去年同期買過禮盒</td><td>優先推播名單</td></tr>
-            <tr><td><strong>櫃量出清</strong></td><td>門市 + SKU 殘量（可後接）</td><td>小範圍 1.5x 點或小券</td></tr>
-            <tr><td><strong>沉睡</strong></td><td>RFM</td><td>滿額券面額建議（有 cap）</td></tr>
-            <tr><td><strong>不該發</strong></td><td>剛買整模、退訂、客訴</td><td>排除名單</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="grid-2" style="margin-top:14px">
-        <div class="card">
-          <h3>加送範圍（含）</h3>
-          <ul>
-            <li>RFM / 沉默分層</li>
-            <li>活動草稿 + 原因說明</li>
-            <li>人審後才發送</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>不含（升級 Pro）</h3>
-          <ul>
-            <li>自動發券 / 排隊推播</li>
-            <li>A/B、預算機器人</li>
-            <li>外接 CDP</li>
-          </ul>
-        </div>
-      </div>
-      <div class="quote-box">
-        護欄示例：單客月行銷折讓 ≤ 客單 15%；節慶券庫存上限；AI <strong>永不直接改積分餘額</strong>。
-      </div>
-    </section>
-
-    <!-- 7 報價 -->
-    <section id="pricing">
-      <div class="sec-label">08 · Pricing</div>
-      <h2>報價：約 Ocard 7 成 + AI 加送</h2>
-      <p class="sec-desc">
-        Ocard 公價多為洽詢。對外話術用「約 7 成」；對內公式：
-        <code style="color:var(--accent)">報價 = max(牌價階梯, 客戶 Ocard 可比價 × 0.7) 且 ≥ 底價</code>。
-        7 折只打<strong>會員核心年費</strong>；實施、超量推播、AI Pro 不承諾 7 折。
-      </p>
-
-      <div class="grid-3">
-        <div class="card">
-          <span class="tag tag-blue">Starter</span>
-          <h3 style="margin-top:8px">1–2 店</h3>
-          <div class="price-tag">18,000–24,000</div>
-          <p class="price-note">NT$ / 年 · 約 1 店</p>
-          <ul style="margin-top:12px">
-            <li>帳本、LINE 綁定、給點兌獎</li>
-            <li>到帳推播（含額度）</li>
-            <li>AI：不含或極簡</li>
-            <li>實施一次：8,000–15,000</li>
-          </ul>
-        </div>
-        <div class="card" style="border-color: rgba(232,168,124,0.45); box-shadow: 0 0 0 1px rgba(232,168,124,0.2);">
-          <span class="tag tag-accent">主推 Growth</span>
-          <h3 style="margin-top:8px">3–15 店 · 西點主力</h3>
-          <div class="price-tag">28,000 起</div>
-          <p class="price-note">NT$ / 年 · 見下表階梯 · 可對 Ocard×0.7</p>
-          <ul style="margin-top:12px">
-            <li>會員點數 + CRM 分群</li>
-            <li>LINE 交易/行銷推播</li>
-            <li><strong>★ 加送 AI 決策基礎</strong></li>
-            <li>實施：25,000–60,000</li>
-          </ul>
-        </div>
-        <div class="card">
-          <span class="tag tag-gold">Pro</span>
-          <h3 style="margin-top:8px">自動 AI · 多品牌</h3>
-          <div class="price-tag">+30%–50%</div>
-          <p class="price-note">在 Growth 年費上加，或 AI 加購</p>
-          <ul style="margin-top:12px">
-            <li>守衛內自動發券</li>
-            <li>A/B、更高配額</li>
-            <li>多品牌共點專案</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="table-wrap" style="margin-top:18px">
-        <table>
-          <thead>
-            <tr><th>Growth 門市階梯（示例）</th><th>年費區間 NT$</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>3–5 店</strong></td><td>28,000 – 40,000</td></tr>
-            <tr><td><strong>6–10 店</strong></td><td>45,000 – 70,000</td></tr>
-            <tr><td><strong>11–15 店</strong></td><td>另議（勿死 7 折）</td></tr>
-            <tr><td><strong>推播含額</strong></td><td>例 10,000 則/年；超出另計 / 則</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>報價四塊（對客戶拆開講）</h3>
-        <div class="grid-2" style="margin-top:10px">
-          <div>
-            <p><strong>① 平台訂閱</strong> — 門市數或 MAU</p>
-            <p><strong>② 開通實施</strong> — 一次（POS / LINE / 教育）</p>
-          </div>
-          <div>
-            <p><strong>③ 用量</strong> — 推播超量</p>
-            <p><strong>④ 加值</strong> — AI Pro、第二商城/自外送對接、多品牌（不在 7 折）</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="warn">
-        <strong>底價紀律：</strong>7 折若低於（主機+推播+支援+實施攤提）×1.3 → 不接，或砍成 Starter 範圍。沒有客戶出示的 Ocard 數字時，用自己牌價，不空想對方價格。
-      </div>
-    </section>
-
-    <!-- 8 話術 -->
-    <section id="script">
-      <div class="sec-label">09 · Sales Script</div>
-      <h2>話術（一頁 Script）</h2>
-
-      <div class="card">
-        <h3>A. 開場 30 秒</h3>
-        <div class="quote-box">
-          西點要的不是再一個集點 App，而是三件事：
-          <strong>會員點數算準、CRM 認得每一位客人、AI 決定節慶該推誰——您點頭才發券</strong>。
-          訂單來自 <strong>POS、線上商城、外送</strong>，LINE 負責觸達；
-          <strong>不換 POS / 不換商城 / 不換外送平台</strong>。
-          會員核心約 <strong>Ocard 七成</strong>，Growth <strong>加送 AI 決策基礎</strong>。
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>B. 資格篩選</h3>
-        <div class="table-wrap" style="border:none">
-          <table>
-            <thead><tr><th>問</th><th>理想</th><th>若否</th></tr></thead>
-            <tbody>
-              <tr><td>幾間門市？</td><td>≥3 或有預購/禮券</td><td>建議官方集點，留聯絡</td></tr>
-              <tr><td>有 POS / 能出訂單？</td><td>有或可 Webhook/日結</td><td>半自動補登方案</td></tr>
-              <tr><td>主要用 LINE？</td><td>是</td><td>可做，價值打七折</td></tr>
-              <tr><td>誰拍板？</td><td>老闆/營運/行銷</td><td>約決策者同場</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>C. 方案三刀 = 三引擎（各 20 秒）</h3>
-        <ul>
-          <li><strong>會員點數：</strong>POS/商城/外送同一流水，禮券與點分帳。</li>
-          <li><strong>CRM：</strong>檔案、等級、RFM、旅程，門市與客服查得到。</li>
-          <li><strong>AI 決策：</strong>給誰、什麼券、何時推——草稿預設您審核。</li>
-        </ul>
-        <p style="margin-top:10px"><strong>Demo 順序：</strong>給點 → CRM 看人 → LINE 到帳 → AI 母親節草稿 → 核准 → 發券 → 核銷。</p>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>D. 價格話術</h3>
-        <ul>
-          <li>開價：「會員核心對齊約 <strong>七成</strong>，且 <strong>AI 基礎直接加送</strong>。」</li>
-          <li>對方拿 Ocard 全包比：「請拆開點餐/商城；<strong>比會員+推播+決策</strong>。」</li>
-          <li>再砍：「年費已含 AI；再砍改 Starter 範圍，不砍壞帳本 SLA。」</li>
-          <li>要自動 AI：「那是 <strong>Pro</strong>，不是加送範圍。」</li>
-        </ul>
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>E. 逼定下一步</h3>
-        <p>① 技術對接 45 分（POS/IT + 營運）　或　② 下一檔節慶试点（人審發送 + 復盤核銷）</p>
-        <div class="quote-box">我們不跟您搶開店系統；我們讓<strong>點算得準、節慶推得準、帳對得完</strong>。</div>
-      </div>
-    </section>
-
-    <!-- 9 流程 -->
-    <section id="flow">
-      <div class="sec-label">10 · Process</div>
-      <h2>流程</h2>
-      <div class="grid-2">
-        <div>
-          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:12px">銷售流程</h3>
-          <ol class="steps">
-            <li><strong>開發 / 約訪</strong>門市數、POS、商城、外送、下一檔節慶</li>
-            <li><strong>篩選 + 六題挖需</strong>三通路是否斷帳</li>
-            <li><strong>Demo</strong>POS 給點→商城單→推播→AI 草稿</li>
-            <li><strong>報價</strong>年費 + 實施 + 可選通路加購</li>
-            <li><strong>簽約</strong>定義 P0 POS / P1 商城 / P2 外送範圍</li>
-            <li><strong>上線復盤</strong>分通路 KPI + 續約</li>
-          </ol>
-        </div>
-        <div>
-          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:12px">交付 30 / 60 / 90</h3>
-          <ol class="steps">
-            <li><strong>30 天 · POS</strong>LINE 綁定、門市給點、到帳推播、查帳</li>
-            <li><strong>60 天 · 商城</strong>訂單 Webhook、用點/券、生日與禮券</li>
-            <li><strong>90 天 · 外送+AI</strong>自外送入帳或三方補登、節慶 AI 人審、ROI</li>
-          </ol>
-          <div class="card" style="margin-top:14px">
-            <h3>三通路即時流</h3>
-            <div class="flow" style="margin-top:10px">
-              <span>POS</span><i>/</i>
-              <span>商城</span><i>/</i>
-              <span>外送</span><i>→</i>
-              <span>Ledger</span><i>→</i>
-              <span>LINE</span><i>→</i>
-              <span>核銷</span>
+        <!-- 左側：三引擎 -->
+        <aside class="lg:col-span-3 space-y-4">
+          <div onclick="openDetail('points')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-amber-500/20 dark:bg-amber-950/10">
+            <div class="mb-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="bg-amber-100 dark:bg-amber-950 p-2 rounded-xl text-amber-600 dark:text-amber-400">
+                  <i data-lucide="coins" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <h3 class="font-extrabold text-slate-900 dark:text-slate-100">會員點數</h3>
+                  <p class="text-xs text-amber-600 dark:text-amber-400 font-bold">引擎 1 · SoR 帳本</p>
+                </div>
+              </div>
+              <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+              <li>• 給點 / 兌獎 / 沖正 / 過期</li>
+              <li>• 多店 · 多通路同一流水</li>
+              <li>• 禮券與點分帳</li>
+              <li>• 冪等 · 可審計 · 可匯出</li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-amber-200/50 dark:border-amber-800/30 flex justify-between text-[11px] text-amber-600 dark:text-amber-400 font-bold">
+              <span>查看帳本細節</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- 11 條件 -->
-    <section id="conditions">
-      <div class="sec-label">11 · Terms</div>
-      <h2>條件與紅線</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h3>合作條件（建議）</h3>
-          <ul>
-            <li>年約；數據所有權歸品牌，可匯出</li>
-            <li>年費：簽約 50% + 上線 50%（或一次付清）</li>
-            <li>實施費簽約支付</li>
-            <li>行銷推播需 opt-in；交易通知可預設開</li>
-            <li>報價有效天數寫死（如 14–30 天）</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>報價紅線</h3>
-          <ul>
-            <li>7 折只打會員核心年費</li>
-            <li>實施 / 超量 / Pro 不跟 7 折</li>
-            <li>低於底價不接或砍範圍</li>
-            <li>AI 加送 = 草稿+人審，寫進合約附件</li>
-            <li>&gt;15 店改專案價 + 成功指標</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- 11 KPI -->
-    <section id="kpi">
-      <div class="sec-label">12 · KPI</div>
-      <h2>KPI（老闆聽得懂）</h2>
-      <div class="grid-3">
-        <div class="card"><div class="kpi-num">會員消費占比</div><p>全通路合計；另拆 POS / 商城 / 外送</p></div>
-        <div class="card"><div class="kpi-num">30 / 60 日復購</div><p>小點高頻是否改善</p></div>
-        <div class="card"><div class="kpi-num">節慶預購 × 客單</div><p>大單與預購件數</p></div>
-        <div class="card"><div class="kpi-num">券核銷率 / 折讓率</div><p>防亂送、控毛利</p></div>
-        <div class="card"><div class="kpi-num">跨通路斷帳率</div><p>有 member 的訂單占比（商城/外送）</p></div>
-        <div class="card"><div class="kpi-num">跨店點爭議單</div><p>帳本價值（趨近 0）</p></div>
-      </div>
-    </section>
-
-    <!-- 13 案例 -->
-    <section id="case">
-      <div class="sec-label">13 · Case</div>
-      <h2>案例（示意 · 可換真客戶）</h2>
-      <div class="card">
-        <h3>「北中南 12 店烘焙」· POS + 官網 + 外送</h3>
-        <div class="grid-3" style="margin-top:12px">
-          <div>
-            <p><strong style="color:var(--accent)">痛點</strong></p>
-            <p>門市集點、官網另一套、外送沒會員；母親節全民 8 折；跨店爭議多。</p>
+          <div onclick="openDetail('crm')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-blue-500/20 dark:bg-blue-950/10">
+            <div class="mb-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="bg-blue-100 dark:bg-blue-950 p-2 rounded-xl text-blue-600 dark:text-blue-400">
+                  <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <h3 class="font-extrabold text-slate-900 dark:text-slate-100">CRM</h3>
+                  <p class="text-xs text-blue-600 dark:text-blue-400 font-bold">引擎 2 · 認得客人</p>
+                </div>
+              </div>
+              <span class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+              <li>• 會員 360 · 等級 · 標籤</li>
+              <li>• RFM 分群 · 旅程</li>
+              <li>• 通路消費歷程</li>
+              <li>• LINE 綁定 · opt-in</li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-blue-200/50 dark:border-blue-800/30 flex justify-between text-[11px] text-blue-600 dark:text-blue-400 font-bold">
+              <span>查看 CRM 細節</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+            </div>
           </div>
-          <div>
-            <p><strong style="color:var(--accent)">做法</strong></p>
-            <p>P0 POS 統一帳本 → P1 官網 Webhook 給點/用券 → 自外送帶 member；AI 節慶人審名單；三方外送只做 LINE 導流券。</p>
-          </div>
-          <div>
-            <p><strong style="color:var(--accent)">結果（示意）</strong></p>
-            <p>有 member 訂單占比↑；跨店爭議→0；節慶折讓可控；分通路報表可看。</p>
-          </div>
-        </div>
-        <p class="price-note" style="margin-top:12px">* 示意數字請在真實上線後替換為 before/after。</p>
-      </div>
-    </section>
 
-    <!-- 13 清單 -->
-    <section id="checklist">
-      <div class="sec-label">14 · Checklists</div>
-      <h2>清單</h2>
-      <div class="grid-2">
-        <div>
-          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:10px">拜訪前</h3>
-          <ul class="check-list">
-            <li>門市數、POS 廠牌</li>
-            <li>線上商城平台（91/SHOPLINE/自建）</li>
-            <li>外送：自外送 or 三方平台</li>
-            <li>下一檔節慶（倒推 6–8 週）</li>
-            <li>Ocard / 官方集點現況</li>
-            <li>決策者在場 + Demo 帳</li>
+          <div onclick="openDetail('ai')" class="group cursor-pointer rounded-2xl border border-purple-200 bg-purple-50/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 dark:border-purple-500/20 dark:bg-purple-950/10">
+            <div class="mb-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="bg-purple-100 dark:bg-purple-950 p-2 rounded-xl text-purple-600 dark:text-purple-400">
+                  <i data-lucide="brain" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <h3 class="font-extrabold text-slate-900 dark:text-slate-100">AI 決策</h3>
+                  <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">引擎 3 · 加送基礎版</p>
+                </div>
+              </div>
+              <span class="h-2 w-2 rounded-full bg-purple-500 animate-pulse"></span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+              <li>• 給誰 / 什麼券 / 何時</li>
+              <li>• 可解釋原因說明</li>
+              <li>• 預設草稿 + 人審</li>
+              <li>• 不直接改點餘額</li>
+            </ul>
+            <div class="mt-4 pt-3 border-t border-purple-200/50 dark:border-purple-800/30 flex justify-between text-[11px] text-purple-600 dark:text-purple-400 font-bold">
+              <span>查看 AI 細節</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+        </aside>
+
+        <!-- 右側：分層 -->
+        <section class="lg:col-span-9 space-y-4">
+
+          <!-- A 通路接入 -->
+          <div onclick="openDetail('channels')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50/60 p-5 shadow-sm transition-all dark:border-emerald-500/20 dark:bg-emerald-950/5 dark:hover:bg-emerald-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 font-black text-xl shrink-0">A</div>
+              <div>
+                <h2 class="text-lg font-extrabold flex items-center gap-2">
+                  通路接入層
+                  <span class="text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded-full">POS · 商城 · 外送</span>
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">訂單來源，不取代既有系統；統一 channel / store_id / order_id 入帳</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              展開通路策略 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+
+          <!-- B 點數帳本 -->
+          <div onclick="openDetail('points')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/30 hover:bg-amber-50/60 p-5 shadow-sm transition-all dark:border-amber-500/20 dark:bg-amber-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0">B</div>
+              <div>
+                <h2 class="text-lg font-extrabold flex items-center gap-2">
+                  會員點數層
+                  <span class="text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 px-2 py-0.5 rounded-full">Ledger SoR</span>
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">給點 · 兌獎 · 禮券 · 倍率 · 沖正 · 過期 · 多店對帳</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">展開帳本 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+
+          <!-- C CRM -->
+          <div onclick="openDetail('crm')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/30 hover:bg-blue-50/60 p-5 shadow-sm transition-all dark:border-blue-500/20 dark:bg-blue-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0">C</div>
+              <div>
+                <h2 class="text-lg font-extrabold flex items-center gap-2">
+                  CRM 經營層
+                  <span class="text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 px-2 py-0.5 rounded-full">360°</span>
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">檔案 · RFM · 旅程 · 標籤 · 券匣 · 客服查詢</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">展開 CRM <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+
+          <!-- D AI + LINE Agents -->
+          <div class="rounded-2xl border border-purple-200 bg-white p-5 shadow-sm dark:border-purple-500/20 dark:bg-slate-900/50">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">D</div>
+              <div>
+                <h2 class="text-lg font-extrabold">AI 決策 + LINE 觸達</h2>
+                <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">Agent 協作 · 人審優先</p>
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <button type="button" onclick="openDetail('ai')" class="text-left rounded-xl border border-purple-100 dark:border-purple-800/40 p-4 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="sparkles" class="w-4 h-4 text-purple-500"></i> 決策 Agent</div>
+                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <li>沉睡 / 高價值名單</li>
+                  <li>節慶券面額建議</li>
+                  <li>草稿 + 人審</li>
+                </ul>
+              </button>
+              <button type="button" onclick="openDetail('line')" class="text-left rounded-xl border border-green-100 dark:border-green-800/40 p-4 hover:bg-green-50 dark:hover:bg-green-950/20 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="message-circle" class="w-4 h-4 text-green-500"></i> LINE Agent</div>
+                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <li>到帳 / 取貨提醒</li>
+                  <li>生日 · 節慶推播</li>
+                  <li>交易 vs 行銷分通道</li>
+                </ul>
+              </button>
+              <button type="button" onclick="openDetail('marketing')" class="text-left rounded-xl border border-rose-100 dark:border-rose-800/40 p-4 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="megaphone" class="w-4 h-4 text-rose-500"></i> 行銷 Agent</div>
+                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <li>母親節預購喚醒</li>
+                  <li>即期出清小範圍</li>
+                  <li>折讓 cap 護欄</li>
+                </ul>
+              </button>
+              <button type="button" onclick="openDetail('boss')" class="text-left rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                <div class="flex items-center gap-2 font-bold text-sm mb-2"><i data-lucide="briefcase" class="w-4 h-4 text-slate-500"></i> 老闆視角</div>
+                <ul class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                  <li>分通路 KPI</li>
+                  <li>折讓率 · 核銷率</li>
+                  <li>跨店爭議 → 0</li>
+                </ul>
+              </button>
+            </div>
+          </div>
+
+          <!-- E 治理 -->
+          <div onclick="openDetail('governance')" class="group cursor-pointer rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm transition-all dark:border-slate-700 dark:bg-slate-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-black text-xl shrink-0">E</div>
+              <div>
+                <h2 class="text-lg font-extrabold">治理與稽核層</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">建議來源 · 人審結果 · 執行結果 · 調帳審計 · 退訂與頻控</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-slate-500 flex items-center gap-1">展開治理 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 流程箭頭示意 -->
+      <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 overflow-x-auto">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端資料流</p>
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold min-w-max">
+          <span class="px-3 py-2 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">POS / 商城 / 外送</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數 Ledger</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">CRM</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">AI 草稿</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">人審</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">核銷回流</span>
+        </div>
+      </div>
+
+      <!-- 行業 / ICP / 痛點 快卡 -->
+      <div class="mt-8 grid md:grid-cols-3 gap-4">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+          <h3 class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="store" class="w-4 h-4 text-amber-500"></i> 行業畫像</h3>
+          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+            <li>高頻小點 + 節慶大單</li>
+            <li>強 LINE / 預購 / 多店</li>
+            <li>損耗敏感 → 勿亂發券</li>
           </ul>
         </div>
-        <div>
-          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:10px">上線檢查</h3>
-          <ul class="check-list">
-            <li>P0：POS 入帳 + LINE 到帳</li>
-            <li>P1：商城 order Webhook</li>
-            <li>P2：自外送 member 入帳</li>
-            <li>channel 欄位強制寫入</li>
-            <li>退貨/取消沖正測過</li>
-            <li>AI 人審預設 ON</li>
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+          <h3 class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-4 h-4 text-blue-500"></i> ICP</h3>
+          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+            <li><strong>主戰場</strong> 3–30 店連鎖</li>
+            <li>有 POS + LINE OA</li>
+            <li>可選商城 / 外送</li>
           </ul>
         </div>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <h3>業務口袋卡</h3>
-        <div class="quote-box">
-          【開場】點數 + CRM + AI 決策 · 您點頭才發<br />
-          【通路】POS · 商城 · 外送 同一人<br />
-          【鎖客】≥3 店 或 有商城/外送 · POS+LINE<br />
-          【三刀】帳不準 / 客不識 / 推不準<br />
-          【Demo】給點→CRM 分群→AI 草稿→核准→LINE<br />
-          【報價】≈ Ocard 7 成 · AI 基礎加送<br />
-          【下一步】P0 POS 或 節慶试点
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+          <h3 class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="help-circle" class="w-4 h-4 text-rose-500"></i> 銷售 6 題</h3>
+          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1.5">
+            <li>跨店點對不對？</li>
+            <li>節慶是否全民折？</li>
+            <li>POS/商城/外送斷帳？</li>
+          </ul>
+          <button type="button" onclick="openDetail('pain')" class="mt-3 text-xs font-bold text-rose-600 dark:text-rose-400">看完整 6 題 →</button>
         </div>
       </div>
-    </section>
 
-    <!-- 14 異議 -->
-    <section id="objection">
-      <div class="sec-label">15 · Objections</div>
-      <h2>異議處理表</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>異議</th><th>回應要點</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>已有 LINE 官方集點</strong></td><td>單店夠；跨店、商城、外送、節慶分眾才需要統一帳本。</td></tr>
-            <tr><td><strong>跟 Ocard 一樣？</strong></td><td>Ocard 擅餐飲；我們強在 POS+商城+外送同一帳 + AI 人審。核心約 7 成+AI 加送。</td></tr>
-            <tr><td><strong>要換 POS / 商城嗎？</strong></td><td><strong>不用。</strong>原系統都留；我們做點數+CRM+AI，只接訂單進中台。</td></tr>
-            <tr><td><strong>CRM 會不會跟 91 重複？</strong></td><td>91 偏賣場與訂單；我們 CRM 綁<strong>點餘額、券、分群、AI 名單</strong>，可共存。</td></tr>
-            <tr><td><strong>外送平台不給會員資料</strong></td><td>三方外送預設不硬給點；用 LINE 導流券回門市/官網；自外送可完整給點。</td></tr>
-            <tr><td><strong>門市太忙</strong></td><td>POS 自動給點；最多掃碼一步；補登有審計。</td></tr>
-            <tr><td><strong>AI 亂送會虧</strong></td><td>預設草稿+人審；折讓 cap；不直接改餘額。</td></tr>
-            <tr><td><strong>已有 91APP</strong></td><td>賣場繼續用 91；我們當積分與決策中台，可共存。</td></tr>
-            <tr><td><strong>不要裝 App</strong></td><td>LINE 綁定即可，不需新 App。</td></tr>
-            <tr><td><strong>三通路一次接不完</strong></td><td>P0 POS → P1 商城 → P2 外送；先讓門市帳準就有感。</td></tr>
-            <tr><td><strong>很貴</strong></td><td>年費含帳本能力；第二套商城/自外送可列通路加購；可比亂折成本。</td></tr>
-            <tr><td><strong>資料外流</strong></td><td>租戶隔離、opt-in、所有權歸品牌、可匯出。</td></tr>
-            <tr><td><strong>員工作弊加點</strong></td><td>操作者+原因+日誌；異常告警。</td></tr>
-            <tr><td><strong>整模與麵包不同點</strong></td><td>品類倍率/排除 SKU；禮盒走券、麵包走點。</td></tr>
-          </tbody>
-        </table>
+      <!-- 報價 -->
+      <div id="sec-pricing" class="mt-10 scroll-mt-24">
+        <div class="flex items-end justify-between gap-4 mb-4 flex-wrap">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pricing</p>
+            <h2 class="text-2xl font-extrabold">報價 · 約 Ocard 7 成 + AI 加送</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">7 折只打會員核心年費；實施 / 通路加購 / AI Pro 另計。公式：max(牌價, 客戶可比價×0.7) ≥ 底價</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <p class="text-xs font-bold text-slate-400">Starter · 1–2 店</p>
+            <p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">18k–24k<span class="text-sm font-bold text-slate-400">/年</span></p>
+            <ul class="mt-4 text-sm text-slate-600 dark:text-slate-400 space-y-2">
+              <li>✓ 點數帳本 + 基礎 CRM</li>
+              <li>✓ LINE 到帳推播</li>
+              <li>△ AI 不含或極簡</li>
+              <li>實施 8k–15k 一次</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border-2 border-amber-400 dark:border-amber-500 bg-amber-50/40 dark:bg-amber-950/20 p-6 shadow-lg shadow-amber-500/10 relative">
+            <span class="absolute -top-3 left-4 text-[10px] font-black uppercase bg-amber-500 text-white px-2 py-1 rounded-full">主推 Growth</span>
+            <p class="text-xs font-bold text-amber-700 dark:text-amber-400">3–15 店 · 點數+CRM+AI</p>
+            <p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">28k 起<span class="text-sm font-bold text-slate-400">/年</span></p>
+            <p class="text-xs text-slate-500 mt-1">3–5 店 28–40k · 6–10 店 45–70k</p>
+            <ul class="mt-4 text-sm text-slate-700 dark:text-slate-300 space-y-2">
+              <li>✓ 會員點數 + CRM 分群</li>
+              <li>✓ LINE 交易/行銷推播</li>
+              <li>✓ <strong>加送 AI 決策基礎（草稿+人審）</strong></li>
+              <li>實施 25k–60k · 可對 Ocard×0.7</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <p class="text-xs font-bold text-slate-400">Pro · 自動 AI</p>
+            <p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">+30–50%<span class="text-sm font-bold text-slate-400">/年</span></p>
+            <ul class="mt-4 text-sm text-slate-600 dark:text-slate-400 space-y-2">
+              <li>✓ 守衛內自動發券</li>
+              <li>✓ A/B · 更高配額</li>
+              <li>✓ 多品牌共點專案</li>
+              <li>第二商城/自外送加購</li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <footer>
-      <p>蛋糕西點業 · 會員積分中台銷售頁（內部 / 提案用）</p>
-      <p style="margin-top:6px">報價為結構示例，請代入實際成本與底價 · AI 加送範圍以合約附件為準</p>
-      <p style="margin-top:12px">
-        <a href="#pricing">報價</a> ·
-        <a href="#script">話術</a> ·
-        <a href="#flow">流程</a> ·
-        <a href="#checklist">清單</a>
+      <!-- 流程 + KPI -->
+      <div class="mt-10 grid lg:grid-cols-2 gap-6">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-emerald-500"></i> 30 / 60 / 90 流程</h3>
+          <ol class="space-y-3 text-sm">
+            <li class="flex gap-3"><span class="font-black text-emerald-600">30</span><span><strong>點數+CRM 基礎</strong>：POS 入帳、LINE 綁定、到帳推播、Admin 查帳</span></li>
+            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>CRM 加深 + 商城</strong>：分群、禮券、訂單 Webhook、生日</span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>AI + 外送</strong>：節慶草稿人審、自外送/補登、ROI 復盤</span></li>
+          </ol>
+          <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
+        </div>
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-blue-500"></i> KPI</h3>
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">會員消費占比</p><p class="text-xs text-slate-500">拆 POS / 商城 / 外送</p></div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">30/60 日復購</p><p class="text-xs text-slate-500">小點高頻</p></div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">節慶預購 × 客單</p><p class="text-xs text-slate-500">大單</p></div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">折讓率 / 核銷率</p><p class="text-xs text-slate-500">防亂送</p></div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">跨通路 member 率</p><p class="text-xs text-slate-500">斷帳改善</p></div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3"><p class="font-bold">跨店爭議單</p><p class="text-xs text-slate-500">→ 0</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 案例 -->
+      <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-amber-50 to-white dark:from-amber-950/20 dark:to-slate-900 p-6">
+        <h3 class="font-extrabold text-lg mb-3 flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-amber-500"></i> 示意案例 · 北中南 12 店</h3>
+        <div class="grid md:grid-cols-3 gap-4 text-sm">
+          <div><p class="font-bold text-rose-600 dark:text-rose-400 mb-1">痛點</p><p class="text-slate-600 dark:text-slate-400">門市/官網/外送三本帳；母親節全民 8 折；跨店爭議。</p></div>
+          <div><p class="font-bold text-blue-600 dark:text-blue-400 mb-1">做法</p><p class="text-slate-600 dark:text-slate-400">點數統一 → CRM 分群 → AI 節慶人審 → LINE；P0 POS → P1 商城 → P2 外送。</p></div>
+          <div><p class="font-bold text-emerald-600 dark:text-emerald-400 mb-1">結果（示意）</p><p class="text-slate-600 dark:text-slate-400">member 訂單占比↑；爭議→0；折讓可控；分通路可報。</p></div>
+        </div>
+      </div>
+
+      <!-- 條件 / 清單 -->
+      <div class="mt-8 grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+          <h3 class="font-extrabold mb-3">條件與紅線</h3>
+          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-2">
+            <li>• 年約；數據所有權歸品牌、可匯出</li>
+            <li>• 7 折只打核心年費；AI 加送 = 草稿+人審</li>
+            <li>• 低於底價不接或砍 Starter 範圍</li>
+            <li>• &gt;15 店專案價；不換 POS/商城/外送</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+          <h3 class="font-extrabold mb-3">拜訪清單</h3>
+          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-2">
+            <li>☐ 門市數 · POS · 商城 · 外送</li>
+            <li>☐ 下一檔節慶（倒推 6–8 週）</li>
+            <li>☐ Ocard / 官方集點現況</li>
+            <li>☐ 決策者在場 · Demo 帳就緒</li>
+          </ul>
+          <button type="button" onclick="openDetail('objection')" class="mt-3 text-xs font-bold text-slate-600 dark:text-slate-300">異議處理表 →</button>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-slate-400 mt-10 mb-4">
+        視覺與分層參考 <a href="https://www.cbots.ai/ai1.html" class="underline hover:text-amber-500" target="_blank" rel="noopener">cbots.ai/ai1.html</a>
+        · CATCH AI Command Layer 風格 · 內容為西點會員中台提案
       </p>
-    </footer>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeDetail()"></div>
+    <div class="relative w-full sm:max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl p-6 md:p-8">
+      <button type="button" onclick="closeDetail()" class="absolute top-4 right-4 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div id="modal-body"></div>
+    </div>
   </div>
+
+  <script>
+    const DETAILS = {
+      points: {
+        title: "會員點數 · SoR 帳本",
+        badge: "引擎 1",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">唯一可改餘額之處。CRM 與 AI 都建立在準帳本之上。</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 給點 / 兌獎 / 沖正 / 過期 · 冪等 order_id</li>
+            <li>• 品類倍率（小點 1x / 整模 1.5x）· 排除已折價/禮券</li>
+            <li>• 禮券、提貨券與積分分帳</li>
+            <li>• 預購付清才入帳；退貨取消沖正</li>
+            <li>• 多店同一 member_id · 流水可審計匯出</li>
+            <li>• P0 預設：每滿 50 元 1 點；10 點兌 50 或指定小點</li>
+          </ul>`
+      },
+      crm: {
+        title: "CRM · 認得每一位客人",
+        badge: "引擎 2",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">讀點數與訂單，寫標籤與旅程；不另開第二套點數。</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 會員 360：姓名/電話/LINE/等級/餘額/券匣</li>
+            <li>• RFM 分群、自訂標籤、銀金級（近 12 月消費）</li>
+            <li>• 旅程：入會 → 首購 → 復購 → 沉睡</li>
+            <li>• 通路歷程：POS / 商城 / 外送分開可看</li>
+            <li>• opt-in、客服備註、活動發放紀錄</li>
+            <li>• 與 91 共存：91 管賣場；本 CRM 綁點與券與 AI 名單</li>
+          </ul>`
+      },
+      ai: {
+        title: "AI 決策 · Growth 加送基礎版",
+        badge: "引擎 3",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4"><strong>不直接改點餘額。</strong>只產出草稿與解釋，預設人審。</p>
+          <div class="rounded-xl bg-purple-50 dark:bg-purple-950/30 p-4 mb-4 text-sm">
+            <p class="font-bold text-purple-700 dark:text-purple-300 mb-2">加送（含）</p>
+            <p class="text-slate-600 dark:text-slate-400">RFM/沉默分層 · 活動草稿 · 原因說明 · 人審後發送</p>
+            <p class="font-bold text-purple-700 dark:text-purple-300 mt-3 mb-2">Pro（另購）</p>
+            <p class="text-slate-600 dark:text-slate-400">守衛內自動 · A/B · 預算 cap 機器人</p>
+          </div>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 生日高價值：切片 vs 整模折建議</li>
+            <li>• 節慶：去年買過禮盒的優先名單</li>
+            <li>• 沉睡 45/60 天：券面額建議（有 cap）</li>
+            <li>• 排除：剛買整模、退訂、客訴</li>
+            <li>• 護欄：單客月折讓 ≤ 客單 15%</li>
+          </ul>`
+      },
+      channels: {
+        title: "A · 通路接入 POS + 商城 + 外送",
+        badge: "接入層",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">不取代既有系統，只接訂單進中台。</p>
+          <table class="w-full text-sm mb-4">
+            <thead><tr class="text-left text-xs text-slate-400"><th class="py-2">通路</th><th>給點</th><th>做法</th></tr></thead>
+            <tbody class="text-slate-700 dark:text-slate-300">
+              <tr class="border-t border-slate-100 dark:border-slate-800"><td class="py-2 font-bold">POS</td><td>是</td><td>掃碼/自動 · P0 必做</td></tr>
+              <tr class="border-t border-slate-100 dark:border-slate-800"><td class="py-2 font-bold">線上商城</td><td>是</td><td>Webhook · 用點/券 · P1</td></tr>
+              <tr class="border-t border-slate-100 dark:border-slate-800"><td class="py-2 font-bold">自外送</td><td>是</td><td>帶 member · P2</td></tr>
+              <tr class="border-t border-slate-100 dark:border-slate-800"><td class="py-2 font-bold">三方外送</td><td>通常否</td><td>補登 / LINE 導流券</td></tr>
+            </tbody>
+          </table>
+          <p class="text-xs text-slate-500">必填：channel · store_id · order_id · member_id · amount_eligible · status</p>`
+      },
+      line: {
+        title: "LINE 推播",
+        badge: "觸達",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>交易</strong>：到帳、兌獎、取貨提醒（可預設開）</li>
+            <li>• <strong>行銷</strong>：生日、節慶、沉睡、出清（opt-in + 頻控）</li>
+            <li>• 交易 / 行銷分通道 · 靜默時段 · 退訂一鍵</li>
+            <li>• payload 帶 channel 方便歸因</li>
+            <li>• 只走 outbox，業務不直連 LINE API</li>
+          </ul>`
+      },
+      marketing: {
+        title: "行銷 Agent · 西點時令",
+        badge: "活動",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 母親節 / 中秋：T-21 預購喚醒（去年買過禮盒）</li>
+            <li>• 生日：D-7 切片或整模折（二選一防疊）</li>
+            <li>• 即期出清：附近店小範圍，嚴格日上限</li>
+            <li>• 入會禮：綁 LINE 送點或小可頌券</li>
+            <li>• 所有活動可追溯核銷率與折讓率</li>
+          </ul>`
+      },
+      boss: {
+        title: "老闆視角 · KPI",
+        badge: "治理",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 會員消費占比（全通路 + 分通路）</li>
+            <li>• 30/60 日復購 · 節慶預購件數與客單</li>
+            <li>• 券核銷率 / 折讓率（防亂送）</li>
+            <li>• 跨通路有 member 的訂單占比</li>
+            <li>• 跨店點爭議工單 → 0</li>
+          </ul>`
+      },
+      governance: {
+        title: "E · 治理與稽核",
+        badge: "合規",
+        html: `
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 每次 AI 建議：來源特徵 · 時間 · 理由 · 內容 · 採納與否 · 結果</li>
+            <li>• 人工調帳：操作者 + 原因 + 日誌</li>
+            <li>• 行銷 opt-in · 退訂 · 頻控</li>
+            <li>• 租戶隔離 · 數據可匯出 · 所有權歸品牌</li>
+            <li>• 對齊 ai1「可追蹤、可人審、可修正」精神</li>
+          </ul>`
+      },
+      pain: {
+        title: "銷售時問的 6 題",
+        badge: "挖需",
+        html: `
+          <ol class="space-y-3 text-sm text-slate-700 dark:text-slate-300 list-decimal pl-5">
+            <li>紙本/各店規則不一，換店點對不上嗎？</li>
+            <li>生日/節慶是不是只能群發、毛利被砍？</li>
+            <li>POS / 商城 / 外送會員會斷嗎？</li>
+            <li>即期、午后空櫃推得準嗎？</li>
+            <li>禮券/提貨券月底對帳吵不吵？</li>
+            <li>想分級是不是還在 Excel？</li>
+          </ol>
+          <p class="mt-4 text-sm font-bold text-amber-600 dark:text-amber-400">金句：問題不只「有沒有會員」，而是帳準不準、客識不識、推得準不準。</p>`
+      },
+      script: {
+        title: "銷售 Script 精要",
+        badge: "話術",
+        html: `
+          <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 text-sm text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
+            西點要的不是再一個集點 App，而是三件事：<strong>會員點數算準、CRM 認得客人、AI 決定該推誰——您點頭才發券</strong>。
+            訂單來自 POS、線上商城、外送；不換既有系統。會員核心約 Ocard 七成，Growth 加送 AI 決策基礎。
+          </div>
+          <p class="text-sm font-bold mb-2">Demo 順序</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">給點 → CRM 看人 → LINE 到帳 → AI 母親節草稿 → 核准 → 發券 → 核銷</p>
+          <p class="text-sm font-bold mt-4 mb-2">逼定</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">① 技術對接 45 分（P0 POS）　② 下一檔節慶试点</p>`
+      },
+      objection: {
+        title: "異議處理（精選）",
+        badge: "抗辯",
+        html: `
+          <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <li><strong>已有官方集點：</strong>單店夠；跨店/商城/外送/節慶分眾才要中台。</li>
+            <li><strong>跟 Ocard 一樣？</strong>重疊在會員；我們強在三通路帳本+CRM+人審 AI；核心約 7 成+加送。</li>
+            <li><strong>要換 POS/商城？</strong>不用，只接訂單。</li>
+            <li><strong>外送沒會員？</strong>三方靠導流；自外送可完整給點。</li>
+            <li><strong>AI 亂送？</strong>預設草稿+人審+折讓 cap。</li>
+            <li><strong>CRM 跟 91 重複？</strong>91 偏賣場；我們綁點/券/AI 名單，可共存。</li>
+          </ul>`
+      }
+    };
+
+    function openDetail(key) {
+      const d = DETAILS[key];
+      if (!d) return;
+      const body = document.getElementById("modal-body");
+      body.innerHTML = `
+        <span class="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">${d.badge}</span>
+        <h2 class="text-xl font-extrabold mt-3 mb-2 pr-8">${d.title}</h2>
+        ${d.html}
+        <button type="button" onclick="closeDetail()" class="mt-6 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-amber-500 dark:text-slate-900 text-sm font-bold">關閉</button>
+      `;
+      document.getElementById("modal").classList.remove("hidden");
+      document.body.classList.add("modal-open");
+      lucide.createIcons();
+    }
+
+    function closeDetail() {
+      document.getElementById("modal").classList.add("hidden");
+      document.body.classList.remove("modal-open");
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const dark = html.classList.toggle("dark");
+      localStorage.setItem("bakery-theme", dark ? "dark" : "light");
+      const icon = document.getElementById("theme-icon");
+      icon.setAttribute("data-lucide", dark ? "sun" : "moon");
+      lucide.createIcons();
+    }
+
+    (function init() {
+      if (localStorage.getItem("bakery-theme") === "dark" ||
+          (!localStorage.getItem("bakery-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+        document.getElementById("theme-icon").setAttribute("data-lucide", "sun");
+      }
+      lucide.createIcons();
+    })();
+
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDetail(); });
+  </script>
 </body>
 </html>

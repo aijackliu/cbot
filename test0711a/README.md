@@ -1,5 +1,5 @@
-﻿# test0711a - bakery loyalty pitch
+﻿# test0711a - bakery loyalty (ai1 style)
 
-Sales page: pricing, scripts, LINE, AI decision, ICP, KPI.
+Points + CRM + AI Decision. UI aligned with https://www.cbots.ai/ai1.html
 
-Open index.html
+Open index.html or GitHub Pages /test0711a/
