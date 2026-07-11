@@ -77,9 +77,9 @@
       <!-- 導言 -->
       <div class="text-center mb-8 max-w-3xl mx-auto">
         <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
-          品牌資料常<strong class="text-slate-900 dark:text-slate-100">分散在不同系統</strong>——我們定時採集接回，消除壁壘，形成<strong class="text-slate-900 dark:text-slate-100">每日可分析的營運資料池</strong>；
-          再驅動<strong class="text-slate-900 dark:text-slate-100">會員點數 + CRM + AI 決策</strong>。<br />
-          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 點擊下方節點展開細節 · 風格對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1 中控層</a>。</span>
+          定時採集打通壁壘 → 整理成<strong class="text-slate-900 dark:text-slate-100">標準業務模型 + Entity Graph</strong>（唯一事實）→
+          驅動<strong class="text-slate-900 dark:text-slate-100">點數 · CRM · AI Agent</strong>共讀同一真相。<br />
+          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 點擊節點展開 · 對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1</a> 資料層思維。</span>
         </p>
       </div>
 
@@ -216,16 +216,49 @@
             </div>
           </div>
 
-          <!-- B 營運資料池 -->
+          <!-- B 標準業務模型 + Entity Graph -->
+          <div onclick="openDetail('model')" class="group cursor-pointer rounded-2xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-50/70 p-5 shadow-sm transition-all dark:border-indigo-500/20 dark:bg-indigo-950/10 dark:hover:bg-indigo-950/20">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400 font-black text-xl shrink-0">B</div>
+                <div>
+                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
+                    標準業務資料模型
+                    <span class="text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 px-2 py-0.5 rounded-full">Single Source of Truth</span>
+                    <span class="text-xs font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 px-2 py-0.5 rounded-full">Entity Graph</span>
+                  </h2>
+                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+                    將原始多通路資料整理成<strong class="text-slate-800 dark:text-slate-200">標準、AI 能理解、可即時查詢與追蹤關聯</strong>的業務資料模型。
+                    各異欄位統一成核心實體表；建立會員、商品、門市、交易、活動與庫存之間的關聯。
+                  </p>
+                  <div class="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">會員 Member</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">商品 Product</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">門市 Store</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">交易 Order</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">活動 Campaign</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">庫存 Inventory</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">點數 Ledger</span>
+                  </div>
+                  <p class="mt-2 text-xs text-indigo-700 dark:text-indigo-400 font-medium">後續各 Agent 基於同一份「唯一事實」推理，而非各讀各的孤島表</p>
+                </div>
+              </div>
+              <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 shrink-0">
+                模型細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- B2 資料池落地 -->
           <div onclick="openDetail('pool')" class="group cursor-pointer rounded-2xl border border-sky-200 bg-sky-50/30 hover:bg-sky-50/60 p-5 shadow-sm transition-all dark:border-sky-500/20 dark:bg-sky-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400 font-black text-xl shrink-0">B</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400 font-black text-sm shrink-0">B2</div>
               <div>
                 <h2 class="text-lg font-extrabold flex items-center gap-2">
-                  每日營運資料池
-                  <span class="text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 px-2 py-0.5 rounded-full">可分析</span>
+                  每日營運資料池（落地）
+                  <span class="text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 px-2 py-0.5 rounded-full">可查詢</span>
                 </h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">會員 · 交易 · 點數流水 · 商品 · 門市 · 券 · 庫存 · 日報 · 異常事件</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">標準實體表實例化存放 · 即時查詢 · 關聯追蹤 · 供 Agent 讀取</p>
               </div>
             </div>
             <div class="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">資料表 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
@@ -322,23 +355,21 @@
 
       <!-- 流程箭頭示意 -->
       <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 overflow-x-auto">
-        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端：採集 → 資料池 → 三引擎 → 觸達</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端：採集 → 標準模型 / Entity Graph → 唯一事實 → Agent</p>
         <div class="flex flex-wrap items-center gap-2 text-xs font-semibold min-w-max">
-          <span class="px-3 py-2 rounded-xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">分散系統定時採集</span>
+          <span class="px-3 py-2 rounded-xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">多系統原始資料</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">每日營運資料池</span>
+          <span class="px-3 py-2 rounded-xl bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">標準實體 + Graph</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">SSOT 資料池</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">CRM</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">AI 草稿</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">人審</span>
+          <span class="px-3 py-2 rounded-xl bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">AI / Agents</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">LINE</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">核銷回流</span>
         </div>
       </div>
 
@@ -421,9 +452,9 @@
         <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-emerald-500"></i> 30 / 60 / 90 流程</h3>
           <ol class="space-y-3 text-sm">
-            <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 點數</strong>：POS/日報每日同步進資料池、給點、LINE 到帳</span></li>
-            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>CRM + 電商</strong>：會員/商城/外送接上池、分群、禮券</span></li>
-            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>AI 看整池</strong>：庫存/日報入池、節慶草稿人審、跨系統 ROI</span></li>
+            <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 標準模型</strong>：POS/日報映射到 Member/Order，點數流水、LINE 到帳</span></li>
+            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>Entity Graph 補齊</strong>：商城/外送/商品/門市關聯、CRM 分群</span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>Agent 共讀 SSOT</strong>：庫存入圖、AI 跨實體推理、節慶人審</span></li>
           </ol>
           <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
         </div>
@@ -527,22 +558,60 @@
           </ul>
           <p class="mt-4 text-xs text-slate-500">不要求一次換掉所有系統；先接「能接的」，壁壘用排程與對帳消掉。</p>`
       },
-      pool: {
-        title: "B · 每日營運資料池",
-        badge: "可分析 · 跨系統",
+      model: {
+        title: "B · 標準業務資料模型 + Entity Graph",
+        badge: "Single Source of Truth",
         html: `
-          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">採集落地後的統一資料池，供點數、CRM、AI 共同使用——AI 看到的是整體營運，不是單一孤島。</p>
-          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-            <li>• <strong>會員表</strong>：身份、等級、LINE、opt-in</li>
-            <li>• <strong>交易表</strong>：POS / 電商 / 外送訂單與金額</li>
-            <li>• <strong>點數流水</strong>：給點、兌獎、沖正、過期</li>
-            <li>• <strong>商品表</strong>：SKU、品類（倍率用）</li>
-            <li>• <strong>門市表</strong>：店別、區域、狀態</li>
-            <li>• <strong>優惠券 / 活動表</strong></li>
-            <li>• <strong>庫存表</strong>：可支援即期與出清決策</li>
-            <li>• <strong>門市日報 / 異常事件</strong></li>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+            將原始多通路資料整理成<strong>標準、AI 能理解、可即時查詢與追蹤關聯</strong>的標準業務資料模型。
+            統一資料表結構，把來自不同平台的各異欄位映射到<strong>核心實體表</strong>；
+            建立會員、商品、門市、交易、活動與庫存之間的關聯（Entity Graph）。
+            讓後續各專屬 Agent 基於同一份<strong>唯一事實（SSOT）</strong>推理判斷。
+          </p>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">1. 欄位統一（Schema Mapping）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• POS / 電商 / 外送的「客人」→ 統一 <code class="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">member_id</code></li>
+            <li>• 各系統商品碼 → 統一 <code class="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">product_id</code> + 品類</li>
+            <li>• 店編 / 倉編 → 統一 <code class="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">store_id</code></li>
+            <li>• 訂單號各異 → 保留 <code class="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">source_system + source_order_id</code>，內部 <code class="text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">order_id</code></li>
+            <li>• 金額、時區、幣別、狀態碼正規化</li>
           </ul>
-          <p class="mt-4 text-sm text-slate-600 dark:text-slate-400">指標可由此計算：營收、回購、LTV、RFM、券使用率、分通路占比等。</p>`
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">2. 核心實體表</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• <strong>Member</strong> 會員 · <strong>Product</strong> 商品 · <strong>Store</strong> 門市</li>
+            <li>• <strong>Order / OrderLine</strong> 交易與明細</li>
+            <li>• <strong>PointLedger</strong> 點數流水 · <strong>Coupon / Campaign</strong> 券與活動</li>
+            <li>• <strong>Inventory</strong> 庫存 · <strong>DailyReport</strong> 門市日報 · <strong>Event</strong> 異常</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">3. Entity Graph（關聯）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• Member —下單→ Order —含→ Product · 發生於→ Store</li>
+            <li>• Order —產生→ PointLedger · 核銷→ Coupon</li>
+            <li>• Campaign —觸達→ Member · 綁定→ Coupon</li>
+            <li>• Store + Product —對應→ Inventory（即期/出清可推）</li>
+            <li>• 可沿圖追蹤：誰在哪店買了什麼、得了多少點、被推過什麼活動</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">4. 對 Agent 的意義</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 決策 / 行銷 / 庫存 Agent <strong>讀同一份 SSOT</strong>，不各接各 API</li>
+            <li>• 查詢可即時：餘額、最近訂單、券狀態、門市庫存</li>
+            <li>• 推理可解釋：建議可回指到實體與關聯邊</li>
+            <li>• 避免「CRM 一套真相、POS 另一套」的幻覺與衝突</li>
+          </ul>`
+      },
+      pool: {
+        title: "B2 · 每日營運資料池（落地）",
+        badge: "可分析 · 即時查詢",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">標準模型的<strong>物理落地</strong>：實體表 + 關聯索引，供點數、CRM、AI 共同讀寫（寫入受規則約束）。</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 會員表：身份、等級、LINE、opt-in</li>
+            <li>• 交易 / 明細表：POS · 電商 · 外送</li>
+            <li>• 點數流水：給點、兌獎、沖正、過期</li>
+            <li>• 商品 · 門市 · 券 · 活動</li>
+            <li>• 庫存 · 日報 · 異常事件</li>
+          </ul>
+          <p class="mt-4 text-sm text-slate-600 dark:text-slate-400">指標由此計算：營收、回購、LTV、RFM、券使用率、分通路占比等——與 Entity Graph 同一真相。</p>`
       },
       points: {
         title: "會員點數 · SoR 帳本",
@@ -676,12 +745,12 @@
         badge: "話術",
         html: `
           <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 text-sm text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
-            系統壁壘先拆：<strong>分散資料每日採集進營運資料池</strong>，再做
-            <strong>會員點數算準、CRM 認得客人、AI 決定該推誰——您點頭才發券</strong>。
+            系統壁壘先拆：<strong>多通路資料採集 → 標準業務模型（Entity Graph）→ 唯一事實</strong>，
+            再做<strong>點數、CRM、AI 決策</strong>。各 Agent 共讀同一份 SSOT。
             不換 POS/商城/外送。會員核心約 Ocard 七成，Growth 加送 AI 決策基礎。
           </div>
           <p class="text-sm font-bold mb-2">Demo 順序</p>
-          <p class="text-sm text-slate-600 dark:text-slate-400">採集日誌 → 資料池 → 給點 → CRM → AI 草稿 → 核准 → LINE → 核銷</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">採集 → 標準實體/Graph → 給點 → CRM → AI 草稿 → 核准 → LINE → 核銷</p>
           <p class="text-sm font-bold mt-4 mb-2">逼定</p>
           <p class="text-sm text-slate-600 dark:text-slate-400">① 技術對接 45 分（P0 POS）　② 下一檔節慶试点</p>`
       },
