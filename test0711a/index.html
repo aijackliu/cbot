@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>蛋糕西點業 · 會員積分中台｜帳本 · LINE · AI 決策</title>
+  <meta name="description" content="西點連鎖專用：多店積分算準、LINE 與門市同一本帳、AI 建議該推誰——預設人審才發券。約 Ocard 7 成 + AI 決策基礎加送。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0e0c;
+      --bg-card: #1a1814;
+      --bg-elevated: #242018;
+      --border: rgba(245, 230, 200, 0.12);
+      --text: #f5f0e8;
+      --muted: #a89f90;
+      --cream: #f3e6d0;
+      --accent: #e8a87c;
+      --accent-2: #c4785a;
+      --gold: #d4a84b;
+      --green: #7dcea0;
+      --blue: #7eb8d4;
+      --radius: 14px;
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      --max: 1080px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Noto Sans TC", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15.5px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(232, 168, 124, 0.18), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(212, 168, 75, 0.1), transparent 45%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(196, 120, 90, 0.08), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(15, 14, 12, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      color: var(--cream);
+      white-space: nowrap;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      flex: 1;
+    }
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.78rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+    .nav-links a:hover {
+      color: var(--cream);
+      background: var(--bg-elevated);
+    }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #1a120c !important;
+      font-weight: 700;
+      font-size: 0.8rem !important;
+      padding: 8px 14px !important;
+      border-radius: 999px !important;
+      text-decoration: none !important;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 56px 0 40px;
+      text-align: left;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gold);
+      background: rgba(212, 168, 75, 0.12);
+      border: 1px solid rgba(212, 168, 75, 0.3);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.45rem);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      max-width: 18em;
+    }
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(120deg, var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-lead {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 38em;
+    }
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+    .pill {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--cream);
+    }
+    .pill strong { color: var(--accent); }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none !important;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); opacity: 0.95; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #1a120c !important;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--cream) !important;
+      border: 1px solid var(--border);
+    }
+
+    /* Sections */
+    section {
+      padding: 48px 0 8px;
+      scroll-margin-top: 64px;
+    }
+    .sec-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .sec-desc {
+      color: var(--muted);
+      margin-bottom: 22px;
+      max-width: 40em;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+    .card + .card { margin-top: 14px; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .card p, .card li { color: var(--muted); font-size: 0.9rem; }
+    .card ul { padding-left: 1.15em; }
+    .card li { margin: 4px 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      background: rgba(0,0,0,0.25);
+    }
+    td { color: var(--muted); }
+    td strong { color: var(--cream); font-weight: 600; }
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+
+    .quote-box {
+      border-left: 3px solid var(--accent);
+      padding: 14px 18px;
+      background: var(--bg-elevated);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: var(--cream);
+      font-size: 0.95rem;
+      margin: 12px 0;
+    }
+
+    .price-tag {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 8px 0 4px;
+    }
+    .price-note { font-size: 0.8rem; color: var(--muted); }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-right: 6px;
+    }
+    .tag-green { background: rgba(125, 206, 160, 0.15); color: var(--green); }
+    .tag-blue { background: rgba(126, 184, 212, 0.15); color: var(--blue); }
+    .tag-gold { background: rgba(212, 168, 75, 0.15); color: var(--gold); }
+    .tag-accent { background: rgba(232, 168, 124, 0.15); color: var(--accent); }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+    }
+    .steps li {
+      position: relative;
+      padding: 14px 14px 14px 52px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      margin-bottom: 10px;
+      color: var(--muted);
+    }
+    .steps li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #1a120c;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .steps li strong { color: var(--cream); display: block; margin-bottom: 4px; }
+
+    .check-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+    }
+    .check-list li {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .check-list li::before {
+      content: "☐ ";
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .kpi-num {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--cream);
+    }
+
+    footer {
+      margin-top: 64px;
+      padding: 28px 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .toc-card {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+    }
+    .toc-card a {
+      display: block;
+      padding: 10px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--cream);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .toc-card a:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .flow span {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 10px;
+      color: var(--cream);
+    }
+    .flow i {
+      font-style: normal;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .warn {
+      background: rgba(232, 168, 124, 0.08);
+      border: 1px solid rgba(232, 168, 124, 0.25);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 12px;
+    }
+    .warn strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="logo">Point<span>Line</span> · 西點業</div>
+      <div class="nav-links">
+        <a href="#profile">行業畫像</a>
+        <a href="#pain">痛點</a>
+        <a href="#icp">ICP</a>
+        <a href="#product">產品</a>
+        <a href="#line">LINE</a>
+        <a href="#ai">AI 決策</a>
+        <a href="#pricing">報價</a>
+        <a href="#script">話術</a>
+        <a href="#flow">流程</a>
+        <a href="#kpi">KPI</a>
+        <a href="#case">案例</a>
+        <a href="#checklist">清單</a>
+      </div>
+      <a class="nav-cta" href="#pricing">看報價</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="badge">蛋糕西點業專用 · 帳本 × LINE × AI 決策</div>
+      <h1>點算得準，LINE 推得到，<em>AI 決定該推誰</em></h1>
+      <p class="hero-lead">
+        多店積分同一本帳、預購與門市會員不斷線、節慶用 AI 產出名單草稿——
+        <strong style="color:var(--cream)">預設人審才發券</strong>，毛利不被全民折砍光。
+        會員核心對照市場常見報價約 <strong style="color:var(--accent)">Ocard 7 成</strong>，Growth <strong style="color:var(--accent)">加送 AI 決策基礎版</strong>。
+      </p>
+      <div class="hero-pills">
+        <div class="pill"><strong>帳本</strong> 多店 · 禮券 · 預購</div>
+        <div class="pill"><strong>LINE</strong> 到帳 · 取貨 · 節慶</div>
+        <div class="pill"><strong>AI</strong> 草稿 + 人審</div>
+        <div class="pill"><strong>報價</strong> ≈ Ocard 7 折 + AI 加送</div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#pricing">方案與報價</a>
+        <a class="btn btn-ghost" href="#script">銷售 Script</a>
+        <a class="btn btn-ghost" href="#flow">30 / 60 / 90 流程</a>
+      </div>
+    </header>
+
+    <section>
+      <div class="sec-label">目錄</div>
+      <h2>本頁內容</h2>
+      <div class="toc-card" style="margin-top:16px">
+        <a href="#profile">1 行業畫像</a>
+        <a href="#pain">2 核心痛點 6 題</a>
+        <a href="#icp">3 客戶分層 ICP</a>
+        <a href="#product">4 產品清單</a>
+        <a href="#line">5 LINE 推播</a>
+        <a href="#ai">6 AI 決策</a>
+        <a href="#pricing">7 報價</a>
+        <a href="#script">8 話術</a>
+        <a href="#flow">9 流程</a>
+        <a href="#conditions">10 條件</a>
+        <a href="#kpi">11 KPI</a>
+        <a href="#case">12 案例</a>
+        <a href="#checklist">13 清單</a>
+        <a href="#objection">14 異議表</a>
+      </div>
+    </section>
+
+    <!-- 1 行業畫像 -->
+    <section id="profile">
+      <div class="sec-label">01 · Industry</div>
+      <h2>行業畫像：為什麼適合你</h2>
+      <p class="sec-desc">西點不是火鍋天天大桌，卻同時有高頻小點與節慶大單——剛好需要「準帳本 + 準推播」。</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>業態特徵</h3>
+          <ul>
+            <li><strong>高頻零食 + 低頻大單</strong>：麵包小點週復購；整模生日/節慶蛋糕高客單</li>
+            <li><strong>強時令</strong>：母親節、情人節、中秋、聖誕、畢業季 → 預購高峰</li>
+            <li><strong>高度 LINE 化</strong>：預購常走官方帳號；集點從紙本→LINE</li>
+            <li><strong>多店 / 加盟常見</strong>：中央廚房 + 多門市取貨，要統一會員</li>
+            <li><strong>損耗敏感</strong>：亂發券傷毛利 → 需要人審 AI，不是狂撒</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>定位一句話</h3>
+          <div class="quote-box">
+            不是「又一個火鍋 Ocard」，而是<strong>西點連鎖的「點算準 + 節慶召回 + 預購/取貨一體」中台</strong>。
+          </div>
+          <p style="margin-top:12px">與 Ocard 有重疊（LINE 會員），但更吃重：<strong>預購、禮券、多店對帳、節慶控成本</strong>。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 痛點 -->
+    <section id="pain">
+      <div class="sec-label">02 · Discovery</div>
+      <h2>核心痛點：銷售時問的 6 題</h2>
+      <p class="sec-desc">每題一句追問；目標讓老闆自己說出「帳」與「推」的問題。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>銷售怎麼問</th><th>你在挖什麼</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>紙本集點 / 各店規則不一，客人換店點數對不上嗎？</strong></td><td>多店帳本</td></tr>
+            <tr><td>2</td><td><strong>生日/節慶是不是只能群發，毛利被全民折吃掉？</strong></td><td>分眾 vs 亂撒</td></tr>
+            <tr><td>3</td><td><strong>預購在 LINE、付款在門市/電商，會員身份會斷嗎？</strong></td><td>OMO 斷點</td></tr>
+            <tr><td>4</td><td><strong>即期品、午后空櫃，有沒有辦法精準推附近客？</strong></td><td>時段/損耗</td></tr>
+            <tr><td>5</td><td><strong>禮券/提貨券核銷月底對帳吵不吵？</strong></td><td>券與點分帳</td></tr>
+            <tr><td>6</td><td><strong>想做會員分級，是不是還在 Excel？</strong></td><td>經營成熟度</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="quote-box" style="margin-top:16px">
+        金句：問題不只在「有沒有會員」，而在<strong>帳準不準、推得準不準</strong>。
+      </div>
+    </section>
+
+    <!-- 3 ICP -->
+    <section id="icp">
+      <div class="sec-label">03 · ICP</div>
+      <h2>客戶分層（ICP）</h2>
+      <div class="grid-2">
+        <div class="card">
+          <span class="tag tag-green">主戰場</span>
+          <h3 style="margin-top:8px">A. 區域連鎖 3–30 店</h3>
+          <p>自有品牌、有 POS、已有 LINE OA。統一帳本 + 節慶 AI，年約 Growth 主推。</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-blue">可接</span>
+          <h3 style="margin-top:8px">B. 單店爆款 / 網紅店</h3>
+          <p>預購強。輕量：集點 + 生日 + LINE 到帳（Starter）。</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-gold">進階</span>
+          <h3 style="margin-top:8px">C. 集團多品牌西點</h3>
+          <p>共點 / 分點規則、多 brand_id。專案報價。</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-accent">後做</span>
+          <h3 style="margin-top:8px">D. 僅電商禮盒</h3>
+          <p>節慶脈衝、弱門市 OMO。可後接，非首發主力。</p>
+        </div>
+      </div>
+      <div class="warn">
+        <strong>不合格先放：</strong>只要 LINE 官方免費集點卡的超微單店（客單與實施不匹配）。結案句：「等要跨店對帳或節慶控毛利時再找我們最划算。」
+      </div>
+    </section>
+
+    <!-- 4 產品 -->
+    <section id="product">
+      <div class="sec-label">04 · Product</div>
+      <h2>產品清單</h2>
+      <p class="sec-desc">三層：帳本（SoR）→ LINE 觸達 → AI 決策。AI 不直接改餘額。</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>帳本（必做）</h3>
+          <ul>
+            <li>消費給點（可排除已折價/禮券）</li>
+            <li>品類倍率（小點 1x / 整模 1.5x）</li>
+            <li>禮券、提貨券獨立券種</li>
+            <li>預購付清才入帳、取消沖正</li>
+            <li>跨店同一 member_id</li>
+            <li>點/券過期與流水審計</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>規則模板（P0 預設）</h3>
+          <ul>
+            <li>每滿 NT$50 → 1 點（可調）</li>
+            <li>10 點 → NT$50 或指定小點</li>
+            <li>綁 LINE → 入會禮 1 點/小可頌券</li>
+            <li>生日：切片免費 <em>或</em> 整模 9 折（二選一防疊）</li>
+            <li>銀/金級：近 12 月消費額</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>OMO 資料流</h3>
+          <div class="flow" style="margin-top:8px">
+            <span>門市 POS</span><i>→</i>
+            <span>預購 LINE/電商</span><i>→</i>
+            <span>禮券核銷</span>
+          </div>
+          <p style="margin-top:12px">全部匯入統一 member + ledger，再出 LINE 通知 / 取貨碼。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 LINE -->
+    <section id="line">
+      <div class="sec-label">05 · LINE</div>
+      <h2>LINE 推播模板</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模板</th><th>時機</th><th>類型</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>到帳 / 兌獎</strong></td><td>結帳後</td><td>交易通知</td></tr>
+            <tr><td><strong>生日蛋糕券</strong></td><td>D-7 / D-3 / 當日</td><td>行銷（opt-in）</td></tr>
+            <tr><td><strong>節慶預購開跑</strong></td><td>母親節 T-21 等</td><td>行銷</td></tr>
+            <tr><td><strong>取貨提醒</strong></td><td>預購日前 1 天</td><td>交易</td></tr>
+            <tr><td><strong>即期 / 午后出清</strong></td><td>當日 14:00 附近門市</td><td>行銷 + 頻控</td></tr>
+            <tr><td><strong>沉睡召回</strong></td><td>45/60 天未消費</td><td>AI 決策 → 人審</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn">
+        <strong>合規：</strong>交易 vs 行銷分通道；日/週上限；靜默時段；退訂一鍵；推播只走 outbox，業務不直連 LINE API。
+      </div>
+    </section>
+
+    <!-- 6 AI -->
+    <section id="ai">
+      <div class="sec-label">06 · AI Decision</div>
+      <h2>AI 決策系統</h2>
+      <p class="sec-desc">Growth <strong>加送基礎版</strong>：只出草稿與解釋，預設人審。Pro 才開守衛內自動。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>決策</th><th>輸入</th><th>輸出（預設草稿）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>生日高價值</strong></td><td>生日月 + 歷史整模訂單</td><td>切片免費 vs 整模折 檔位建議</td></tr>
+            <tr><td><strong>節慶預購喚醒</strong></td><td>去年同期買過禮盒</td><td>優先推播名單</td></tr>
+            <tr><td><strong>櫃量出清</strong></td><td>門市 + SKU 殘量（可後接）</td><td>小範圍 1.5x 點或小券</td></tr>
+            <tr><td><strong>沉睡</strong></td><td>RFM</td><td>滿額券面額建議（有 cap）</td></tr>
+            <tr><td><strong>不該發</strong></td><td>剛買整模、退訂、客訴</td><td>排除名單</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="card">
+          <h3>加送範圍（含）</h3>
+          <ul>
+            <li>RFM / 沉默分層</li>
+            <li>活動草稿 + 原因說明</li>
+            <li>人審後才發送</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>不含（升級 Pro）</h3>
+          <ul>
+            <li>自動發券 / 排隊推播</li>
+            <li>A/B、預算機器人</li>
+            <li>外接 CDP</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote-box">
+        護欄示例：單客月行銷折讓 ≤ 客單 15%；節慶券庫存上限；AI <strong>永不直接改積分餘額</strong>。
+      </div>
+    </section>
+
+    <!-- 7 報價 -->
+    <section id="pricing">
+      <div class="sec-label">07 · Pricing</div>
+      <h2>報價：約 Ocard 7 成 + AI 加送</h2>
+      <p class="sec-desc">
+        Ocard 公價多為洽詢。對外話術用「約 7 成」；對內公式：
+        <code style="color:var(--accent)">報價 = max(牌價階梯, 客戶 Ocard 可比價 × 0.7) 且 ≥ 底價</code>。
+        7 折只打<strong>會員核心年費</strong>；實施、超量推播、AI Pro 不承諾 7 折。
+      </p>
+
+      <div class="grid-3">
+        <div class="card">
+          <span class="tag tag-blue">Starter</span>
+          <h3 style="margin-top:8px">1–2 店</h3>
+          <div class="price-tag">18,000–24,000</div>
+          <p class="price-note">NT$ / 年 · 約 1 店</p>
+          <ul style="margin-top:12px">
+            <li>帳本、LINE 綁定、給點兌獎</li>
+            <li>到帳推播（含額度）</li>
+            <li>AI：不含或極簡</li>
+            <li>實施一次：8,000–15,000</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: rgba(232,168,124,0.45); box-shadow: 0 0 0 1px rgba(232,168,124,0.2);">
+          <span class="tag tag-accent">主推 Growth</span>
+          <h3 style="margin-top:8px">3–15 店 · 西點主力</h3>
+          <div class="price-tag">28,000 起</div>
+          <p class="price-note">NT$ / 年 · 見下表階梯 · 可對 Ocard×0.7</p>
+          <ul style="margin-top:12px">
+            <li>多店帳本 + 規則 + Admin</li>
+            <li>LINE 交易/行銷推播</li>
+            <li><strong>★ 加送 AI 決策基礎</strong></li>
+            <li>實施：25,000–60,000</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="tag tag-gold">Pro</span>
+          <h3 style="margin-top:8px">自動 AI · 多品牌</h3>
+          <div class="price-tag">+30%–50%</div>
+          <p class="price-note">在 Growth 年費上加，或 AI 加購</p>
+          <ul style="margin-top:12px">
+            <li>守衛內自動發券</li>
+            <li>A/B、更高配額</li>
+            <li>多品牌共點專案</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:18px">
+        <table>
+          <thead>
+            <tr><th>Growth 門市階梯（示例）</th><th>年費區間 NT$</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>3–5 店</strong></td><td>28,000 – 40,000</td></tr>
+            <tr><td><strong>6–10 店</strong></td><td>45,000 – 70,000</td></tr>
+            <tr><td><strong>11–15 店</strong></td><td>另議（勿死 7 折）</td></tr>
+            <tr><td><strong>推播含額</strong></td><td>例 10,000 則/年；超出另計 / 則</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>報價四塊（對客戶拆開講）</h3>
+        <div class="grid-2" style="margin-top:10px">
+          <div>
+            <p><strong>① 平台訂閱</strong> — 門市數或 MAU</p>
+            <p><strong>② 開通實施</strong> — 一次（POS / LINE / 教育）</p>
+          </div>
+          <div>
+            <p><strong>③ 用量</strong> — 推播超量</p>
+            <p><strong>④ 加值</strong> — AI Pro、客製、多品牌（不在 7 折）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="warn">
+        <strong>底價紀律：</strong>7 折若低於（主機+推播+支援+實施攤提）×1.3 → 不接，或砍成 Starter 範圍。沒有客戶出示的 Ocard 數字時，用自己牌價，不空想對方價格。
+      </div>
+    </section>
+
+    <!-- 8 話術 -->
+    <section id="script">
+      <div class="sec-label">08 · Sales Script</div>
+      <h2>話術（一頁 Script）</h2>
+
+      <div class="card">
+        <h3>A. 開場 30 秒</h3>
+        <div class="quote-box">
+          西點客人平常來買麵包小點，生日和母親節才下大單。
+          多店最痛的是<strong>點數對不齊</strong>、預購在 LINE、結帳在門市，會員斷掉；一到節慶又<strong>全民發券砍毛利</strong>。
+          我們做三件事：<strong>多店積分算準、LINE 跟門市同一本帳、AI 建議該推誰——您點頭才發券</strong>。
+          不換 POS、不重做官網，30 天先跑通給點與到帳通知。
+          會員核心約市場常見報價 <strong>Ocard 七成</strong>，且 <strong>AI 決策基礎加送</strong>。
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>B. 資格篩選</h3>
+        <div class="table-wrap" style="border:none">
+          <table>
+            <thead><tr><th>問</th><th>理想</th><th>若否</th></tr></thead>
+            <tbody>
+              <tr><td>幾間門市？</td><td>≥3 或有預購/禮券</td><td>建議官方集點，留聯絡</td></tr>
+              <tr><td>有 POS / 能出訂單？</td><td>有或可 Webhook/日結</td><td>半自動補登方案</td></tr>
+              <tr><td>主要用 LINE？</td><td>是</td><td>可做，價值打七折</td></tr>
+              <tr><td>誰拍板？</td><td>老闆/營運/行銷</td><td>約決策者同場</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>C. 方案三刀（各 20 秒）</h3>
+        <ul>
+          <li><strong>帳本：</strong>所有門市、預購付清、禮券核銷，同一流水。</li>
+          <li><strong>LINE：</strong>到帳、取貨提醒走交易；活動走 opt-in。</li>
+          <li><strong>AI：</strong>只出「給誰、什麼券」草稿，預設您審核。</li>
+        </ul>
+        <p style="margin-top:10px"><strong>Demo 順序：</strong>給點 → 到帳推播 → 流水 → AI 母親節名單草稿 → 核准 → 發券 → 核銷報表。</p>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>D. 價格話術</h3>
+        <ul>
+          <li>開價：「會員核心對齊約 <strong>七成</strong>，且 <strong>AI 基礎直接加送</strong>。」</li>
+          <li>對方拿 Ocard 全包比：「請拆開點餐/商城；<strong>比會員+推播+決策</strong>。」</li>
+          <li>再砍：「年費已含 AI；再砍改 Starter 範圍，不砍壞帳本 SLA。」</li>
+          <li>要自動 AI：「那是 <strong>Pro</strong>，不是加送範圍。」</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>E. 逼定下一步</h3>
+        <p>① 技術對接 45 分（POS/IT + 營運）　或　② 下一檔節慶试点（人審發送 + 復盤核銷）</p>
+        <div class="quote-box">我們不跟您搶開店系統；我們讓<strong>點算得準、節慶推得準、帳對得完</strong>。</div>
+      </div>
+    </section>
+
+    <!-- 9 流程 -->
+    <section id="flow">
+      <div class="sec-label">09 · Process</div>
+      <h2>流程</h2>
+      <div class="grid-2">
+        <div>
+          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:12px">銷售流程</h3>
+          <ol class="steps">
+            <li><strong>開發 / 約訪</strong>確認門市數、POS、下一檔節慶</li>
+            <li><strong>篩選 + 六題挖需</strong>不合格溫柔結束</li>
+            <li><strong>Demo</strong>給點→推播→AI 草稿→核准</li>
+            <li><strong>報價</strong>牌價階梯 + 可選 Ocard×0.7 對照</li>
+            <li><strong>簽約</strong>年費 + 實施；定義试点或全量</li>
+            <li><strong>上線復盤</strong>KPI 與續約 / 升 Pro</li>
+          </ol>
+        </div>
+        <div>
+          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:12px">交付 30 / 60 / 90</h3>
+          <ol class="steps">
+            <li><strong>30 天</strong>LINE 綁定、POS 給點、到帳推播、Admin 查帳</li>
+            <li><strong>60 天</strong>生日/過期模板、禮券核銷、基礎分群</li>
+            <li><strong>90 天</strong>節慶 campaign + AI 草稿人審、取貨提醒、ROI 復盤</li>
+          </ol>
+          <div class="card" style="margin-top:14px">
+            <h3>OMO 即時流</h3>
+            <div class="flow" style="margin-top:10px">
+              <span>訂單入帳</span><i>→</i>
+              <span>Ledger</span><i>→</i>
+              <span>Outbox</span><i>→</i>
+              <span>LINE</span><i>→</i>
+              <span>核銷回流</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 條件 -->
+    <section id="conditions">
+      <div class="sec-label">10 · Terms</div>
+      <h2>條件與紅線</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>合作條件（建議）</h3>
+          <ul>
+            <li>年約；數據所有權歸品牌，可匯出</li>
+            <li>年費：簽約 50% + 上線 50%（或一次付清）</li>
+            <li>實施費簽約支付</li>
+            <li>行銷推播需 opt-in；交易通知可預設開</li>
+            <li>報價有效天數寫死（如 14–30 天）</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>報價紅線</h3>
+          <ul>
+            <li>7 折只打會員核心年費</li>
+            <li>實施 / 超量 / Pro 不跟 7 折</li>
+            <li>低於底價不接或砍範圍</li>
+            <li>AI 加送 = 草稿+人審，寫進合約附件</li>
+            <li>&gt;15 店改專案價 + 成功指標</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 KPI -->
+    <section id="kpi">
+      <div class="sec-label">11 · KPI</div>
+      <h2>KPI（老闆聽得懂）</h2>
+      <div class="grid-3">
+        <div class="card"><div class="kpi-num">會員消費占比</div><p>3 個月是否抬升</p></div>
+        <div class="card"><div class="kpi-num">30 / 60 日復購</div><p>小點高頻是否改善</p></div>
+        <div class="card"><div class="kpi-num">節慶預購 × 客單</div><p>大單與預購件數</p></div>
+        <div class="card"><div class="kpi-num">券核銷率 / 折讓率</div><p>防亂送、控毛利</p></div>
+        <div class="card"><div class="kpi-num">跨店點爭議單</div><p>帳本價值（趨近 0）</p></div>
+        <div class="card"><div class="kpi-num">推播到達 / 退訂</div><p>通道健康度</p></div>
+      </div>
+    </section>
+
+    <!-- 12 案例 -->
+    <section id="case">
+      <div class="sec-label">12 · Case</div>
+      <h2>案例（示意 · 可換真客戶）</h2>
+      <div class="card">
+        <h3>「北中南 12 店烘焙」</h3>
+        <div class="grid-3" style="margin-top:12px">
+          <div>
+            <p><strong style="color:var(--accent)">痛點</strong></p>
+            <p>各店集點卡；母親節全民 8 折砍毛利；預購在 LINE、點對不齊。</p>
+          </div>
+          <div>
+            <p><strong style="color:var(--accent)">做法</strong></p>
+            <p>統一帳本；AI 只給「去年買過禮盒 + 沉默 60 天」預購券草稿；生日人審發切片券；取貨日前交易提醒。</p>
+          </div>
+          <div>
+            <p><strong style="color:var(--accent)">結果（示意）</strong></p>
+            <p>節慶預購轉化提升；折讓成本占比下降；跨店爭議工單歸零；核銷可追蹤。</p>
+          </div>
+        </div>
+        <p class="price-note" style="margin-top:12px">* 示意數字請在真實上線後替換為 before/after。</p>
+      </div>
+    </section>
+
+    <!-- 13 清單 -->
+    <section id="checklist">
+      <div class="sec-label">13 · Checklists</div>
+      <h2>清單</h2>
+      <div class="grid-2">
+        <div>
+          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:10px">拜訪前</h3>
+          <ul class="check-list">
+            <li>門市數、POS 廠牌、有無預購</li>
+            <li>下一檔節慶日期（倒推 6–8 週）</li>
+            <li>是否已用 Ocard / 91 / 官方集點</li>
+            <li>決策者是否在場</li>
+            <li>Demo 帳（假門市、假母親節名單）</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="color:var(--cream);font-size:1rem;margin-bottom:10px">上線 P0</h3>
+          <ul class="check-list">
+            <li>member + LINE 綁定 + opt-in</li>
+            <li>earn/redeem 冪等與流水</li>
+            <li>POS/日結入帳</li>
+            <li>到帳 Flex 模板</li>
+            <li>Admin 查帳與人工調帳審計</li>
+            <li>AI 草稿人審開關預設 ON</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>業務口袋卡</h3>
+        <div class="quote-box">
+          【開場】點算準 · LINE 同一帳 · AI 建議您點頭才發<br />
+          【鎖客】≥3 店 或 預購/禮券 · 有 POS/LINE<br />
+          【三刀】跨店帳 / 節慶毛利 / 預購斷點<br />
+          【Demo】給點→推播→AI 草稿→核准→核銷<br />
+          【報價】核心 ≈ Ocard 7 成 · AI 基礎加送 · 實施另計<br />
+          【下一步】技術 45 分 或 節慶试点
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 異議 -->
+    <section id="objection">
+      <div class="sec-label">14 · Objections</div>
+      <h2>異議處理表</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>異議</th><th>回應要點</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>已有 LINE 官方集點</strong></td><td>單店夠；跨店、預購、禮券、節慶分眾才需要帳本+決策。</td></tr>
+            <tr><td><strong>跟 Ocard 一樣？</strong></td><td>Ocard 擅餐飲快速玩法；西點重預購/禮券/控毛利。可比核心 7 成+AI 加送。</td></tr>
+            <tr><td><strong>門市太忙</strong></td><td>POS 自動給點；最多掃碼一步；補登有審計。</td></tr>
+            <tr><td><strong>AI 亂送會虧</strong></td><td>預設草稿+人審；折讓 cap；不直接改餘額。</td></tr>
+            <tr><td><strong>已有 91APP</strong></td><td>賣場繼續用 91；我們當積分與決策中台，可共存。</td></tr>
+            <tr><td><strong>不要裝 App</strong></td><td>LINE 綁定即可，不需新 App。</td></tr>
+            <tr><td><strong>預購在留言串不了</strong></td><td>一期表單/付清檔入帳；二期正式預購；先跑準門市 POS。</td></tr>
+            <tr><td><strong>加盟不願共點</strong></td><td>點成本歸屬規則；先直營试点。</td></tr>
+            <tr><td><strong>很貴</strong></td><td>對去年節慶亂折成本；试点价可谈。</td></tr>
+            <tr><td><strong>要再觀望</strong></td><td>節慶窗口半年一次；可先上給點到帳（低風險）。</td></tr>
+            <tr><td><strong>資料外流</strong></td><td>租戶隔離、opt-in、合約寫所有權、可匯出。</td></tr>
+            <tr><td><strong>員工作弊加點</strong></td><td>操作者+原因+日誌；異常告警。</td></tr>
+            <tr><td><strong>推播被擋</strong></td><td>交易/行銷分開；頻控與靜默時段。</td></tr>
+            <tr><td><strong>整模與麵包不同點</strong></td><td>品類倍率/排除 SKU；禮盒走券、麵包走點。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p>蛋糕西點業 · 會員積分中台銷售頁（內部 / 提案用）</p>
+      <p style="margin-top:6px">報價為結構示例，請代入實際成本與底價 · AI 加送範圍以合約附件為準</p>
+      <p style="margin-top:12px">
+        <a href="#pricing">報價</a> ·
+        <a href="#script">話術</a> ·
+        <a href="#flow">流程</a> ·
+        <a href="#checklist">清單</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
