@@ -46,10 +46,11 @@
       </div>
       <div>
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Bakery Loyalty Command</span>
-          <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">Growth · AI 加送</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Bakery Ops Data + Loyalty</span>
+          <span class="text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-500/20 font-bold">每日資料池</span>
+          <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">AI 加送</span>
         </div>
-        <h1 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">蛋糕西點 · 會員點數 + CRM + AI 決策</h1>
+        <h1 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">採集破壁壘 · 點數 + CRM + AI 決策</h1>
       </div>
     </div>
     <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
@@ -76,9 +77,9 @@
       <!-- 導言 -->
       <div class="text-center mb-8 max-w-3xl mx-auto">
         <p class="text-sm md:text-base leading-relaxed text-slate-600 dark:text-slate-400">
-          以<strong class="text-slate-900 dark:text-slate-100">會員點數帳本</strong>為核心，疊加<strong class="text-slate-900 dark:text-slate-100">CRM 經營</strong>與<strong class="text-slate-900 dark:text-slate-100">AI 決策</strong>（預設人審）；
-          POS · 線上商城 · 外送同一會員，LINE 負責觸達。<br />
-          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 點擊下方節點可展開細節；風格對齊 CATCH AI 中控層（ai1）。</span>
+          品牌資料常<strong class="text-slate-900 dark:text-slate-100">分散在不同系統</strong>——我們定時採集接回，消除壁壘，形成<strong class="text-slate-900 dark:text-slate-100">每日可分析的營運資料池</strong>；
+          再驅動<strong class="text-slate-900 dark:text-slate-100">會員點數 + CRM + AI 決策</strong>。<br />
+          <span class="text-amber-600 dark:text-amber-400 font-semibold">💡 點擊下方節點展開細節 · 風格對齊 <a href="https://www.cbots.ai/ai1.html" class="underline" target="_blank" rel="noopener">ai1 中控層</a>。</span>
         </p>
       </div>
 
@@ -165,27 +166,75 @@
         <!-- 右側：分層 -->
         <section class="lg:col-span-9 space-y-4">
 
-          <!-- A 通路接入 -->
-          <div onclick="openDetail('channels')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50/60 p-5 shadow-sm transition-all dark:border-emerald-500/20 dark:bg-emerald-950/5 dark:hover:bg-emerald-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 font-black text-xl shrink-0">A</div>
-              <div>
-                <h2 class="text-lg font-extrabold flex items-center gap-2">
-                  通路接入層
-                  <span class="text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded-full">POS · 商城 · 外送</span>
-                </h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">訂單來源，不取代既有系統；統一 channel / store_id / order_id 入帳</p>
+          <!-- A 資料採集 -->
+          <div onclick="openDetail('ingest')" class="group cursor-pointer rounded-2xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-50/70 p-5 shadow-sm transition-all dark:border-cyan-500/20 dark:bg-cyan-950/10 dark:hover:bg-cyan-950/20">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-950 dark:text-cyan-400 font-black text-xl shrink-0">A</div>
+                <div>
+                  <h2 class="text-lg font-extrabold flex flex-wrap items-center gap-2">
+                    資料採集與接入層
+                    <span class="text-xs font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 px-2 py-0.5 rounded-full">每日同步</span>
+                    <span class="text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 px-2 py-0.5 rounded-full">消除系統壁壘</span>
+                  </h2>
+                  <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+                    品牌分散在不同系統的資料<strong class="text-slate-800 dark:text-slate-200">定時採集接回來</strong>，形成<strong class="text-slate-800 dark:text-slate-200">每日可分析的營運資料池</strong>。
+                    讓 AI 不只看單一系統，而是理解整體營運。
+                  </p>
+                  <div class="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">POS 交易</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">CRM 會員</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">點數</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">電商</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">外送</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">庫存</span>
+                    <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">門市日報</span>
+                  </div>
+                  <p class="mt-2 text-xs text-cyan-700 dark:text-cyan-400 font-medium">接入方式：API · CSV · Excel · 資料庫直連 · 人工上傳</p>
+                </div>
               </div>
-            </div>
-            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-              展開通路策略 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+              <div class="text-xs font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1 shrink-0">
+                採集細節 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+              </div>
             </div>
           </div>
 
-          <!-- B 點數帳本 -->
+          <!-- A2 通路 -->
+          <div onclick="openDetail('channels')" class="group cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50/60 p-5 shadow-sm transition-all dark:border-emerald-500/20 dark:bg-emerald-950/5 dark:hover:bg-emerald-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 font-black text-sm shrink-0">A2</div>
+              <div>
+                <h2 class="text-lg font-extrabold flex items-center gap-2">
+                  通路與訂單場景
+                  <span class="text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded-full">POS · 商城 · 外送</span>
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">採集進來後如何給點 / 用券；不取代既有 POS、開店、外送平台</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              通路策略 <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+
+          <!-- B 營運資料池 -->
+          <div onclick="openDetail('pool')" class="group cursor-pointer rounded-2xl border border-sky-200 bg-sky-50/30 hover:bg-sky-50/60 p-5 shadow-sm transition-all dark:border-sky-500/20 dark:bg-sky-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400 font-black text-xl shrink-0">B</div>
+              <div>
+                <h2 class="text-lg font-extrabold flex items-center gap-2">
+                  每日營運資料池
+                  <span class="text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 px-2 py-0.5 rounded-full">可分析</span>
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">會員 · 交易 · 點數流水 · 商品 · 門市 · 券 · 庫存 · 日報 · 異常事件</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1">資料表 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+
+          <!-- C 點數帳本 -->
           <div onclick="openDetail('points')" class="group cursor-pointer rounded-2xl border border-amber-200 bg-amber-50/30 hover:bg-amber-50/60 p-5 shadow-sm transition-all dark:border-amber-500/20 dark:bg-amber-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0">B</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400 font-black text-xl shrink-0">C</div>
               <div>
                 <h2 class="text-lg font-extrabold flex items-center gap-2">
                   會員點數層
@@ -197,10 +246,10 @@
             <div class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">展開帳本 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
 
-          <!-- C CRM -->
+          <!-- D CRM -->
           <div onclick="openDetail('crm')" class="group cursor-pointer rounded-2xl border border-blue-200 bg-blue-50/30 hover:bg-blue-50/60 p-5 shadow-sm transition-all dark:border-blue-500/20 dark:bg-blue-950/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0">C</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-black text-xl shrink-0">D</div>
               <div>
                 <h2 class="text-lg font-extrabold flex items-center gap-2">
                   CRM 經營層
@@ -212,13 +261,13 @@
             <div class="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">展開 CRM <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
           </div>
 
-          <!-- D AI + LINE Agents -->
+          <!-- E AI + LINE Agents -->
           <div class="rounded-2xl border border-purple-200 bg-white p-5 shadow-sm dark:border-purple-500/20 dark:bg-slate-900/50">
             <div class="flex items-center gap-3 mb-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">D</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400 font-black text-xl">E</div>
               <div>
                 <h2 class="text-lg font-extrabold">AI 決策 + LINE 觸達</h2>
-                <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">Agent 協作 · 人審優先</p>
+                <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">看整池資料 · 非單一系統 · 人審優先</p>
               </div>
             </div>
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -257,13 +306,13 @@
             </div>
           </div>
 
-          <!-- E 治理 -->
+          <!-- F 治理 -->
           <div onclick="openDetail('governance')" class="group cursor-pointer rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm transition-all dark:border-slate-700 dark:bg-slate-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-black text-xl shrink-0">E</div>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-black text-xl shrink-0">F</div>
               <div>
                 <h2 class="text-lg font-extrabold">治理與稽核層</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">建議來源 · 人審結果 · 執行結果 · 調帳審計 · 退訂與頻控</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-0.5">同步日誌 · 失敗重試 · AI 建議追蹤 · 調帳審計 · 退訂與頻控</p>
               </div>
             </div>
             <div class="text-xs font-bold text-slate-500 flex items-center gap-1">展開治理 <i data-lucide="chevron-right" class="w-4 h-4"></i></div>
@@ -273,11 +322,13 @@
 
       <!-- 流程箭頭示意 -->
       <div class="mt-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 overflow-x-auto">
-        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端資料流</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">端到端：採集 → 資料池 → 三引擎 → 觸達</p>
         <div class="flex flex-wrap items-center gap-2 text-xs font-semibold min-w-max">
-          <span class="px-3 py-2 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">POS / 商城 / 外送</span>
+          <span class="px-3 py-2 rounded-xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">分散系統定時採集</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
-          <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數 Ledger</span>
+          <span class="px-3 py-2 rounded-xl bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">每日營運資料池</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
+          <span class="px-3 py-2 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">點數</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
           <span class="px-3 py-2 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">CRM</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-slate-400"></i>
@@ -370,9 +421,9 @@
         <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <h3 class="font-extrabold text-lg mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-emerald-500"></i> 30 / 60 / 90 流程</h3>
           <ol class="space-y-3 text-sm">
-            <li class="flex gap-3"><span class="font-black text-emerald-600">30</span><span><strong>點數+CRM 基礎</strong>：POS 入帳、LINE 綁定、到帳推播、Admin 查帳</span></li>
-            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>CRM 加深 + 商城</strong>：分群、禮券、訂單 Webhook、生日</span></li>
-            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>AI + 外送</strong>：節慶草稿人審、自外送/補登、ROI 復盤</span></li>
+            <li class="flex gap-3"><span class="font-black text-cyan-600">30</span><span><strong>採集 + 點數</strong>：POS/日報每日同步進資料池、給點、LINE 到帳</span></li>
+            <li class="flex gap-3"><span class="font-black text-blue-600">60</span><span><strong>CRM + 電商</strong>：會員/商城/外送接上池、分群、禮券</span></li>
+            <li class="flex gap-3"><span class="font-black text-purple-600">90</span><span><strong>AI 看整池</strong>：庫存/日報入池、節慶草稿人審、跨系統 ROI</span></li>
           </ol>
           <button type="button" onclick="openDetail('script')" class="mt-4 text-xs font-bold text-amber-600 dark:text-amber-400">打開銷售 Script →</button>
         </div>
@@ -442,6 +493,57 @@
 
   <script>
     const DETAILS = {
+      ingest: {
+        title: "A · 資料採集與接入層",
+        badge: "消除系統壁壘 · 每日同步",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+            品牌分散在不同系統的資料<strong>定時採集接回來</strong>，消除系統壁壘，形成<strong>每日可分析的營運資料池</strong>。
+            建立每日資料同步節奏，讓 AI 不只看單一系統，而是理解整體營運。
+          </p>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">串接範圍</p>
+          <div class="flex flex-wrap gap-2 mb-4 text-xs font-semibold">
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">POS 交易</span>
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">CRM 會員</span>
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">點數</span>
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">電商</span>
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">外送</span>
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">庫存</span>
+            <span class="px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">門市日報</span>
+          </div>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">支援接入方式</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• <strong>API</strong>：即時或準即時 Webhook / 排程拉取</li>
+            <li>• <strong>CSV / Excel</strong>：日結檔、總部匯出檔自動或半自動匯入</li>
+            <li>• <strong>資料庫直連</strong>：唯讀連線至既有 DB（權限與白名單）</li>
+            <li>• <strong>人工上傳</strong>：例外日報、一次性歷史回灌</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">每日節奏（建議）</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 門市打烊後：POS / 日報批次</li>
+            <li>• 夜間：電商、外送、庫存增量同步</li>
+            <li>• 清晨：資料品質檢核 → 指標重算 → AI 可讀取整池</li>
+            <li>• 失敗：告警 + 重試 + 人工補傳入口</li>
+          </ul>
+          <p class="mt-4 text-xs text-slate-500">不要求一次換掉所有系統；先接「能接的」，壁壘用排程與對帳消掉。</p>`
+      },
+      pool: {
+        title: "B · 每日營運資料池",
+        badge: "可分析 · 跨系統",
+        html: `
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">採集落地後的統一資料池，供點數、CRM、AI 共同使用——AI 看到的是整體營運，不是單一孤島。</p>
+          <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <li>• <strong>會員表</strong>：身份、等級、LINE、opt-in</li>
+            <li>• <strong>交易表</strong>：POS / 電商 / 外送訂單與金額</li>
+            <li>• <strong>點數流水</strong>：給點、兌獎、沖正、過期</li>
+            <li>• <strong>商品表</strong>：SKU、品類（倍率用）</li>
+            <li>• <strong>門市表</strong>：店別、區域、狀態</li>
+            <li>• <strong>優惠券 / 活動表</strong></li>
+            <li>• <strong>庫存表</strong>：可支援即期與出清決策</li>
+            <li>• <strong>門市日報 / 異常事件</strong></li>
+          </ul>
+          <p class="mt-4 text-sm text-slate-600 dark:text-slate-400">指標可由此計算：營收、回購、LTV、RFM、券使用率、分通路占比等。</p>`
+      },
       points: {
         title: "會員點數 · SoR 帳本",
         badge: "引擎 1",
@@ -542,11 +644,13 @@
           </ul>`
       },
       governance: {
-        title: "E · 治理與稽核",
-        badge: "合規",
+        title: "F · 治理與稽核",
+        badge: "合規 · 同步品質",
         html: `
           <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-            <li>• 每次 AI 建議：來源特徵 · 時間 · 理由 · 內容 · 採納與否 · 結果</li>
+            <li>• <strong>採集日誌</strong>：來源系統 · 筆數 · 成功/失敗 · 延遲</li>
+            <li>• 同步失敗重試與人工補傳軌跡</li>
+            <li>• 每次 AI 建議：來源特徵 · 時間 · 理由 · 採納 · 結果</li>
             <li>• 人工調帳：操作者 + 原因 + 日誌</li>
             <li>• 行銷 opt-in · 退訂 · 頻控</li>
             <li>• 租戶隔離 · 數據可匯出 · 所有權歸品牌</li>
@@ -572,11 +676,12 @@
         badge: "話術",
         html: `
           <div class="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 text-sm text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
-            西點要的不是再一個集點 App，而是三件事：<strong>會員點數算準、CRM 認得客人、AI 決定該推誰——您點頭才發券</strong>。
-            訂單來自 POS、線上商城、外送；不換既有系統。會員核心約 Ocard 七成，Growth 加送 AI 決策基礎。
+            系統壁壘先拆：<strong>分散資料每日採集進營運資料池</strong>，再做
+            <strong>會員點數算準、CRM 認得客人、AI 決定該推誰——您點頭才發券</strong>。
+            不換 POS/商城/外送。會員核心約 Ocard 七成，Growth 加送 AI 決策基礎。
           </div>
           <p class="text-sm font-bold mb-2">Demo 順序</p>
-          <p class="text-sm text-slate-600 dark:text-slate-400">給點 → CRM 看人 → LINE 到帳 → AI 母親節草稿 → 核准 → 發券 → 核銷</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">採集日誌 → 資料池 → 給點 → CRM → AI 草稿 → 核准 → LINE → 核銷</p>
           <p class="text-sm font-bold mt-4 mb-2">逼定</p>
           <p class="text-sm text-slate-600 dark:text-slate-400">① 技術對接 45 分（P0 POS）　② 下一檔節慶试点</p>`
       },
