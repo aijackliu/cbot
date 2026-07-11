@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>大阪京都 6 日行程卡 · 2025/9/1–9/6</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #5c5c5c;
+    --line: #e8e4dc;
+    --cream: #f7f4ee;
+    --card: #fffcf7;
+    --accent: #c45c26;
+    --accent2: #2d5a4a;
+    --blue: #3d5a80;
+    --soft: #f0ebe3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    background: #ddd8cf;
+    color: var(--ink);
+    padding: 24px;
+    line-height: 1.45;
+  }
+  .sheet {
+    max-width: 1100px;
+    margin: 0 auto 32px;
+  }
+  .cover {
+    background: linear-gradient(135deg, #2d5a4a 0%, #1e3d34 55%, #c45c26 160%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.15);
+  }
+  .cover h1 { font-size: 28px; font-weight: 700; letter-spacing: .02em; }
+  .cover .sub { opacity: .9; margin-top: 8px; font-size: 15px; }
+  .cover .meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+    font-size: 13px;
+  }
+  .cover .meta div {
+    background: rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .cover .meta b { display: block; opacity: .75; font-weight: 600; margin-bottom: 4px; font-size: 11px; letter-spacing: .06em; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0,0,0,.08);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    min-height: 520px;
+  }
+  .card-head {
+    padding: 18px 20px 14px;
+    color: #fff;
+    position: relative;
+  }
+  .d1 .card-head { background: linear-gradient(135deg, #3d5a80, #2c4160); }
+  .d2 .card-head { background: linear-gradient(135deg, #8b3a3a, #c45c26); }
+  .d3 .card-head { background: linear-gradient(135deg, #2d5a4a, #3d7a62); }
+  .d4 .card-head { background: linear-gradient(135deg, #6b4f3a, #a67c52); }
+  .d5 .card-head { background: linear-gradient(135deg, #3d5a80, #5c7a9a); }
+  .d6 .card-head { background: linear-gradient(135deg, #4a4a4a, #6e6e6e); }
+  .day-num {
+    font-size: 12px;
+    letter-spacing: .12em;
+    opacity: .85;
+    font-weight: 600;
+  }
+  .card-head h2 {
+    font-size: 22px;
+    margin-top: 4px;
+    font-weight: 700;
+  }
+  .card-head .date {
+    margin-top: 6px;
+    font-size: 13px;
+    opacity: .92;
+  }
+  .badge {
+    display: inline-block;
+    margin-top: 10px;
+    background: rgba(255,255,255,.2);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+  .card-body {
+    padding: 16px 20px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .hotel {
+    background: var(--soft);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .hotel strong { color: var(--ink); }
+  .timeline { flex: 1; }
+  .item {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 13.5px;
+  }
+  .item:last-child { border-bottom: none; }
+  .time {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 12px;
+    padding-top: 2px;
+  }
+  .d2 .time, .d3 .time { color: #8b3a3a; }
+  .d3 .time { color: #2d5a4a; }
+  .d4 .time { color: #6b4f3a; }
+  .d5 .time { color: #3d5a80; }
+  .d6 .time { color: #555; }
+  .what { color: var(--ink); }
+  .what small {
+    display: block;
+    color: var(--muted);
+    font-size: 11.5px;
+    margin-top: 3px;
+  }
+  .tip {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: #fff8f0;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 12px;
+    color: #5a4030;
+  }
+  .footer-note {
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+    margin-top: 8px;
+    padding: 12px;
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .card { break-inside: avoid; box-shadow: none; page-break-inside: avoid; }
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="cover">
+    <h1>大阪・京都 6 日行程</h1>
+    <p class="sub">2025/9/1（二）– 9/6（日）｜無 USJ｜關西機場進出</p>
+    <div class="meta">
+      <div>
+        <b>OUTBOUND</b>
+        9/1 10:15 桃園 → 14:00 關西　JX822
+      </div>
+      <div>
+        <b>RETURN</b>
+        9/6 15:20 關西 → 17:20 桃園　GK055
+      </div>
+      <div>
+        <b>住宿 9/1–9/4</b>
+        ESLEAD HOTEL Namba Daikokucho（大国町）
+      </div>
+      <div>
+        <b>住宿 9/4–9/6</b>
+        Miyako City Osaka Hommachi（本町）
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- DAY 1 -->
+    <article class="card d1">
+      <div class="card-head">
+        <div class="day-num">DAY 01</div>
+        <h2>抵達・道頓堀</h2>
+        <div class="date">9/1（二）</div>
+        <span class="badge">輕鬆日 · 不趕景點</span>
+      </div>
+      <div class="card-body">
+        <div class="hotel">🏨 <strong>ESLEAD Namba Daikokucho</strong><br>南海→難波→大国町</div>
+        <div class="timeline">
+          <div class="item">
+            <div class="time">14:00</div>
+            <div class="what">關西機場抵達 JX822<small>入境・取行李・買 ICOCA</small></div>
+          </div>
+          <div class="item">
+            <div class="time">16:00</div>
+            <div class="what">前往飯店<small>約 60–80 分，Check-in 放行李</small></div>
+          </div>
+          <div class="item">
+            <div class="time">18:00</div>
+            <div class="what">道頓堀／心齋橋<small>逛街、章魚燒、宵夜，早休息</small></div>
+          </div>
+        </div>
+        <div class="tip">💡 抵達日只吃喝散步，為隔天京都留體力。</div>
+      </div>
+    </article>
+
+    <!-- DAY 2 -->
+    <article class="card d2">
+      <div class="card-head">
+        <div class="day-num">DAY 02</div>
+        <h2>京都・東山</h2>
+        <div class="date">9/2（三）</div>
+        <span class="badge">清水寺・祇園</span>
+      </div>
+      <div class="card-body">
+        <div class="hotel">🏨 住大国町｜日歸京都</div>
+        <div class="timeline">
+          <div class="item">
+            <div class="time">08:00前</div>
+            <div class="what">出發京都<small>難波搭京阪 → 清水五条／祇園四条</small></div>
+          </div>
+          <div class="item">
+            <div class="time">上午</div>
+            <div class="what">清水寺 → 二年坂三年坂<small>產寧坂散步、拍照</small></div>
+          </div>
+          <div class="item">
+            <div class="time">中午</div>
+            <div class="what">清水／祇園一帶午餐</div>
+          </div>
+          <div class="item">
+            <div class="time">下午</div>
+            <div class="what">八坂神社 → 花見小路<small>可選錦市場（擇一）</small></div>
+          </div>
+          <div class="item">
+            <div class="time">傍晚</div>
+            <div class="what">回大阪晚餐<small>難波／大国町</small></div>
+          </div>
+        </div>
+        <div class="tip">💡 今日只走東山圈，勿再加金閣／嵐山。</div>
+      </div>
+    </article>
+
+    <!-- DAY 3 -->
+    <article class="card d3">
+      <div class="card-head">
+        <div class="day-num">DAY 03</div>
+        <h2>京都・稻荷＋金閣</h2>
+        <div class="date">9/3（四）</div>
+        <span class="badge">方案 A 經典</span>
+      </div>
+      <div class="card-body">
+        <div class="hotel">🏨 住大国町｜日歸京都</div>
+        <div class="timeline">
+          <div class="item">
+            <div class="time">一早</div>
+            <div class="what">伏見稻荷大社<small>盡量 8 點前到千本鳥居</small></div>
+          </div>
+          <div class="item">
+            <div class="time">中午</div>
+            <div class="what">稻荷附近用餐・移動</div>
+          </div>
+          <div class="item">
+            <div class="time">下午</div>
+            <div class="what">金閣寺<small>人多，停留勿拖太久</small></div>
+          </div>
+          <div class="item">
+            <div class="time">傍晚</div>
+            <div class="what">回大阪<small>體力夠可外圍看嵐山就走</small></div>
+          </div>
+        </div>
+        <div class="tip">💡 想輕鬆可改整天嵐山（竹林・渡月橋），二選一。</div>
+      </div>
+    </article>
+
+    <!-- DAY 4 -->
+    <article class="card d4">
+      <div class="card-head">
+        <div class="day-num">DAY 04</div>
+        <h2>奈良＋換宿</h2>
+        <div class="date">9/4（五）</div>
+        <span class="badge">換本町飯店</span>
+      </div>
+      <div class="card-body">
+        <div class="hotel">🏨 早：大国町 → 晚：<strong>Miyako City Hommachi</strong></div>
+        <div class="timeline">
+          <div class="item">
+            <div class="time">上午</div>
+            <div class="what">近鐵奈良<small>東大寺・奈良公園餵鹿</small></div>
+          </div>
+          <div class="item">
+            <div class="time">中午</div>
+            <div class="what">奈良町／駅前午餐<small>中谷堂麻糬等</small></div>
+          </div>
+          <div class="item">
+            <div class="time">14:30</div>
+            <div class="what">回大阪・取行李<small>大国町退房</small></div>
+          </div>
+          <div class="item">
+            <div class="time">16:00</div>
+            <div class="what">Check-in 本町<small>御堂筋線幾站即達</small></div>
+          </div>
+          <div class="item">
+            <div class="time">晚上</div>
+            <div class="what">本町／心齋橋晚餐</div>
+          </div>
+        </div>
+        <div class="tip">💡 換宿日不排神戶或京都，只做奈良半天。</div>
+      </div>
+    </article>
+
+    <!-- DAY 5 -->
+    <article class="card d5">
+      <div class="card-head">
+        <div class="day-num">DAY 05</div>
+        <h2>大阪城・梅田</h2>
+        <div class="date">9/5（六）</div>
+        <span class="badge">市區輕鬆 · 備返程</span>
+      </div>
+      <div class="card-body">
+        <div class="hotel">🏨 Miyako City Osaka Hommachi</div>
+        <div class="timeline">
+          <div class="item">
+            <div class="time">上午</div>
+            <div class="what">大阪城公園<small>天守閣視人潮決定</small></div>
+          </div>
+          <div class="item">
+            <div class="time">中午</div>
+            <div class="what">城下或本町午餐</div>
+          </div>
+          <div class="item">
+            <div class="time">下午</div>
+            <div class="what">梅田逛街・伴手禮<small>阪急／大丸梅田先掃貨</small></div>
+          </div>
+          <div class="item">
+            <div class="time">晚上</div>
+            <div class="what">本町／心齋橋晚餐<small>勿太晚，隔天要離境</small></div>
+          </div>
+        </div>
+        <div class="tip">💡 想換口味可改神戶日歸（三宮・Harborland）。</div>
+      </div>
+    </article>
+
+    <!-- DAY 6 -->
+    <article class="card d6">
+      <div class="card-head">
+        <div class="day-num">DAY 06</div>
+        <h2>伴手禮・返程</h2>
+        <div class="date">9/6（日）</div>
+        <span class="badge">GK055 15:20</span>
+      </div>
+      <div class="card-body">
+        <div class="hotel">🏨 退房 → 關西機場</div>
+        <div class="timeline">
+          <div class="item">
+            <div class="time">08:30</div>
+            <div class="what">補買伴手禮<small>本町／心齋橋藥妝・餅乾</small></div>
+          </div>
+          <div class="item">
+            <div class="time">11:00</div>
+            <div class="what">最晚離開飯店<small>御堂筋→難波→南海空港線</small></div>
+          </div>
+          <div class="item">
+            <div class="time">12:30</div>
+            <div class="what">抵達關西機場<small>國際線建議起飛前 2.5–3 小時</small></div>
+          </div>
+          <div class="item">
+            <div class="time">15:20</div>
+            <div class="what">GK055 起飛<small>→ 17:20 桃園</small></div>
+          </div>
+        </div>
+        <div class="tip">⚠️ 9/6 不排任何遠程景點。Online check-in 提早辦。</div>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="footer-note">大阪・京都 6 日｜無 USJ｜可列印或手機截圖各卡使用</p>
+</div>
+
+</body>
+</html>
