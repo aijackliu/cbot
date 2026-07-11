@@ -1,10 +1,12 @@
 ﻿# test0711 · 大阪・京都 6 日行程
 
-依航班與住宿的關西 6 日行程卡（無 USJ、無奈良）。
+依航班與住宿的關西 6 日行程卡（無 USJ、無奈良、無伏見稻荷）。
 
 - 線上預覽：https://aijackliu.github.io/cbot/test0711/
 - 9/1 桃園→關西 JX822 · 9/6 關西→桃園 GK055
 - 住宿：ESLEAD Namba Daikokucho → Miyako City Osaka Hommachi
+- Day2：京都東山（清水・祇園）
+- Day3：嵐山＋金閣寺
 - Day4：木津市場＋換宿本町
 
 靜態 HTML，無需後端。
