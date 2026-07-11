@@ -378,13 +378,18 @@
           </button>
           <button type="button" onclick="openDetail('gtm-paths')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5 sm:p-6">
             <div class="h-9 w-9 rounded-xl bg-sage/15 text-sage flex items-center justify-center mb-3"><i data-lucide="route" class="w-4 h-4"></i></div>
-            <h3 class="font-extrabold text-lg">六條銷售路徑</h3>
-            <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-2">節慶窗口、POS 商、直營連鎖、加盟總部、91/商城加值、同業轉介。</p>
+            <h3 class="font-extrabold text-lg">六條主路徑</h3>
+            <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-2">退戶、節慶、POS 商、直營、加盟總部、商城共存。</p>
           </button>
-          <button type="button" onclick="openDetail('gtm-process')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5 sm:p-6">
+          <button type="button" onclick="openDetail('gtm-more')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5 sm:p-6">
+            <div class="h-9 w-9 rounded-xl bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 flex items-center justify-center mb-3"><i data-lucide="network" class="w-4 h-4"></i></div>
+            <h3 class="font-extrabold text-lg">還能做的銷售方式</h3>
+            <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-2">會計/裝潢/代操轉介、试点包、內容展會、地推、分潤捆綁。</p>
+          </button>
+          <button type="button" onclick="openDetail('gtm-process')" class="bento-card cursor-pointer text-left rounded-3xl border border-ink-200/90 dark:border-white/10 bg-white/85 dark:bg-ink-900/55 p-5 sm:p-6 sm:col-span-2 lg:col-span-1">
             <div class="h-9 w-9 rounded-xl bg-blue-500/15 text-blue-700 dark:text-blue-300 flex items-center justify-center mb-3"><i data-lucide="list-ordered" class="w-4 h-4"></i></div>
             <h3 class="font-extrabold text-lg">成交節奏</h3>
-            <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-2">名單 → 挖退訂原因 → Demo 對痛 → 節慶试点 → 年約。</p>
+            <p class="text-sm text-ink-800/65 dark:text-cream/55 mt-2">名單 → 挖因 → Demo → 试点 → 年約。現在只押 4 條。</p>
           </button>
         </div>
 
@@ -866,31 +871,81 @@ const DETAILS = {
           </ul>`
       },
       "gtm-paths": {
-        title: "六條銷售路徑",
-        badge: "GTM",
+        title: "六條主路徑（優先序）",
+        badge: "GTM 核心",
         html: `
           <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
-            <li>• <strong>① Ocard / 競品退戶</strong>（優先）：痛過、付過，成交週期短</li>
+            <li>• <strong>① Ocard / 競品退戶</strong>（最優）：痛過、付過，成交週期短</li>
             <li>• <strong>② 節慶窗口</strong>：母親節/中秋前 6–8 週，卖试点包</li>
-            <li>• <strong>③ POS 經銷商</strong>：綁「會員中台」聯賣，分潤或轉介費</li>
-            <li>• <strong>④ 直營連鎖 3–30 店</strong>：主打跨店帳 + 總部報表</li>
-            <li>• <strong>⑤ 加盟總部</strong>：規則複製、派發加盟（G 層）</li>
-            <li>• <strong>⑥ 已有 91/商城</strong>：共存加值，不換站，只插點數 CRM AI</li>
+            <li>• <strong>③ POS 經銷商</strong>：聯賣會員中台，轉介費/分潤</li>
+            <li>• <strong>④ 直營連鎖 3–30 店</strong>：跨店帳 + 總部報表</li>
+            <li>• <strong>⑤ 加盟總部</strong>：規則複製派發（治理 G 層）</li>
+            <li>• <strong>⑥ 已有 91/商城</strong>：共存加值，不換站</li>
           </ul>
-          <p class="mt-4 text-xs text-slate-500">資源有限時順序：① → ② → ③ → ④。</p>`
+          <p class="mt-4 text-sm font-bold text-amber-700 dark:text-amber-300">現在只押：① → ② → ③ → ④。其餘第二季再加。</p>`
+      },
+      "gtm-more": {
+        title: "還能做的銷售方式（擴充）",
+        badge: "第二季加碼",
+        html: `
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">A. 通路與生態轉介</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• <strong>會計 / 記帳士</strong>：帳單裡有會員年費、抱怨成本</li>
+            <li>• <strong>裝潢 / 開幕統包</strong>：新店清單塞「會員+LINE」</li>
+            <li>• <strong>廣告 / 網紅經紀</strong>：有流量沒留存 → 接中台</li>
+            <li>• <strong>外送顧問</strong>：導回自外送/門市+點數</li>
+            <li>• <strong>中央廚房 / 原料商</strong>：連鎖統一會員</li>
+            <li>• <strong>LINE OA 代操</strong>：會發文不會管帳 → 聯賣</li>
+            <li>• <strong>收單 / 支付業務</strong>（需人脈）：自有點數替代亂回饋</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">B. 產品化賣法（別只賣年費）</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 節慶试点包 · 開幕 90 天包 · Ocard 遷移包</li>
+            <li>• 總部治理包（老闆+行銷 Agent + 加盟複製）</li>
+            <li>• 資料健檢（免費/低價進門）→ 轉付費</li>
+            <li>• 成果分期（试点達標再收第二期，慎用）</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">C. 內容與 inbound</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 短影音：「為什麼砍掉 Ocard」「跨店點對不齊」</li>
+            <li>• 本頁當提案 URL · SEO「烘焙 會員系統」「Ocard 替代」</li>
+            <li>• 老闆小聚 10 人 Demo · 舊客戶轉介獎金</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">D. 地推與場景</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <li>• 商圈掃街 15 店/次 · 餐飲/加盟/烘焙展</li>
+            <li>• 14:00–16:00 電訪 · 活動日駐點（需同意）</li>
+          </ul>
+          <p class="text-sm font-bold mb-2 text-slate-800 dark:text-slate-200">E. 捆綁與帳戶</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+            <li>• 小 POS 白牌嵌報價 · 簡訊商聯名分群 · 進銷存聯名庫存 Agent</li>
+            <li>• Land & expand（1 店→全品牌）· 先直營後加盟 · 多品牌共點</li>
+            <li>• 沉睡商機：報過價 6 個月後用節慶包再打</li>
+            <li>• 區域代理（擴張期）+ 名單 KPI</li>
+          </ul>
+          <p class="mt-4 text-xs text-slate-500">弱：「我們有 AI」。強：「您砍 Ocard 後跨店還亂嗎？母親節试点包。」</p>`
       },
       "gtm-process": {
-        title: "成交節奏（通用）",
+        title: "成交節奏 + 現在只押 4 條",
         badge: "Process",
         html: `
-          <ol class="space-y-2 text-sm text-slate-700 dark:text-slate-300 list-decimal pl-5">
+          <p class="text-sm font-bold mb-2">通用成交</p>
+          <ol class="space-y-2 text-sm text-slate-700 dark:text-slate-300 list-decimal pl-5 mb-4">
             <li><strong>名單分級</strong>：退戶 / 準退 / 新客</li>
-            <li><strong>挖因</strong>：退訂或痛點 3 句（錢、帳、推）</li>
-            <li><strong>Demo</strong>：只 demo 對得上的 1 個痛（15 分）</li>
-            <li><strong>试点</strong>：一檔節慶 or 30 天給點+一波人審活動</li>
+            <li><strong>挖因</strong>：錢、帳、推 三選一深挖</li>
+            <li><strong>Demo</strong>：只 demo 1 個痛（15 分）</li>
+            <li><strong>试点</strong>：一檔節慶 or 30 天給點+人審一波</li>
             <li><strong>對帳證明</strong>：跨店/跨通路零爭議</li>
-            <li><strong>年約</strong>：Growth + AI 加送；再談 Agent 擴充</li>
-          </ol>`
+            <li><strong>年約</strong>：Growth + AI 加送；再擴 Agent</li>
+          </ol>
+          <p class="text-sm font-bold mb-2">本季只押</p>
+          <ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+            <li>1. Ocard 退戶 + CSV 名單</li>
+            <li>2. POS 經銷轉介</li>
+            <li>3. 節慶试点包</li>
+            <li>4. 91/商城共存</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">會計、裝潢、展會、內容 → 第二季再加，避免十條並行沒 Demo。</p>`
       },
       "gtm-find-churn": {
         title: "如何查到 Ocard 退戶",
