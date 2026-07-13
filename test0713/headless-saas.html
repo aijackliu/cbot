@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Agent × SaaS · Headless Software｜a16z 對談筆記</title>
+  <meta name="description" content="a16z Headless Software 對談濃縮：UI 退場、SoR 不退、例外與 context、新創卡巨頭中間；含 5 張怪誕手繪配圖" />
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --panel: #111822;
+      --border: #1c2a3a;
+      --text: #e8eef6;
+      --muted: #8b9cb3;
+      --accent: #3b82f6;
+      --gold: #d4a574;
+      --chip: #1a2433;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", system-ui, "Noto Sans TC", sans-serif;
+      background:
+        radial-gradient(900px 480px at 10% -5%, #1a2840 0%, transparent 55%),
+        radial-gradient(700px 400px at 100% 20%, #152030 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: #93c5fd; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      position: sticky; top: 0; z-index: 30;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 14, 20, 0.92);
+      backdrop-filter: blur(10px);
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.65rem;
+      align-items: center;
+    }
+    header h1 { font-size: 1.05rem; font-weight: 650; }
+    header p { color: var(--muted); font-size: 0.75rem; margin-top: 0.15rem; }
+    .nav { display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .nav a {
+      color: var(--muted); padding: 0.2rem 0.45rem; border-radius: 6px;
+    }
+    .nav a:hover { color: var(--text); background: var(--chip); text-decoration: none; }
+    main { max-width: 1100px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+    .hero {
+      padding: 1.5rem 0 1.1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .hero .kicker {
+      font-size: 0.72rem; color: var(--gold); font-weight: 650;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem;
+    }
+    .hero h2 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem); font-weight: 700;
+      line-height: 1.3; max-width: 36ch;
+    }
+    .hero .one-liner {
+      margin-top: 0.75rem; font-size: 1rem; color: #cbd5e1;
+      max-width: 52ch; line-height: 1.55;
+    }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem;
+    }
+    .tag {
+      font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px;
+      background: var(--chip); color: var(--muted); border: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .tag.accent { color: #bfdbfe; border-color: #1e3a5f; background: #122033; }
+    .section { margin-bottom: 2rem; scroll-margin-top: 4rem; }
+    .section > h3 {
+      font-size: 1.05rem; font-weight: 650; margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;
+    }
+    .section > h3 .num {
+      font-size: 0.72rem; color: var(--accent); background: #122033;
+      border: 1px solid #1e3a5f; border-radius: 6px; padding: 0.12rem 0.4rem;
+    }
+    .card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1rem 1.1rem;
+    }
+    .grid { display: grid; gap: 0.85rem; }
+    .g2 { grid-template-columns: 1fr 1fr; }
+    .g3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 800px) {
+      .g2, .g3 { grid-template-columns: 1fr; }
+      main, header { padding-left: 1rem; padding-right: 1rem; }
+    }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.86rem;
+    }
+    th, td {
+      text-align: left; padding: 0.55rem 0.5rem;
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    th { color: var(--muted); font-size: 0.72rem; font-weight: 650; }
+    td strong { color: #f1f5f9; font-weight: 650; }
+    ul { margin: 0.35rem 0 0 1.1rem; color: #cbd5e1; font-size: 0.9rem; }
+    li { margin: 0.3rem 0; }
+    .shot {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .shot img {
+      width: 100%; height: auto; display: block;
+      background: #f8fafc; cursor: zoom-in;
+    }
+    .shot .cap {
+      padding: 0.75rem 0.9rem 0.9rem;
+    }
+    .shot .cap .idx {
+      font-size: 0.68rem; color: var(--accent); font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .shot .cap h4 {
+      font-size: 0.92rem; font-weight: 650; margin: 0.2rem 0 0.35rem;
+    }
+    .shot .cap p {
+      font-size: 0.8rem; color: var(--muted); line-height: 1.45;
+    }
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.88); align-items: center; justify-content: center;
+      padding: 1.5rem; cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: min(1200px, 96vw); max-height: 92vh;
+      border-radius: 8px; box-shadow: 0 20px 60px #000a;
+    }
+    .takeaway {
+      border-left: 3px solid var(--accent);
+      background: #0f1620; padding: 0.75rem 1rem;
+      border-radius: 0 10px 10px 0; margin: 0.5rem 0;
+      font-size: 0.9rem; color: #dbeafe;
+    }
+    footer {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.72rem; line-height: 1.55;
+    }
+    .toc-bar {
+      display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 1rem 0 0;
+    }
+    .toc-bar a {
+      font-size: 0.72rem; padding: 0.3rem 0.55rem; border-radius: 8px;
+      background: var(--chip); border: 1px solid var(--border); color: var(--muted);
+    }
+    .toc-bar a:hover { color: var(--text); border-color: #334155; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>AI Agent × SaaS · Headless</h1>
+      <p>a16z 對談濃縮 · Elena × Seema Amble × Steven Sinofsky · 2026-07-13 入庫</p>
+    </div>
+    <nav class="nav">
+      <a href="https://aijackliu.github.io/cbot/">BIRD</a>
+      <a href="./AI眼鏡-定位與三航道-圖表.html">整合控制台</a>
+      <a href="../">基建</a>
+      <a href="#gallery">配圖</a>
+      <a href="#tldr">TL;DR</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="kicker">a16z · Is Software Losing Its Head?</div>
+      <h2>AI Agent 來了，SaaS 還有未來嗎？</h2>
+      <p class="one-liner">
+        消失的可能不是 SaaS，而是「人類必須登入後台」的使用方式。
+        UI 退場；資料、邏輯、權限與例外規則不會退場。
+      </p>
+      <div class="meta">
+        <span class="tag accent">Headless Software</span>
+        <span class="tag">System of Record</span>
+        <span class="tag">MCP / API</span>
+        <span class="tag">例外處理</span>
+        <span class="tag">新創機會</span>
+        <span class="tag">配圖 × 5 · none · 16:9</span>
+      </div>
+      <div class="toc-bar">
+        <a href="#gallery">① 配圖廊</a>
+        <a href="#tldr">② TL;DR</a>
+        <a href="#agent3">③ Agent 三件事</a>
+        <a href="#stick">④ 黏著</a>
+        <a href="#sap">⑤ SAP / SoR</a>
+        <a href="#exception">⑥ 例外</a>
+        <a href="#startup">⑦ 新創</a>
+        <a href="#take">⑧ 帶走</a>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="section" id="gallery">
+      <h3><span class="num">圖</span> 怪誕手繪配圖（gimi-illustration · 無角色）</h3>
+      <div class="grid g2">
+        <article class="shot">
+          <img src="./assets/headless-saas/01-headless-ui-off.jpg" alt="UI 退場，價值在資料邏輯權限" loading="lazy" data-full />
+          <div class="cap">
+            <div class="idx">01 · HEADLESS</div>
+            <h4>UI 退場</h4>
+            <p>介面幽靈化；Agent 用 API 接機架、資料庫、邏輯與權限。價值在核心，不在 Dashboard。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/headless-saas/02-startup-vs-enterprise.jpg" alt="40人報帳 vs 萬人多國" loading="lazy" data-full />
+          <div class="cap">
+            <div class="idx">02 · SCALE</div>
+            <h4>40 人報帳 ≠ 萬人多國</h4>
+            <p>OCR 籃子解決不了 20 國法律與差旅政策。規則被「編碼進系統」後無法一鍵取代。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/headless-saas/03-exceptions-context.jpg" alt="例外才是遊戲" loading="lazy" data-full />
+          <div class="cap">
+            <div class="idx">03 · EXCEPTIONS</div>
+            <h4>例外才是遊戲</h4>
+            <p>主流程只是幹管；真正有趣的是未進欄位的 context 與長尾例外。Agent 要時間學。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/headless-saas/04-startup-between-giants.jpg" alt="新創卡在巨頭中間" loading="lazy" data-full />
+          <div class="cap">
+            <div class="idx">04 · STARTUP</div>
+            <h4>新創卡在巨頭中間</h4>
+            <p>兩座硬掛 AI 的城堡之間，小船走新航道——不正面對決品類與 8000 件准入清單。</p>
+          </div>
+        </article>
+      </div>
+      <article class="shot" style="margin-top:0.85rem;">
+        <img src="./assets/headless-saas/05-agent-three-modes.jpg" alt="Agent 查詢 做事 分析" loading="lazy" data-full />
+        <div class="cap">
+          <div class="idx">05 · AGENT MODES</div>
+          <h4>Agent 三件事：查詢 · 做事 · 分析</h4>
+          <p>Look up 輕量；Do 牽涉身份／席位／權限；Analyze 跨系統且最需逐步驗證。不可混為一談。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- TL;DR -->
+    <section class="section" id="tldr">
+      <h3><span class="num">TL;DR</span> 六個判斷</h3>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th style="width:28%">判斷</th><th>內容</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>不是「SaaS 消失」</strong></td><td>消失的更可能是人類必須登入後台 UI 的使用方式</td></tr>
+            <tr><td><strong>Headless</strong></td><td>不是拿掉軟體，而是把 GUI 從核心挪開；價值在資料、邏輯、權限、例外規則</td></tr>
+            <tr><td><strong>Agent 三種事</strong></td><td>① 查詢 ② 做事（寫入／身份／席位） ③ 分析（多系統、需驗證）</td></tr>
+            <tr><td><strong>SAP 為什麼還在</strong></td><td>封裝的是「公司怎麼運作」，不是 Postgres + API 能取代的表格</td></tr>
+            <tr><td><strong>整場遊戲</strong></td><td>例外處理 + context（未寫進欄位的政策）+ 時間累積</td></tr>
+            <tr><td><strong>新創機會</strong></td><td>不正面對決 SoR；卡巨頭之間、跨部門翻譯、資料之上採取行動、實體垂直</td></tr>
+          </tbody>
+        </table>
+        <div class="takeaway" style="margin-top:0.9rem;">
+          SaaS 可能從「給人操作的軟體」變成「讓 Agent 存取與執行的基礎設施」。
+        </div>
+      </div>
+    </section>
+
+    <!-- Agent 3 -->
+    <section class="section" id="agent3">
+      <h3><span class="num">①</span> Headless 與 Agent 三類事</h3>
+      <div class="grid g2">
+        <div class="card">
+          <h4 style="font-size:0.85rem;margin-bottom:0.5rem;color:var(--muted);">Headless 在說什麼</h4>
+          <ul>
+            <li>傳統軟體為<strong>人類存取</strong>而建（工作流、肌肉記憶）</li>
+            <li>Agent 走 API / MCP / 聊天 / CLI，不在乎按鈕層數</li>
+            <li>Salesforce Headless 360：功能層與 GUI <strong>解耦</strong></li>
+            <li>Seema：個案多半是既有 API 品牌再包裝；趨勢是為 agent 重定位 SoR</li>
+            <li>Slackbot 暴增 → 人不必進 CRM UI 也能查資料</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 style="font-size:0.85rem;margin-bottom:0.5rem;color:var(--muted);">Sinofsky：Agent 三件事</h4>
+          <table>
+            <thead><tr><th>類型</th><th>本質</th><th>難點</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Look up</strong></td><td>查詢</td><td>輕量；很多 headless 只是換皮查詢</td></tr>
+              <tr><td><strong>Do</strong></td><td>寫入／執行動作</td><td>身份、憑證、席位、權限、政策</td></tr>
+              <tr><td><strong>Analyze</strong></td><td>跨系統分析</td><td>適合長跑；幻覺與逐步驗證最重</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:0.65rem;font-size:0.8rem;color:var(--muted);">Headless ≠ Agent；要先講清楚自己在哪一種。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stick -->
+    <section class="section" id="stick">
+      <h3><span class="num">②</span> 什麼讓企業軟體黏著</h3>
+      <div class="card">
+        <table>
+          <thead><tr><th>來源</th><th>機制</th></tr></thead>
+          <tbody>
+            <tr><td>人類互動</td><td>讀寫頻率、下游流程、未成文 SOP、肌肉記憶</td></tr>
+            <tr><td>組織政治</td><td>新業務副總指定 Salesforce；財務／行銷共用真相來源</td></tr>
+            <tr><td>合規稽核</td><td>必須乾淨追蹤；替代方案少</td></tr>
+            <tr><td><strong>收錢</strong></td><td>已在付費 → 停付極難</td></tr>
+            <tr><td>怪細節</td><td>Outlook 代理存取、共用行事曆例外——60 萬席位拔不掉</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:0.7rem;font-size:0.88rem;color:#cbd5e1;">
+          <strong>慣性</strong>與「已付費很久、滲進日常」比功能清單更重要。
+        </p>
+      </div>
+    </section>
+
+    <!-- SAP -->
+    <section class="section" id="sap">
+      <h3><span class="num">③</span> 為什麼 SAP／SoR 可能不會消失</h3>
+      <div class="card">
+        <table>
+          <thead><tr><th>迷思</th><th>反駁</th></tr></thead>
+          <tbody>
+            <tr><td>Postgres + API = 取代 SAP</td><td>資料庫不懂公司如何運作</td></tr>
+            <tr><td>40 人 OCR 報帳 = 企業報帳</td><td>萬人、多國、法律與內部政策 → 編碼成這家公司獨有</td></tr>
+            <tr><td>vibe code 一個 CRM</td><td>難在：記什麼、組織邊界、誰長期維護、隨業務演進</td></tr>
+          </tbody>
+        </table>
+        <ul style="margin-top:0.75rem;">
+          <li>拿掉 SAP 級系統 ≈ 拿掉公司定義（規則在系統裡）</li>
+          <li>周邊新創多在 SAP <strong>之上／旁邊</strong> 做易用層，不連根拔起</li>
+          <li>逃生閥常是匯出 Excel／CSV／PDF；LLM 讓 ad hoc 分析變強</li>
+          <li>Agent 仍需：資料存取 + <strong>context</strong>（例外、地區話術、未進欄位的政策）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Exception -->
+    <section class="section" id="exception">
+      <h3><span class="num">④</span> 例外處理才是整場遊戲</h3>
+      <div class="grid g2">
+        <div class="card">
+          <ul>
+            <li>企業裡「有趣的事」幾乎都是<strong>例外</strong></li>
+            <li>例外多半沒被系統性記錄</li>
+            <li>語音／電腦操作 agent 可觀察人類如何處理——需跨完整銷售週期</li>
+            <li>工程師易把 headless =「流程寫成 API」；非工程師往往說不清自己怎麼解客</li>
+            <li>亞馬遜：改寫「例外」定義（錯貨直接補寄）→ 用資料改善後端</li>
+            <li>權限：誰讀寫、何時、agent 之間如何互動</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 style="font-size:0.85rem;margin-bottom:0.5rem;color:var(--muted);">生產力創造新場景</h4>
+          <ul>
+            <li>自動化「輕鬆層」後，人們發明新工作（差旅分析、遠端優化…）</li>
+            <li>長尾不會變短，只是換方式變長</li>
+            <li>永遠有成交、出差、現場 → data exhaust 持續產生</li>
+            <li>「完成／結帳」需要敘事與責任軌跡，不是一支 API 就結束</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Startup -->
+    <section class="section" id="startup">
+      <h3><span class="num">⑤</span> 新創機會與三條路</h3>
+      <div class="grid g2">
+        <div class="card">
+          <h4 style="font-size:0.85rem;margin-bottom:0.5rem;color:var(--muted);">Seema：三條路</h4>
+          <ol style="margin-left:1.1rem;font-size:0.9rem;color:#cbd5e1;">
+            <li style="margin:0.35rem 0;">用巨頭當後端 + 其 agent（巨頭未必甘當背景）</li>
+            <li style="margin:0.35rem 0;"><strong>DIY 重建 SoR</strong>（Fortune 500 = 活體換心）</li>
+            <li style="margin:0.35rem 0;"><strong>與 SAP 並肩／疊加</strong>，同時用語音、文件攝入長出新系統記錄</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h4 style="font-size:0.85rem;margin-bottom:0.5rem;color:var(--muted);">機會方向</h4>
+          <ul>
+            <li>資料之上<strong>採取行動</strong>（優先名單、流失、outreach）</li>
+            <li>Agentic 閉環 + 地區話術基準資料</li>
+            <li>實體垂直（建築、製造現場）</li>
+            <li><strong>不正面對決</strong>：卡兩個硬掛 AI 的巨頭中間</li>
+            <li>跨部門翻譯層（帳單、交易、情境）</li>
+            <li>公司<strong>內部</strong>網路效應（chat 擴散，非 B2B 外部網路）</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Takeaways -->
+    <section class="section" id="take">
+      <h3><span class="num">帶走</span> 可執行決策句</h3>
+      <div class="card">
+        <div class="takeaway">1. 評估 SaaS：問 SoR 裡編碼了哪些規則／例外／合規，不是只問 UI。</div>
+        <div class="takeaway">2. 做 Agent：先分清 lookup / do / analyze，權限與驗證策略不同。</div>
+        <div class="takeaway">3. 做新創：避免 vibe 一個 CRM 取代 Salesforce；找巨頭之間、流程之間、易用層 + 新資料排放。</div>
+        <div class="takeaway">4. Headless 行銷 vs 真實：很多是 API 再包裝；看是否願意被上層架空、寫入是否真開放。</div>
+        <div class="takeaway">5. 護城河：收錢、慣性、怪細節、編碼進系統的外部力量（法規／公司本身）。</div>
+      </div>
+    </section>
+
+    <footer>
+      來源：a16z 對談轉寫 <span style="font-family:Consolas,monospace;">20260713.txt</span> ·
+      筆記：<span style="font-family:Consolas,monospace;">notes/2026-07-13-a16z-Headless-Software-AI-Agent-SaaS.md</span> ·
+      配圖：gimi-illustration · none · 16:9 ·
+      策略：<span style="font-family:Consolas,monospace;">notes/_assets/20260713-headless-saas/shot-config.md</span><br />
+      來賓：Seema Amble · Steven Sinofsky · 主持：Elena Burger · 非官方逐字稿，僅供投研筆記。
+    </footer>
+  </main>
+
+  <div class="lightbox" id="lb" title="點擊關閉">
+    <img id="lb-img" alt="放大預覽" />
+  </div>
+
+  <script>
+    const lb = document.getElementById("lb");
+    const lbImg = document.getElementById("lb-img");
+    document.querySelectorAll("img[data-full]").forEach((img) => {
+      img.addEventListener("click", () => {
+        lbImg.src = img.src;
+        lb.classList.add("open");
+      });
+    });
+    lb.addEventListener("click", () => {
+      lb.classList.remove("open");
+      lbImg.src = "";
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        lb.classList.remove("open");
+        lbImg.src = "";
+      }
+    });
+  </script>
+</body>
+</html>
