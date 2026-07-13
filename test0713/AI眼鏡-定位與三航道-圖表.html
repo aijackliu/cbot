@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 眼鏡｜定位與三航道圖表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --bg2: #121820;
+      --card: #151c27;
+      --line: #243041;
+      --text: #e8eef7;
+      --muted: #8b9bb0;
+      --dim: #5c6b80;
+      --cyan: #3dd6c6;
+      --blue: #5b8cff;
+      --violet: #a78bfa;
+      --amber: #f5b942;
+      --rose: #f07178;
+      --green: #5ad67d;
+      --core: #3dd6c6;
+      --support: #5b8cff;
+      --lab: #8b9bb0;
+      --radius: 16px;
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Noto Sans TC", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(61,214,198,.12), transparent),
+        radial-gradient(ellipse 40% 30% at 90% 60%, rgba(91,140,255,.08), transparent),
+        linear-gradient(rgba(36,48,65,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36,48,65,.35) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+    }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(11,15,20,.82);
+      border-bottom: 1px solid var(--line);
+      margin: -32px -20px 28px;
+      padding: 12px 20px;
+    }
+    nav .inner {
+      max-width: 1180px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+    }
+    nav .brand {
+      font-weight: 700; font-size: 14px; margin-right: auto;
+      letter-spacing: .02em;
+    }
+    nav .brand span { color: var(--cyan); }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 500;
+      padding: 6px 10px; border-radius: 999px; border: 1px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    nav a:hover { color: var(--text); border-color: var(--line); background: var(--card); }
+
+    header.hero {
+      margin-bottom: 36px;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; color: var(--cyan);
+      letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .eyebrow::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 12px var(--cyan);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 800; letter-spacing: -.02em;
+      margin-bottom: 10px;
+    }
+    .sub {
+      color: var(--muted); font-size: 15px; max-width: 640px;
+    }
+    .meta-row {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px;
+    }
+    .chip {
+      font-size: 11px; font-weight: 600;
+      padding: 5px 10px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--card);
+      color: var(--muted);
+    }
+    .chip.hi { border-color: rgba(61,214,198,.35); color: var(--cyan); }
+
+    section {
+      margin-bottom: 48px;
+      scroll-margin-top: 64px;
+    }
+    .sec-head {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .sec-num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px; color: var(--cyan); font-weight: 500;
+    }
+    h2 {
+      font-size: 18px; font-weight: 700;
+    }
+    .sec-desc { color: var(--muted); font-size: 13px; margin: -8px 0 16px; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== FIG 01 Positioning wall card ===== */
+    .wall {
+      background:
+        linear-gradient(145deg, rgba(61,214,198,.08), transparent 40%),
+        linear-gradient(225deg, rgba(91,140,255,.08), transparent 40%),
+        var(--card);
+      border: 1px solid rgba(61,214,198,.25);
+      border-radius: 20px;
+      padding: 28px 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .wall::after {
+      content: "";
+      position: absolute; right: -40px; top: -40px;
+      width: 160px; height: 160px;
+      border: 1px solid rgba(61,214,198,.12);
+      border-radius: 50%;
+    }
+    .wall-title {
+      font-size: 13px; font-weight: 600; color: var(--cyan);
+      letter-spacing: .1em; margin-bottom: 18px;
+    }
+    .wall-lines {
+      display: grid; gap: 14px;
+    }
+    .wall-line {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 12px; align-items: start;
+    }
+    .wall-k {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px; color: var(--dim); padding-top: 3px;
+    }
+    .wall-v {
+      font-size: 16px; font-weight: 600; letter-spacing: -.01em;
+    }
+    .wall-v.big { font-size: 20px; color: #fff; }
+    .wall-dont {
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .tag-x {
+      font-size: 11px; color: var(--rose);
+      border: 1px solid rgba(240,113,120,.3);
+      background: rgba(240,113,120,.08);
+      padding: 4px 10px; border-radius: 999px; font-weight: 500;
+    }
+
+    .who-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-top: 16px;
+    }
+    @media (max-width: 720px) {
+      .who-grid { grid-template-columns: 1fr; }
+      .wall-line { grid-template-columns: 1fr; gap: 4px; }
+    }
+    .who-box {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .who-box h3 {
+      font-size: 11px; font-weight: 600; color: var(--dim);
+      letter-spacing: .06em; margin-bottom: 8px;
+    }
+    .who-box p { font-size: 13px; color: var(--text); }
+    .who-box.yes h3 { color: var(--green); }
+    .who-box.no h3 { color: var(--rose); }
+
+    /* ===== FIG 02 Architecture ===== */
+    .os-stack {
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+    }
+    .os-top {
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(90deg, rgba(61,214,198,.15), rgba(91,140,255,.15));
+      border: 1px solid rgba(61,214,198,.35);
+      border-radius: 14px 14px 8px 8px;
+      padding: 16px 20px;
+      font-weight: 700; font-size: 17px;
+    }
+    .os-top small {
+      display: block; font-weight: 500; font-size: 12px;
+      color: var(--muted); margin-top: 4px;
+    }
+    .os-connector {
+      width: 2px; height: 20px;
+      background: linear-gradient(var(--cyan), var(--line));
+    }
+    .packs {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 800px) {
+      .packs { grid-template-columns: 1fr; }
+    }
+    .pack {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--bg2);
+      padding: 18px 16px;
+      position: relative;
+      min-height: 220px;
+      display: flex; flex-direction: column;
+    }
+    .pack.u { border-top: 3px solid var(--cyan); }
+    .pack.m { border-top: 3px solid var(--violet); }
+    .pack.e { border-top: 3px solid var(--amber); }
+    .pack-id {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px; color: var(--dim); margin-bottom: 6px;
+    }
+    .pack h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .pack .en {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px; color: var(--muted); margin-bottom: 10px;
+    }
+    .pack .one { font-size: 13px; color: var(--text); margin-bottom: 12px; flex: 0; }
+    .pack ul {
+      list-style: none; font-size: 12px; color: var(--muted);
+      display: grid; gap: 6px; flex: 1;
+    }
+    .pack ul li {
+      padding-left: 14px; position: relative;
+    }
+    .pack ul li::before {
+      content: ""; position: absolute; left: 0; top: 7px;
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    .pack.u ul li::before { background: var(--cyan); }
+    .pack.m ul li::before { background: var(--violet); }
+    .pack.e ul li::before { background: var(--amber); }
+    .pack .bill {
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid var(--line);
+      font-size: 11px; font-weight: 600;
+    }
+    .pack.u .bill { color: var(--cyan); }
+    .pack.m .bill { color: var(--violet); }
+    .pack.e .bill { color: var(--amber); }
+
+    .os-connector.down {
+      background: linear-gradient(var(--line), var(--blue));
+    }
+    .platform {
+      width: 100%;
+      border: 1px solid rgba(91,140,255,.35);
+      background: linear-gradient(180deg, rgba(91,140,255,.1), rgba(21,28,39,.9));
+      border-radius: 8px 8px 14px 14px;
+      padding: 16px 18px;
+      text-align: center;
+    }
+    .platform strong {
+      display: block; font-size: 14px; margin-bottom: 10px;
+    }
+    .plat-pills {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    }
+    .plat-pills span {
+      font-size: 12px; padding: 6px 12px; border-radius: 8px;
+      background: rgba(0,0,0,.25); border: 1px solid var(--line);
+      color: var(--text); font-weight: 500;
+    }
+
+    /* ===== FIG 03 Layers ===== */
+    .layers {
+      display: grid; gap: 10px;
+    }
+    .layer {
+      display: grid;
+      grid-template-columns: 100px 70px 1fr 1fr;
+      gap: 12px; align-items: center;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--bg2);
+    }
+    @media (max-width: 800px) {
+      .layer { grid-template-columns: 1fr 1fr; }
+    }
+    .layer-name {
+      font-weight: 700; font-size: 14px;
+    }
+    .layer.core .layer-name { color: var(--core); }
+    .layer.support .layer-name { color: var(--support); }
+    .layer.lab .layer-name { color: var(--lab); }
+    .layer-pct {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px; font-weight: 700;
+    }
+    .layer.core .layer-pct { color: var(--core); }
+    .layer.support .layer-pct { color: var(--support); }
+    .layer.lab .layer-pct { color: var(--lab); }
+    .layer-items { font-size: 12px; color: var(--muted); }
+    .layer-rule { font-size: 12px; color: var(--text); font-weight: 500; }
+    .bar-track {
+      grid-column: 1 / -1;
+      height: 6px; border-radius: 99px; background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 99px; }
+    .layer.core .bar-fill { width: 70%; background: var(--core); }
+    .layer.support .bar-fill { width: 20%; background: var(--support); }
+    .layer.lab .bar-fill { width: 10%; background: var(--lab); }
+
+    /* ===== FIG 04 Golden paths ===== */
+    .flows {
+      display: grid; gap: 14px;
+    }
+    .flow {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 16px 18px;
+    }
+    .flow-head {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .flow-badge {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 8px; border-radius: 6px;
+    }
+    .flow-badge.u { background: rgba(61,214,198,.15); color: var(--cyan); }
+    .flow-badge.m { background: rgba(167,139,250,.15); color: var(--violet); }
+    .flow-badge.e { background: rgba(245,185,66,.15); color: var(--amber); }
+    .flow-title { font-weight: 700; font-size: 14px; }
+    .flow-sla {
+      margin-left: auto; font-size: 11px; color: var(--muted);
+      font-family: "JetBrains Mono", monospace;
+    }
+    .steps {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    }
+    .step {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      max-width: 140px;
+      min-height: 64px;
+    }
+    .step b {
+      display: block; font-size: 10px; color: var(--dim);
+      font-family: "JetBrains Mono", monospace;
+      margin-bottom: 4px;
+    }
+    .arrow {
+      color: var(--dim); font-size: 14px; flex-shrink: 0;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    /* ===== FIG 05 North star ===== */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .metrics { grid-template-columns: 1fr; }
+    }
+    .metric {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .metric.star {
+      border-color: rgba(61,214,198,.4);
+      background: rgba(61,214,198,.08);
+    }
+    .metric .label {
+      font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600;
+    }
+    .metric .val {
+      font-size: 13px; font-weight: 700; line-height: 1.35;
+    }
+    .metric.star .val { color: var(--cyan); }
+
+    /* ===== FIG 06 Users ===== */
+    .users {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 800px) {
+      .users { grid-template-columns: 1fr; }
+    }
+    .user {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 18px;
+    }
+    .user .uid {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px; color: var(--cyan); margin-bottom: 6px;
+    }
+    .user h3 { font-size: 15px; margin-bottom: 8px; }
+    .user p { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .user .ok {
+      font-size: 12px; color: var(--text);
+      padding: 8px 10px; border-radius: 8px;
+      background: var(--bg2); border: 1px solid var(--line);
+    }
+
+    /* ===== FIG 07 Roadmap ===== */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      position: relative;
+    }
+    @media (max-width: 900px) {
+      .roadmap { grid-template-columns: repeat(2, 1fr); }
+    }
+    .phase {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 130px;
+    }
+    .phase .w {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px; color: var(--cyan); margin-bottom: 6px;
+    }
+    .phase h3 { font-size: 13px; margin-bottom: 8px; }
+    .phase p { font-size: 11px; color: var(--muted); line-height: 1.45; }
+
+    /* ===== FIG 08 Monetization ===== */
+    .money {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 900px) {
+      .money { grid-template-columns: 1fr 1fr; }
+    }
+    .tier {
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .tier .lv {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px; color: var(--dim); margin-bottom: 6px;
+    }
+    .tier h3 { font-size: 13px; margin-bottom: 6px; }
+    .tier p { font-size: 11px; color: var(--muted); }
+
+    /* ===== FIG 09 Constraints ===== */
+    .const-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 700px) {
+      .const-grid { grid-template-columns: 1fr; }
+    }
+    .const {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px; align-items: center;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--bg2);
+      font-size: 12px;
+    }
+    .const .from { color: var(--rose); font-weight: 600; }
+    .const .to { color: var(--green); font-weight: 600; }
+    .const .mid { color: var(--dim); font-family: "JetBrains Mono", monospace; font-size: 14px; }
+
+    /* ===== FIG 10 Speak / don't ===== */
+    .speak {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 700px) {
+      .speak { grid-template-columns: 1fr; }
+    }
+    .speak-col {
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+    }
+    .speak-col.yes {
+      background: rgba(90,214,125,.06);
+      border-color: rgba(90,214,125,.3);
+    }
+    .speak-col.no {
+      background: rgba(240,113,120,.06);
+      border-color: rgba(240,113,120,.3);
+    }
+    .speak-col h3 {
+      font-size: 13px; margin-bottom: 12px;
+    }
+    .speak-col.yes h3 { color: var(--green); }
+    .speak-col.no h3 { color: var(--rose); }
+    .speak-col ul {
+      list-style: none; display: grid; gap: 8px;
+      font-size: 13px; color: var(--muted);
+    }
+    .speak-col li {
+      padding-left: 16px; position: relative;
+    }
+    .speak-col.yes li::before {
+      content: "+"; position: absolute; left: 0; color: var(--green); font-weight: 700;
+    }
+    .speak-col.no li::before {
+      content: "×"; position: absolute; left: 0; color: var(--rose); font-weight: 700;
+    }
+
+    footer {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 12px; color: var(--dim);
+      display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between;
+    }
+    footer code {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--muted);
+    }
+
+    @media print {
+      nav { display: none; }
+      .bg-grid { display: none; }
+      body { background: #fff; color: #111; }
+      .card, .wall, .pack, .phase, .metric, .user, .tier, .flow, .const, .speak-col, .layer, .who-box, .platform, .os-top {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+      section { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="wrap">
+    <nav>
+      <div class="inner">
+        <div class="brand">AI 眼鏡 <span>圖表板</span></div>
+        <a href="#fig01">定位</a>
+        <a href="#fig02">三航道</a>
+        <a href="#fig03">分層</a>
+        <a href="#fig04">金路徑</a>
+        <a href="#fig05">指標</a>
+        <a href="#fig06">用戶</a>
+        <a href="#fig07">90天</a>
+        <a href="#fig08">變現</a>
+        <a href="#fig09">約束</a>
+        <a href="#fig10">話術</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="eyebrow">PRD Visual Board · v1.0</div>
+      <h1>AI 眼鏡｜定位與三航道</h1>
+      <p class="sub">從《定位與三航道 PRD》抽出的決策圖：定位牆、架構、功能治理、金路徑、指標、90 天節奏與對外話術。</p>
+      <div class="meta-row">
+        <span class="chip hi">2026-07-13</span>
+        <span class="chip">決策用</span>
+        <span class="chip">對照 work0601</span>
+        <span class="chip">繁中現場 AI OS</span>
+      </div>
+    </header>
+
+    <!-- 01 -->
+    <section id="fig01">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <h2>一頁定位（可貼牆）</h2>
+      </div>
+      <div class="wall">
+        <div class="wall-title">POSITIONING CARD</div>
+        <div class="wall-lines">
+          <div class="wall-line">
+            <div class="wall-k">定位</div>
+            <div class="wall-v big">繁中「現場 AI 作業系統」</div>
+          </div>
+          <div class="wall-line">
+            <div class="wall-k">主航道</div>
+            <div class="wall-v">理解 ｜ 記憶 ｜ 執行</div>
+          </div>
+          <div class="wall-line">
+            <div class="wall-k">收費</div>
+            <div class="wall-v">成功任務額度 + B2B 情境包</div>
+          </div>
+          <div class="wall-line">
+            <div class="wall-k">護城河</div>
+            <div class="wall-v">場景深度 × Agent 路由 × 歷程計費 × 信任設計</div>
+          </div>
+        </div>
+        <div class="wall-dont">
+          <span class="tag-x">不做功能數競賽</span>
+          <span class="tag-x">不做假比價 headline</span>
+          <span class="tag-x">不做全時監控敘事</span>
+        </div>
+        <div class="who-grid">
+          <div class="who-box yes">
+            <h3>我們是誰</h3>
+            <p>用眼鏡看／聽現場，用 Agent 辦事，用可計量歷程證明價值並收費。</p>
+          </div>
+          <div class="who-box no">
+            <h3>我們不是誰</h3>
+            <p>不是 Meta 時尚硬體；不是功能超市 App；不是全時監視裝置。</p>
+          </div>
+          <div class="who-box">
+            <h3>對消費者</h3>
+            <p>戴上就能聽懂菜單、記住會議、問現場問題——雙手空著，答案在耳邊。</p>
+          </div>
+          <div class="who-box">
+            <h3>對 B2B</h3>
+            <p>可白標的眼鏡 Agent 堆疊：意圖路由、視覺工具、稽核計費。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section id="fig02">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <h2>三航道架構</h2>
+      </div>
+      <p class="sec-desc">OS 頂層 → 三 Pack → 共用平台層（歷程／計費／隱私／成本）</p>
+      <div class="card">
+        <div class="os-stack">
+          <div class="os-top">
+            現場 AI 作業系統
+            <small>繁中生活場景 · Agent 執行 · 可計費歷程</small>
+          </div>
+          <div class="os-connector"></div>
+          <div class="packs">
+            <article class="pack u">
+              <div class="pack-id">PACK 01</div>
+              <h3>理解</h3>
+              <div class="en">See → Understand</div>
+              <p class="one">看一眼，聽懂現場</p>
+              <ul>
+                <li>菜單翻譯（Core）</li>
+                <li>文件 OCR（Core）</li>
+                <li>營養掃描（可選）</li>
+              </ul>
+              <div class="bill">收費：Vision 次數額度</div>
+            </article>
+            <article class="pack m">
+              <div class="pack-id">PACK 02</div>
+              <h3>記憶</h3>
+              <div class="en">Hear → Remember</div>
+              <p class="one">聽過的，變成可回看</p>
+              <ul>
+                <li>會議錄音摘要（Core）</li>
+                <li>行事曆寫入（Core）</li>
+                <li>提醒連動（後續）</li>
+              </ul>
+              <div class="bill">收費：會議分鐘／摘要</div>
+            </article>
+            <article class="pack e">
+              <div class="pack-id">PACK 03</div>
+              <h3>執行</h3>
+              <div class="en">Intent → Action</div>
+              <p class="one">說一句，辦一件</p>
+              <ul>
+                <li>意圖路由主鏈（Core）</li>
+                <li>天氣短答（Support）</li>
+                <li>喝水／音樂（Support）</li>
+              </ul>
+              <div class="bill">收費：基礎含；進階另計</div>
+            </article>
+          </div>
+          <div class="os-connector down"></div>
+          <div class="platform">
+            <strong>平台層 · Platform</strong>
+            <div class="plat-pills">
+              <span>歷程 feature_key</span>
+              <span>計費額度</span>
+              <span>隱私／實體鍵</span>
+              <span>成本 SLA · 模板 TTS</span>
+              <span>Audit Log</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section id="fig03">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <h2>功能分層治理</h2>
+      </div>
+      <p class="sec-desc">資源分配：Core 70% · Support 20% · Lab 10%</p>
+      <div class="layers">
+        <div class="layer core">
+          <div class="layer-name">Core</div>
+          <div class="layer-pct">70%</div>
+          <div class="layer-items">菜單 · OCR · 會議 · 行事曆 · 意圖主鏈</div>
+          <div class="layer-rule">進 KPI · 進訂閱 · 進 headline</div>
+          <div class="bar-track"><div class="bar-fill"></div></div>
+        </div>
+        <div class="layer support">
+          <div class="layer-name">Support</div>
+          <div class="layer-pct">20%</div>
+          <div class="layer-items">天氣 · 喝水 · 音樂 · 裝置連線</div>
+          <div class="layer-rule">服務日活 · 可降級</div>
+          <div class="bar-track"><div class="bar-fill"></div></div>
+        </div>
+        <div class="layer lab">
+          <div class="layer-name">Lab</div>
+          <div class="layer-pct">10%</div>
+          <div class="layer-items">星座 · 植物 · 景點 · Wiki · 商品辨識（無真價）</div>
+          <div class="layer-rule">不進 headline · 可關 · 成本最後</div>
+          <div class="bar-track"><div class="bar-fill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section id="fig04">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <h2>金路徑（Must）</h2>
+      </div>
+      <p class="sec-desc">v1 必須跑通的成功任務鏈 · 含 LLM SLA</p>
+      <div class="flows">
+        <div class="flow">
+          <div class="flow-head">
+            <span class="flow-badge u">GP-U1</span>
+            <span class="flow-title">菜單翻譯</span>
+            <span class="flow-sla">SLA · Vision ×1 · 0 speech LLM</span>
+          </div>
+          <div class="steps">
+            <div class="step"><b>01</b>語音／入口<br/>菜單翻譯</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>02</b>開相機<br/>實體鍵提示</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>03</b>/menu-translate<br/>Vision stream</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>04</b>菜名對照 UI<br/>+ TTS 重點</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>05</b>log<br/>menu_translate</div>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="flow-head">
+            <span class="flow-badge u">GP-U2</span>
+            <span class="flow-title">文件掃描 OCR</span>
+            <span class="flow-sla">SLA · Vision ×1</span>
+          </div>
+          <div class="steps">
+            <div class="step"><b>01</b>工具頁<br/>文件掃描</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>02</b>實體鍵拍攝</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>03</b>/doc-scan</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>04</b>原文／譯文卡<br/>+ TTS 重點</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>05</b>log<br/>doc_scan</div>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="flow-head">
+            <span class="flow-badge m">GP-M1</span>
+            <span class="flow-title">會議錄音摘要</span>
+            <span class="flow-sla">SLA · STT + 1 LLM · 必寫 log</span>
+          </div>
+          <div class="steps">
+            <div class="step"><b>01</b>會議助理頁</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>02</b>開始錄音<br/>（修 P0 Bug）</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>03</b>/speech/transcribe</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>04</b>摘要 + 時間軸</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>05</b>log<br/>meeting_summary</div>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="flow-head">
+            <span class="flow-badge m">GP-M2</span>
+            <span class="flow-title">行事曆</span>
+            <span class="flow-sla">確認才寫入 · 三分事件</span>
+          </div>
+          <div class="steps">
+            <div class="step"><b>01</b>語音解析<br/>calendar.add</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>02</b>Confirm Dialog</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>03</b>DeviceCalendar</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>04</b>Toast 成功</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>05</b>parse / confirm<br/>/ cancel</div>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="flow-head">
+            <span class="flow-badge e">GP-E1 / E2</span>
+            <span class="flow-title">意圖主鏈 · 天氣樣板</span>
+            <span class="flow-sla">目標天氣 0–1 LLM（現況 3）</span>
+          </div>
+          <div class="steps">
+            <div class="step"><b>01</b>/intents/parse</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>02</b>ACTION_ONLY<br/>或 Dispatcher</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>03</b>工具／API</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>04</b>模板 TTS<br/>優先於 speech LLM</div>
+            <span class="arrow">→</span>
+            <div class="step"><b>05</b>正規化<br/>feature_key</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section id="fig05">
+      <div class="sec-head">
+        <span class="sec-num">05</span>
+        <h2>北極星與護衛指標</h2>
+      </div>
+      <div class="metrics">
+        <div class="metric star">
+          <div class="label">北極星</div>
+          <div class="val">核心場景每週成功任務／用戶</div>
+        </div>
+        <div class="metric">
+          <div class="label">品質</div>
+          <div class="val">金路徑成功率 ≥ 85%</div>
+        </div>
+        <div class="metric">
+          <div class="label">成本</div>
+          <div class="val">LLM／任務 ↓ ≥ 40%</div>
+        </div>
+        <div class="metric">
+          <div class="label">信任</div>
+          <div class="val">隱私誤錄重大事故 = 0</div>
+        </div>
+        <div class="metric">
+          <div class="label">變現</div>
+          <div class="val">額度可演示 + B2B 報價</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section id="fig06">
+      <div class="sec-head">
+        <span class="sec-num">06</span>
+        <h2>一級用戶</h2>
+      </div>
+      <div class="users">
+        <div class="user">
+          <div class="uid">U-A</div>
+          <h3>旅行／外食繁中用戶</h3>
+          <p>菜單翻譯、文件 OCR</p>
+          <div class="ok">90 天：週使用核心場景 ≥ 3 次</div>
+        </div>
+        <div class="user">
+          <div class="uid">U-B</div>
+          <h3>現場知識工作</h3>
+          <p>會議摘要、行事曆</p>
+          <div class="ok">90 天：錄 → 摘要 → 可回看跑通</div>
+        </div>
+        <div class="user">
+          <div class="uid">U-C</div>
+          <h3>日常輕使用</h3>
+          <p>短問答、記錄、音樂</p>
+          <div class="ok">Support 拉日活，不單獨定生死</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section id="fig07">
+      <div class="sec-head">
+        <span class="sec-num">07</span>
+        <h2>90 天作戰節奏</h2>
+      </div>
+      <div class="roadmap">
+        <div class="phase">
+          <div class="w">W1–2</div>
+          <h3>止血</h3>
+          <p>P0 Bug、會議可錄、翻譯入口、實體鍵文案</p>
+        </div>
+        <div class="phase">
+          <div class="w">W2–4</div>
+          <h3>成本</h3>
+          <p>天氣／存檔模板 TTS；LLM 計數上報</p>
+        </div>
+        <div class="phase">
+          <div class="w">W3–5</div>
+          <h3>可觀測</h3>
+          <p>feature_key、latency、會議／天氣 log</p>
+        </div>
+        <div class="phase">
+          <div class="w">W5–8</div>
+          <h3>場景深</h3>
+          <p>U1 / U2 / M1 金路徑 E2E 穩定</p>
+        </div>
+        <div class="phase">
+          <div class="w">W7–10</div>
+          <h3>變現演示</h3>
+          <p>額度 mock、B2B 一頁式</p>
+        </div>
+        <div class="phase">
+          <div class="w">W12</div>
+          <h3>關卡</h3>
+          <p>留／砍 Lab；是否開真價 API</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section id="fig08">
+      <div class="sec-head">
+        <span class="sec-num">08</span>
+        <h2>變現分層</h2>
+      </div>
+      <div class="money">
+        <div class="tier">
+          <div class="lv">L0</div>
+          <h3>硬體／套裝</h3>
+          <p>一次買斷或渠道價</p>
+        </div>
+        <div class="tier">
+          <div class="lv">L1</div>
+          <h3>個人訂閱</h3>
+          <p>Vision／基礎額度</p>
+        </div>
+        <div class="tier">
+          <div class="lv">L2</div>
+          <h3>專業訂閱</h3>
+          <p>會議分鐘、匯出</p>
+        </div>
+        <div class="tier">
+          <div class="lv">L3</div>
+          <h3>B2B 情境包</h3>
+          <p>白標 · 席位 · API</p>
+        </div>
+        <div class="tier">
+          <div class="lv">L4</div>
+          <h3>用量超額</h3>
+          <p>按次／token</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section id="fig09">
+      <div class="sec-head">
+        <span class="sec-num">09</span>
+        <h2>約束 → 產品化</h2>
+      </div>
+      <div class="const-grid">
+        <div class="const">
+          <div class="from">相機僅實體鍵</div>
+          <div class="mid">→</div>
+          <div class="to">「主動才拍」信任賣點</div>
+        </div>
+        <div class="const">
+          <div class="from">WebRTC 未定</div>
+          <div class="mid">→</div>
+          <div class="to">語音備援；不承諾全時 Agent</div>
+        </div>
+        <div class="const">
+          <div class="from">LLM 成本偏高</div>
+          <div class="mid">→</div>
+          <div class="to">任務 SLA · 模板 TTS · cache</div>
+        </div>
+        <div class="const">
+          <div class="from">feature 命名粗糙</div>
+          <div class="mid">→</div>
+          <div class="to">enum 正規化 → 可計費</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section id="fig10">
+      <div class="sec-head">
+        <span class="sec-num">10</span>
+        <h2>對外話術</h2>
+      </div>
+      <div class="speak">
+        <div class="speak-col yes">
+          <h3>可說</h3>
+          <ul>
+            <li>菜單翻譯、文件重點、會議摘要</li>
+            <li>商品「辨識品牌與品名」</li>
+            <li>主動按鍵拍攝，保護隱私</li>
+            <li>現場 AI 助理（場景包）</li>
+          </ul>
+        </div>
+        <div class="speak-col no">
+          <h3>不可說</h3>
+          <ul>
+            <li>全時錄影監視、醫療診斷</li>
+            <li>全網真比價／歷史最低價（API 前）</li>
+            <li>無感拍下周圍一切</li>
+            <li>已能量產全球、已取代手機</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>來源：<code>AI眼鏡-定位與三航道PRD.md</code></span>
+      <span>列印可出簡報頁 · Ctrl/Cmd+P</span>
+    </footer>
+  </div>
+</body>
+</html>
