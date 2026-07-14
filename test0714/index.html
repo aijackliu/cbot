@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>記憶三層架構 · memory-layers</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --panel2: #182236;
+      --border: #2a3a55;
+      --text: #e8eef9;
+      --muted: #93a4c3;
+      --hub: #3b82f6;
+      --rag: #22c55e;
+      --river: #a855f7;
+      --infra: #f59e0b;
+      --agent: #f472b6;
+      --line: #3d4f6f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #1a2744 0%, var(--bg) 55%);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 28px 20px 48px;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 1.55rem; margin: 0 0 6px; letter-spacing: 0.02em; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .illu {
+      width: 100%;
+      max-width: 920px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin: 8px 0 6px;
+      background: #fff;
+      display: block;
+    }
+    .illu-cap { color: var(--muted); font-size: 0.82rem; margin: 0 0 18px; }
+    h2 {
+      font-size: 1.05rem;
+      margin: 28px 0 12px;
+      color: #c7d7f5;
+      border-left: 3px solid var(--hub);
+      padding-left: 10px;
+    }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px 16px;
+      margin-bottom: 16px; font-size: 0.85rem; color: var(--muted);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .arch {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 900px) {
+      .arch-main {
+        display: grid;
+        grid-template-columns: 200px 1fr 240px;
+        gap: 14px;
+        align-items: stretch;
+      }
+    }
+    .card {
+      background: linear-gradient(180deg, var(--panel2), var(--panel));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.25);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.82rem; }
+    .card li { margin: 3px 0; }
+    .tag {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: .04em;
+      padding: 2px 7px; border-radius: 999px; border: 1px solid;
+      text-transform: uppercase;
+    }
+    .tag-hub { color: #93c5fd; border-color: #2563eb55; background: #1e3a8a33; }
+    .tag-rag { color: #86efac; border-color: #16a34a55; background: #14532d33; }
+    .tag-river { color: #d8b4fe; border-color: #9333ea55; background: #581c8733; }
+    .tag-infra { color: #fcd34d; border-color: #d9770655; background: #78350f33; }
+    .tag-agent { color: #f9a8d4; border-color: #db277755; background: #83184333; }
+    .layers {
+      display: grid;
+      gap: 10px;
+    }
+    .layer {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      background: #0f1728;
+    }
+    .layer.hub { border-color: #2563eb88; box-shadow: inset 0 0 0 1px #2563eb22; }
+    .layer.rag { border-color: #16a34a88; box-shadow: inset 0 0 0 1px #16a34a22; }
+    .layer.river { border-color: #9333ea88; box-shadow: inset 0 0 0 1px #9333ea22; }
+    .layer .title {
+      font-weight: 700; font-size: 0.92rem; margin-bottom: 4px;
+    }
+    .layer .path { font-family: ui-monospace, Consolas, monospace; font-size: 0.75rem; color: var(--muted); }
+    .arrow-col {
+      display: flex; flex-direction: column; justify-content: center; gap: 8px;
+      color: var(--muted); font-size: 0.78rem; text-align: center;
+    }
+    .flow-box {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #0c1424;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .endpoint {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.78rem;
+      color: #c4d4f0;
+      word-break: break-all;
+    }
+    .note {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #1a1520;
+      border: 1px solid #5b3a5e;
+      color: #e9d5ff;
+      font-size: 0.84rem;
+    }
+    .promote {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      justify-content: center; margin: 8px 0 4px;
+      font-size: 0.85rem;
+    }
+    .chip {
+      border-radius: 999px; padding: 6px 12px;
+      border: 1px solid var(--border); background: #0f1728;
+    }
+    .chip strong { color: #fff; }
+    .chev { color: var(--muted); }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.84rem;
+      background: var(--panel); border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #243149; vertical-align: top; }
+    th { background: #18233a; color: #c7d7f5; font-weight: 600; }
+    tr:last-child td { border-bottom: 0; }
+    td code, .mono { font-family: ui-monospace, Consolas, monospace; font-size: 0.78rem; color: #bfdbfe; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.8rem; }
+    .mermaid-hint { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
+    .illu { cursor: zoom-in; }
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,.88); align-items: center; justify-content: center;
+      padding: 1.5rem; cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: min(1100px, 96vw); max-height: 92vh;
+      border-radius: 10px; box-shadow: 0 12px 48px rgba(0,0,0,.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>記憶三層架構</h1>
+    <p class="sub">knowledge-hub（SoR）· rag-memory-lab（證據檢索）· Memory River（工作記憶）· 遠端基建 · 宿主 Grok</p>
+
+    <img class="illu" src="./assets/memory-layers/01-three-layers.png" alt="記憶三層並聯" />
+    <p class="illu-cap">配圖 · gimi-illustration · SoR / 證據 / 工作記憶 · 禁止混存</p>
+
+    <div class="legend">
+      <span><i class="dot" style="background:var(--agent)"></i>Agent</span>
+      <span><i class="dot" style="background:var(--hub)"></i>Hub SoR</span>
+      <span><i class="dot" style="background:var(--rag)"></i>RAG</span>
+      <span><i class="dot" style="background:var(--river)"></i>River</span>
+      <span><i class="dot" style="background:var(--infra)"></i>遠端基建</span>
+    </div>
+
+    <!-- 總覽 -->
+    <h2>1. 系統總覽</h2>
+    <div class="arch-main">
+      <div class="card">
+        <h3><span class="tag tag-agent">Agent</span> Grok</h3>
+        <ul>
+          <li>唯一宿主</li>
+          <li>查詢路由</li>
+          <li>升格 checklist</li>
+          <li>skill: memory-layers-promote</li>
+        </ul>
+      </div>
+
+      <div class="layers">
+        <div class="layer hub">
+          <div class="title">📘 knowledge-hub · SoR</div>
+          <div class="path">J:\grok\34\knowledge-hub\notes · bird · weekly</div>
+          <ul>
+            <li>人可編的唯一真相</li>
+            <li>build.ps1 / query.ps1（門牌）</li>
+            <li>NotebookLM 是複本</li>
+          </ul>
+        </div>
+        <div class="layer rag">
+          <div class="title">🔎 rag-memory-lab · 證據檢索</div>
+          <div class="path">J:\grok\34\rag-memory-lab\artifacts\workspace</div>
+          <ul>
+            <li>Chunk → FTS5/BM25 → 向量 → RRF</li>
+            <li>只回 path + 摘錄（不生成答案）</li>
+            <li>索引可丟可重建</li>
+          </ul>
+        </div>
+        <div class="layer river">
+          <div class="title">🌊 Memory River · 工作記憶</div>
+          <div class="path">mr-serve 127.0.0.1:4791 · data @ %USERPROFILE%\.memory-river</div>
+          <ul>
+            <li>偏好 / 約定 / 決策 / 對話蒸餾</li>
+            <li>LanceDB 本機 NTFS（勿用 J:）</li>
+            <li>非 Postgres 主存</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag tag-infra">Remote</span> 100.88.220.82</h3>
+        <ul>
+          <li><span class="endpoint">:11434</span> Ollama embed<br/><code class="mono">qwen3-embedding:0.6b</code></li>
+          <li><span class="endpoint">:8080/v1</span> Chat Completions<br/><code class="mono">qwen3.6</code></li>
+          <li><span class="endpoint">:5432</span> PostgreSQL<br/><code class="mono">memory_ops</code>（可選佇列）</li>
+          <li><span class="endpoint">:5050</span> Adminer</li>
+        </ul>
+        <p class="note">本機 Ollama 已移除。River 只依賴遠端 embed。</p>
+      </div>
+    </div>
+
+    <!-- 資料流 -->
+    <h2>2. 讀寫資料流</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3><span class="tag tag-hub">Write</span> 成稿</h3>
+        <ul>
+          <li>人 / Grok 寫 notes</li>
+          <li>BIRD 拆門牌 → bird/*</li>
+          <li>build.ps1 → bird-index</li>
+          <li>可選 index_workspace.py</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag tag-rag">Read</span> 找知識</h3>
+        <ul>
+          <li>先門牌 B / I.K</li>
+          <li>再 rag hybrid 證據卡</li>
+          <li>生成可選打 :8080</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag tag-river">Session</span> 工作記憶</h3>
+        <ul>
+          <li>POST /store · /recall</li>
+          <li>embed → 遠端 :11434</li>
+          <li>值得留 → 升格 notes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="promote">
+      <span class="chip">River / 對話 claim</span>
+      <span class="chev">→</span>
+      <span class="chip">Grok checklist（5 項全 Yes）</span>
+      <span class="chev">→</span>
+      <span class="chip"><strong>hub notes</strong>（SoR）</span>
+      <span class="chev">→</span>
+      <span class="chip">build.ps1 ± rag reindex</span>
+    </div>
+    <p class="mermaid-hint">升格單向、人確認；禁止 notes bulk 灌 River；禁止自動雙向 sync。</p>
+
+    <!-- Grok 路由 -->
+    <h2>3. Grok 查詢路由</h2>
+    <img class="illu" src="./assets/memory-layers/02-grok-routing.png" alt="Grok 路由" />
+    <p class="illu-cap">①門牌 · ②證據 · ③偏好 · 先判斷</p>
+    <table>
+      <thead>
+        <tr><th>問題型</th><th>主路徑</th><th>落地</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>庫裡有什麼／我寫過</td>
+          <td><span class="tag tag-hub">Hub</span></td>
+          <td>bird-index · query.ps1 · 先門牌</td>
+        </tr>
+        <tr>
+          <td>原文怎麼說／要證據</td>
+          <td><span class="tag tag-rag">RAG</span></td>
+          <td><code>query_workspace.py</code> hybrid</td>
+        </tr>
+        <tr>
+          <td>上次怎麼約／偏好</td>
+          <td><span class="tag tag-river">River</span></td>
+          <td><code>POST /recall</code> · 不夠 rehydrate</td>
+        </tr>
+        <tr>
+          <td>兩邊都可能</td>
+          <td>River → RAG</td>
+          <td>衝突時 <strong>hub 成稿 &gt; River &gt; 臆測</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3b. 升格（River → hub）</h2>
+    <img class="illu" src="./assets/memory-layers/03-promote-checklist.png" alt="升格不是自動同步" />
+    <p class="illu-cap">①候選 · ②清單 · ③notes · 人確認 · 禁止自動雙寫</p>
+
+    <!-- 部署拓撲 -->
+    <h2>4. 部署拓撲（本機 vs 遠端）</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3>本機 Windows</h3>
+        <ul>
+          <li>Grok 對話</li>
+          <li>knowledge-hub / rag-memory-lab</li>
+          <li>mr-serve :4791（loopback only）</li>
+          <li>LanceDB data（C: 本機 NTFS）</li>
+          <li>❌ 無本機 Ollama</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Tailscale · 100.88.220.82</h3>
+        <ul>
+          <li>Ollama embed :11434</li>
+          <li>Chat LLM :8080</li>
+          <li>PostgreSQL :5432</li>
+          <li>Adminer :5050</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>信任邊界</h3>
+        <ul>
+          <li>mr-serve 僅 127.0.0.1</li>
+          <li>勿 reverse-proxy 對外</li>
+          <li>PG 密碼勿進 git</li>
+          <li>River ≠ SoR</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 檔案索引 -->
+    <h2>5. 檔案索引</h2>
+    <table>
+      <thead><tr><th>檔案</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">docs/memory-layers.md</td><td>邊界與鐵律（文字 SoR）</td></tr>
+        <tr><td class="mono">docs/memory-layers-architecture.md</td><td>本架構的 Markdown 版（含 Mermaid）</td></tr>
+        <tr><td class="mono">docs/memory-layers-architecture.html</td><td>本頁視覺總覽</td></tr>
+        <tr><td class="mono">.local/memory-river/start-mr-serve.ps1</td><td>啟動 daemon</td></tr>
+        <tr><td class="mono">skills/memory-layers-promote/</td><td>Grok 路由 + 升格 skill</td></tr>
+        <tr><td class="mono">%USERPROFILE%\.memory-river\</td><td>River config + LanceDB</td></tr>
+      </tbody>
+    </table>
+
+    <footer>
+      memory-layers · Phase 1 · 薄整合 · Gimi 配圖 ·
+      <a href="./memory-layers-architecture.md">架構 MD</a> ·
+      <a href="./README.md">README</a> ·
+      test0714 · aijackliu/cbot
+    </footer>
+  </div>
+  <div class="lightbox" id="lb" title="點擊關閉"><img id="lb-img" alt="" /></div>
+  <script>
+    const lb = document.getElementById('lb');
+    const lbImg = document.getElementById('lb-img');
+    document.querySelectorAll('img.illu').forEach(img => {
+      img.addEventListener('click', () => {
+        lbImg.src = img.src;
+        lbImg.alt = img.alt || '';
+        lb.classList.add('open');
+      });
+    });
+    lb.addEventListener('click', () => lb.classList.remove('open'));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') lb.classList.remove('open');
+    });
+  </script>
+</body>
+</html>

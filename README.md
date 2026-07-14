@@ -13,3 +13,9 @@ Demo / prototype pages.
 - 路徑：`test0711/`
 - 線上預覽：https://aijackliu.github.io/cbot/test0711/
 - 說明：依航班與住宿的關西 6 日行程卡（無 USJ），靜態 HTML
+
+## 記憶三層架構（test0714）
+
+- 路徑：`test0714/`
+- 線上預覽：https://aijackliu.github.io/cbot/test0714/
+- 說明：knowledge-hub / rag / Memory River 架構頁 + 3 張 Gimi 配圖
