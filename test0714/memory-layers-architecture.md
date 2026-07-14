@@ -3,7 +3,7 @@
 > 視覺總覽：用瀏覽器開 [`memory-layers-architecture.html`](./memory-layers-architecture.html)  
 > 邊界鐵律：[`memory-layers.md`](./memory-layers.md)  
 > Grok skill：`Grok skill（本機）`  
-> 配圖（gimi-illustration）：[`../gimi-illustration-skill/outputs/20260714-memory-layers/`](./assets/memory-layers/)
+> 配圖（gimi-illustration）：[`../gimi-illustration-skill/outputs/20260714-memory-layers/`](assets/memory-layers/)
 
 ---
 
@@ -19,7 +19,7 @@
 
 宿主只有 **Grok**。升格單向、人確認；**禁止**自動雙向同步。
 
-![記憶三層並聯](./assets/memory-layers/01-three-layers.png)
+![記憶三層並聯](assets/memory-layers/01-three-layers.jpg)
 
 > SoR 成稿 · 證據卡找段落 · River 工作記憶——**禁止混存**。配圖：gimi-illustration · quirky-sketch。
 
@@ -145,7 +145,7 @@ flowchart TB
 
 ## 4. 查詢路由（Grok）
 
-![Grok 路由：先判斷再分層](./assets/memory-layers/02-grok-routing.png)
+![Grok 路由：先判斷再分層](assets/memory-layers/02-grok-routing.jpg)
 
 > ①門牌 · ②證據 · ③偏好——問題類型決定主路徑。
 
@@ -175,7 +175,7 @@ flowchart TD
 
 ## 5. 升格流程（River → Hub）
 
-![升格不是自動同步](./assets/memory-layers/03-promote-checklist.png)
+![升格不是自動同步](assets/memory-layers/03-promote-checklist.jpg)
 
 > ①候選 · ②清單 · ③notes——**人確認**；禁止自動雙寫。
 
@@ -289,4 +289,5 @@ hub 成稿  >  River 蒸餾  >  模型臆測
 | `docs/memory-ops-schema.sql` | PG 升格佇列 DDL |
 | `.local/memory-river/README.md` | River 運維 |
 | `skills/memory-layers-promote/` | Grok 薄整合 |
+
 

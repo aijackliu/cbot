@@ -1,4 +1,4 @@
-# 2026-07-14｜test0714
+﻿# 2026-07-14｜test0714
 
 ## 記憶三層架構 · knowledge-hub · rag · Memory River
 
@@ -24,8 +24,9 @@
 
 ### 配圖
 
-1. `01-three-layers.png` — 三層並聯 · 禁止混存  
-2. `02-grok-routing.png` — 路由：門牌 / 證據 / 偏好  
-3. `03-promote-checklist.png` — 升格不是自動同步  
+1. `01-three-layers.jpg` — 三層並聯 · 禁止混存  
+2. `02-grok-routing.jpg` — 路由：門牌 / 證據 / 偏好  
+3. `03-promote-checklist.jpg` — 升格不是自動同步  
 
 靜態 HTML，無需後端。配圖風格：quirky-sketch · Gimi IP。
+
