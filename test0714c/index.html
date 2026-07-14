@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2330 PA Hub · 支阻 / Qwen / PG｜test0714c</title>
+  <meta name="description" content="台積電 2330 Swing+聚類支阻網頁中樞：PG 落庫、Qwen 解讀、Ollama/FastAPI/Redis 探活" />
+  <style>
+    :root {
+      --bg: #0a0e14; --panel: #111822; --border: #1c2a3a; --text: #e8eef6;
+      --muted: #8b9cb3; --accent: #3b82f6; --chip: #1a2433; --cyan: #22d3ee;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, "Microsoft JhengHei", sans-serif;
+      background:
+        radial-gradient(900px 480px at 10% -5%, #1e3a5f 0%, transparent 55%),
+        var(--bg);
+      color: var(--text); line-height: 1.6; min-height: 100vh;
+    }
+    a { color: #7dd3fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      position: sticky; top: 0; z-index: 20;
+      padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border);
+      background: rgba(10,14,20,.92); backdrop-filter: blur(10px);
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: .65rem; align-items: center;
+    }
+    header h1 { font-size: 1.05rem; font-weight: 650; }
+    header p { color: var(--muted); font-size: .75rem; margin-top: .15rem; }
+    .nav { display: flex; flex-wrap: wrap; gap: .35rem .75rem; font-size: .78rem; }
+    .nav a { color: var(--muted); padding: .2rem .45rem; border-radius: 6px; }
+    .nav a:hover { color: var(--text); background: var(--chip); text-decoration: none; }
+    main { max-width: 920px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+    .hero { padding: 1.5rem 0 1.1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+    .kicker { font-size: .72rem; color: var(--cyan); font-weight: 650; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .4rem; }
+    .hero h2 { font-size: clamp(1.35rem, 3vw, 1.85rem); font-weight: 700; line-height: 1.3; max-width: 36ch; }
+    .one-liner { margin-top: .75rem; font-size: 1rem; color: #cbd5e1; max-width: 54ch; }
+    .meta { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem; }
+    .tag {
+      font-size: .7rem; padding: .15rem .5rem; border-radius: 999px;
+      background: var(--chip); color: var(--muted); border: 1px solid var(--border); font-weight: 600;
+    }
+    .tag.hot { color: #93c5fd; border-color: #1e3a5f; }
+    .tag.ok { color: #86efac; border-color: #14532d; }
+    .section { margin-bottom: 2rem; scroll-margin-top: 4rem; }
+    .section > h3 { font-size: 1.05rem; font-weight: 650; margin-bottom: .85rem; display: flex; gap: .45rem; align-items: center; }
+    .num { font-size: .72rem; color: var(--accent); font-weight: 700; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.05rem; }
+    .layers { display: grid; gap: .75rem; grid-template-columns: 1fr; }
+    @media (min-width: 720px) { .layers { grid-template-columns: repeat(3, 1fr); } }
+    .layer { border-radius: 12px; border: 1px solid var(--border); padding: .9rem; background: #0f1620; }
+    .layer h4 { font-size: .9rem; margin-bottom: .35rem; color: #7dd3fc; }
+    .layer p { font-size: .8rem; color: var(--muted); line-height: 1.45; }
+    table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    th, td { text-align: left; padding: .55rem .45rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-size: .72rem; font-weight: 650; }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: .78rem; color: #93c5fd; }
+    .takeaway {
+      border-left: 3px solid var(--accent); background: #0f1620; padding: .75rem 1rem;
+      border-radius: 0 10px 10px 0; margin: .75rem 0; font-size: .9rem; color: #bfdbfe;
+    }
+    .cta {
+      display: inline-block; margin-top: .75rem; padding: .55rem 1rem; border-radius: 10px;
+      background: linear-gradient(145deg, #2563eb, #1d4ed8); color: #fff !important; font-weight: 650; font-size: .88rem;
+    }
+    .cta:hover { text-decoration: none; filter: brightness(1.08); }
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .72rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>2330 PA Hub</h1>
+      <p>test0714c · 支阻 · Qwen · PG · Redis · FastAPI · Ollama</p>
+    </div>
+    <nav class="nav">
+      <a href="#stack">服務</a>
+      <a href="#flow">資料流</a>
+      <a href="#params">參數</a>
+      <a href="#run">怎麼跑</a>
+      <a href="./architecture.md">MD</a>
+    </nav>
+  </header>
+  <main>
+    <div class="hero">
+      <div class="kicker">test0714c · 2026-07-14</div>
+      <h2>台積電 2330 · Swing 聚類支阻網頁中樞</h2>
+      <p class="one-liner">
+        拉 K 線 → 算近端 S/R → 落 PostgreSQL → Qwen 解讀；
+        探活 Ollama／FastAPI／Redis。算法同源 Compass／富途 SR，日線容差 0.5%。
+      </p>
+      <div class="meta">
+        <span class="tag hot">2330.TW</span>
+        <span class="tag hot">S/R 0.5%</span>
+        <span class="tag ok">Qwen :8080</span>
+        <span class="tag ok">PG pa_2330</span>
+        <span class="tag">:8792</span>
+      </div>
+      <a class="cta" href="http://127.0.0.1:8792/">開啟本機 Hub :8792</a>
+    </div>
+
+    <section class="section" id="stack">
+      <h3><span class="num">01</span> 服務地圖</h3>
+      <div class="layers">
+        <div class="layer">
+          <h4>Hub :8792</h4>
+          <p>支阻圖 · Qwen · 資料庫後台 · 基建探活</p>
+        </div>
+        <div class="layer">
+          <h4>行情 + 帳本</h4>
+          <p>yfinance → bars · sr_runs（PG pa_2330）</p>
+        </div>
+        <div class="layer">
+          <h4>AI + 基建</h4>
+          <p>Qwen 解讀 · Ollama 標籤 · FastAPI · Redis</p>
+        </div>
+      </div>
+      <div class="takeaway">靠近歷史高檔時<strong>上方 R 可能為空</strong>——腳本只畫現價之上的阻力，屬正常。</div>
+    </section>
+
+    <section class="section" id="flow">
+      <h3><span class="num">02</span> 一次分析</h3>
+      <div class="card">
+        <table>
+          <thead><tr><th>步</th><th>做什麼</th></tr></thead>
+          <tbody>
+            <tr><td>①</td><td>yfinance 拉 <code>2330.TW</code>（預設 1y 日線）</td></tr>
+            <tr><td>②</td><td>寫入 PG <code>bars</code></td></tr>
+            <tr><td>③</td><td>Swing High/Low → 價格聚類 → 強度 ≥2</td></tr>
+            <tr><td>④</td><td>近端 R1–3／S1–3；存 <code>sr_runs</code></td></tr>
+            <tr><td>⑤</td><td>Qwen 可注入快照解讀（非喊單）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="params">
+      <h3><span class="num">03</span> 2330 參數</h3>
+      <div class="card">
+        <table>
+          <thead><tr><th>週期</th><th>strength</th><th>tolerance</th></tr></thead>
+          <tbody>
+            <tr><td>日線（預設）</td><td>4</td><td><strong>0.5%</strong></td></tr>
+            <tr><td>週線</td><td>3～4</td><td>0.6%～1.0%</td></tr>
+            <tr><td>富途 SPX 預設（勿照抄）</td><td>5</td><td>0.15%（偏細）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="takeaway">線太多 → 加大容差；幾乎沒線 → 略降容差或 strength 改 3。</div>
+    </section>
+
+    <section class="section" id="run">
+      <h3><span class="num">04</span> 怎麼跑</h3>
+      <div class="card">
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:.6rem">工作區 <code>pa-2330-hub</code></p>
+        <pre style="background:#0f1620;padding:.85rem 1rem;border-radius:10px;border:1px solid var(--border);font-size:.8rem;overflow:auto;color:#c6d4e8">pip install -r requirements.txt
+python setup_postgres.py
+python server.py
+# http://127.0.0.1:8792/</pre>
+        <p style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
+          Adminer：System=PostgreSQL · Server=<code>100.88.220.82</code> · DB=<code>pa_2330</code><br />
+          注意：Swing 右側確認有 look-ahead → <strong>看圖用</strong>，非嚴格回測訊號。
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      test0714c · 靜態說明 · 完整產品 <code>pa-2330-hub</code> ·
+      算法參考 <a href="https://github.com/kain26/SPX-Price-Action-Compass" target="_blank" rel="noopener">SPX-Price-Action-Compass</a> ·
+      <a href="https://github.com/aijackliu/cbot/tree/main/test0714c">GitHub</a>
+    </footer>
+  </main>
+</body>
+</html>
