@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>倪海廈 Web 架構 · Qwen / PG / Ollama｜test0714a</title>
+  <meta name="description" content="倪海廈 skill 網頁化：四端並聯、對話五步管線、四頁地圖；3 張 Gimi 配圖" />
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --panel: #111822;
+      --border: #1c2a3a;
+      --text: #e8eef6;
+      --muted: #8b9cb3;
+      --accent: #c04a36;
+      --chip: #1a2433;
+      --jade: #22c55e;
+      --amber: #d4a574;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", system-ui, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background:
+        radial-gradient(900px 480px at 10% -5%, #3a1c18 0%, transparent 55%),
+        radial-gradient(700px 400px at 100% 20%, #152030 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: #f0a090; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      position: sticky; top: 0; z-index: 30;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 14, 20, 0.92);
+      backdrop-filter: blur(10px);
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.65rem;
+      align-items: center;
+    }
+    header h1 { font-size: 1.05rem; font-weight: 650; }
+    header p { color: var(--muted); font-size: 0.75rem; margin-top: 0.15rem; }
+    .nav { display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .nav a {
+      color: var(--muted); padding: 0.2rem 0.45rem; border-radius: 6px;
+    }
+    .nav a:hover { color: var(--text); background: var(--chip); text-decoration: none; }
+    main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+    .hero {
+      padding: 1.5rem 0 1.1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .hero .kicker {
+      font-size: 0.72rem; color: var(--amber); font-weight: 650;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem;
+    }
+    .hero h2 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem); font-weight: 700;
+      line-height: 1.3; max-width: 32ch;
+    }
+    .hero .one-liner {
+      margin-top: 0.75rem; font-size: 1rem; color: #cbd5e1;
+      max-width: 52ch; line-height: 1.55;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+    .tag {
+      font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px;
+      background: var(--chip); color: var(--muted); border: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .tag.hot { color: #fca5a5; border-color: #7f1d1d; }
+    .tag.ok { color: #86efac; border-color: #14532d; }
+    .section { margin-bottom: 2rem; scroll-margin-top: 4rem; }
+    .section > h3 {
+      font-size: 1.05rem; font-weight: 650; margin-bottom: 0.85rem;
+      display: flex; align-items: center; gap: 0.45rem;
+    }
+    .section > h3 .num {
+      font-size: 0.72rem; color: var(--accent); font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1rem 1.05rem;
+    }
+    .layers {
+      display: grid; gap: 0.75rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .layers { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .layers { grid-template-columns: repeat(4, 1fr); }
+    }
+    .layer {
+      border-radius: 12px; border: 1px solid var(--border);
+      padding: 0.9rem; background: #0f1620;
+    }
+    .layer h4 { font-size: 0.9rem; margin-bottom: 0.35rem; color: #f0a090; }
+    .layer p { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+    ul { margin: 0.35rem 0 0 1.1rem; color: #cbd5e1; font-size: 0.88rem; }
+    li { margin: 0.28rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    th, td {
+      text-align: left; padding: 0.55rem 0.45rem;
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    th { color: var(--muted); font-size: 0.72rem; font-weight: 650; }
+    code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.78rem; color: #fecaca;
+    }
+    .shot {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 0 auto 1rem;
+      max-width: 920px;
+    }
+    .shot img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #fff;
+      cursor: zoom-in;
+    }
+    .shot .cap { padding: 0.75rem 0.95rem 0.95rem; }
+    .shot .cap .idx {
+      font-size: 0.68rem; color: var(--accent); font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .shot .cap h4 {
+      font-size: 0.95rem; font-weight: 650; margin: 0.2rem 0 0.35rem;
+    }
+    .shot .cap p {
+      font-size: 0.8rem; color: var(--muted); line-height: 1.45;
+    }
+    .gallery { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+    .takeaway {
+      border-left: 3px solid var(--accent);
+      background: #0f1620; padding: 0.75rem 1rem;
+      border-radius: 0 10px 10px 0; margin: 0.75rem 0;
+      font-size: 0.9rem; color: #fecaca;
+    }
+    .infra {
+      display: grid; gap: 0.55rem;
+      grid-template-columns: 1fr;
+      font-size: 0.82rem; color: var(--muted);
+    }
+    @media (min-width: 640px) {
+      .infra { grid-template-columns: 1fr 1fr; }
+    }
+    .infra code { color: #fca5a5; }
+    footer {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.72rem; line-height: 1.55;
+    }
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,.9); align-items: center; justify-content: center;
+      padding: 1.25rem; cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: min(1100px, 96vw);
+      max-height: 92vh;
+      width: auto; height: auto;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px #000a;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>倪海廈 Web 架構</h1>
+      <p>test0714a · skill 網頁化 · Qwen · Postgres · Ollama · Gimi 配圖</p>
+    </div>
+    <nav class="nav">
+      <a href="#stack">四端</a>
+      <a href="#gallery">配圖</a>
+      <a href="#pipeline">管線</a>
+      <a href="#pages">四頁</a>
+      <a href="#run">怎麼跑</a>
+      <a href="./architecture.md">MD</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">test0714a · 2026-07-14</div>
+      <h2>把倪海廈 skill 做成可對話網頁</h2>
+      <p class="one-liner">
+        瀏覽器問症／問方 → 本機先摘錄講義 → Qwen 以倪師視角回答 → PostgreSQL 記對話；
+        另可查 Ollama 標籤與 DB 後台。
+      </p>
+      <div class="meta">
+        <span class="tag hot">nihaixia skill</span>
+        <span class="tag hot">Qwen :8080</span>
+        <span class="tag ok">Postgres :5432</span>
+        <span class="tag ok">Ollama :11434</span>
+        <span class="tag">gimi · quirky-sketch</span>
+      </div>
+    </div>
+
+    <section class="section" id="stack">
+      <h3><span class="num">01</span> 四端並聯</h3>
+      <div class="layers">
+        <div class="layer">
+          <h4>網頁</h4>
+          <p>對話 · 知識庫 · 後台 · 基建四頁；探活燈</p>
+        </div>
+        <div class="layer">
+          <h4>書庫</h4>
+          <p>本機 nihaixia：SKILL / modules / cases</p>
+        </div>
+        <div class="layer">
+          <h4>Qwen</h4>
+          <p>100.88.220.82:8080 生成倪師視角回答</p>
+        </div>
+        <div class="layer">
+          <h4>帳本 + 標籤</h4>
+          <p>Postgres 存對話；Ollama 列模型 tags</p>
+        </div>
+      </div>
+      <div class="takeaway">中央是門面；四周各站其職——<strong>不要混成一大坨資料庫</strong>。</div>
+    </section>
+
+    <section class="section" id="gallery">
+      <h3><span class="num">02</span> 配圖（點圖放大）</h3>
+      <div class="gallery">
+        <article class="shot">
+          <img src="./assets/01-stack-overview.jpg" alt="四端並聯總覽" data-full="./assets/01-stack-overview.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 01</div>
+            <h4>四端並聯總覽</h4>
+            <p>網頁居中；書庫 · Qwen · Postgres · Ollama 四站。Gimi 做「各站其職」手勢。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/02-chat-pipeline.jpg" alt="對話五步管線" data-full="./assets/02-chat-pipeline.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 02</div>
+            <h4>對話五步管線</h4>
+            <p>①提問 → ②摘錄書庫 → ③system → ④Qwen → ⑤落庫。先找講義再生成。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/03-four-panels.jpg" alt="四頁使用地圖" data-full="./assets/03-four-panels.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 03</div>
+            <h4>四頁使用地圖</h4>
+            <p>對話 · 知識庫 · 後台 · 基建——各做一件事。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="pipeline">
+      <h3><span class="num">03</span> 一次 /api/chat</h3>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>步</th><th>做什麼</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>①</td><td>使用者送出訊息（可勾選注入知識摘錄）</td></tr>
+            <tr><td>②</td><td>關鍵字掃 SKILL / modules / cases，取 top 摘錄</td></tr>
+            <tr><td>③</td><td>組 system：身份 + 六經速查 + 摘錄 + 免責</td></tr>
+            <tr><td>④</td><td>Qwen 生成（enable_thinking=false）</td></tr>
+            <tr><td>⑤</td><td>user + assistant 寫入 Postgres sessions/messages</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="takeaway">講義沒寫的 → 應說「講義未涉及」，勿替倪師亂編。急重症先就醫。</div>
+    </section>
+
+    <section class="section" id="pages">
+      <h3><span class="num">04</span> 四頁功能</h3>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>分頁</th><th>用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>對話</td><td>問症狀／方證（Qwen + 摘錄）</td></tr>
+            <tr><td>知識庫</td><td>直接搜講義，不經模型</td></tr>
+            <tr><td>後台</td><td>sessions / messages 統計與預覽 · Adminer</td></tr>
+            <tr><td>基建</td><td>PG / Qwen / Ollama 探活 + 模型名</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="run">
+      <h3><span class="num">05</span> 本機怎麼跑（完整產品）</h3>
+      <div class="card">
+        <div class="infra">
+          <div>路徑<br /><code>J:\grok\34\nihaixia-web</code></div>
+          <div>啟動<br /><code>.\start.ps1</code> → <code>http://127.0.0.1:8790/</code></div>
+          <div>首次建庫<br /><code>python setup_postgres.py</code></div>
+          <div>知識庫<br /><code>J:\grok\34\nihaixia</code>（同層 skill）</div>
+          <div>Qwen<br /><code>http://100.88.220.82:8080/v1/chat/completions</code></div>
+          <div>Ollama<br /><code>http://100.88.220.82:11434/api/tags</code></div>
+          <div>Postgres<br /><code>100.88.220.82:5432 / nihaixia</code></div>
+          <div>Adminer<br /><code>http://100.88.220.82:5050</code></div>
+        </div>
+      </div>
+      <p style="margin-top:0.85rem;font-size:0.85rem;color:var(--muted);">
+        本頁（test0714a）是<strong>靜態架構說明</strong>，無需後端。完整可對話產品在工作區 <code>nihaixia-web</code>。
+        詳細：<a href="./architecture.md">architecture.md</a> · 策略：<a href="./assets/shot-config.md">shot-config.md</a>
+      </p>
+    </section>
+
+    <footer>
+      僅供中醫學習研究，不替代專業醫療診斷。<br />
+      Skill 源：<a href="https://github.com/jangviktor-web/nihaixia" target="_blank" rel="noreferrer">jangviktor-web/nihaixia</a>
+      · 配圖 skill：<a href="https://github.com/GiMi-Xiaomi/gimi-illustration-skill" target="_blank" rel="noreferrer">gimi-illustration-skill</a>
+      · 本 repo：<a href="https://github.com/aijackliu/cbot" target="_blank" rel="noreferrer">aijackliu/cbot</a>
+    </footer>
+  </main>
+
+  <div class="lightbox" id="lb" role="dialog" aria-modal="true">
+    <img id="lbImg" alt="" />
+  </div>
+  <script>
+    const lb = document.getElementById("lb");
+    const lbImg = document.getElementById("lbImg");
+    document.querySelectorAll(".shot img").forEach((img) => {
+      img.addEventListener("click", () => {
+        lbImg.src = img.dataset.full || img.src;
+        lbImg.alt = img.alt || "";
+        lb.classList.add("open");
+      });
+    });
+    lb.addEventListener("click", () => {
+      lb.classList.remove("open");
+      lbImg.src = "";
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        lb.classList.remove("open");
+        lbImg.src = "";
+      }
+    });
+  </script>
+</body>
+</html>

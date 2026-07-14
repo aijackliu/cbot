@@ -19,3 +19,9 @@ Demo / prototype pages.
 - 路徑：`test0714/`
 - 線上預覽：https://aijackliu.github.io/cbot/test0714/
 - 說明：knowledge-hub / rag / Memory River 架構頁 + 3 張 Gimi 配圖
+
+## 倪海廈 Web 架構（test0714a）
+
+- 路徑：`test0714a/`
+- 線上預覽：https://aijackliu.github.io/cbot/test0714a/
+- 說明：nihaixia skill 網頁化（Qwen / Postgres / Ollama）架構頁 + 3 張 Gimi 配圖
