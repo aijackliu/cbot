@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cordys CRM Hub 架構 · Qwen / PG / FastAPI / Redis｜test0714b</title>
+  <meta name="description" content="CordysCRM 整合中樞：Hub 總覽、Qwen 管線、五分頁、Hub vs 官方 Docker；4 張 Gimi 配圖" />
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --panel: #111822;
+      --border: #1c2a3a;
+      --text: #e8eef6;
+      --muted: #8b9cb3;
+      --accent: #3b82f6;
+      --chip: #1a2433;
+      --jade: #22c55e;
+      --amber: #22d3ee;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", system-ui, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background:
+        radial-gradient(900px 480px at 10% -5%, #1e3a5f 0%, transparent 55%),
+        radial-gradient(700px 400px at 100% 20%, #0e2a33 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: #7dd3fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      position: sticky; top: 0; z-index: 30;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 14, 20, 0.92);
+      backdrop-filter: blur(10px);
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.65rem;
+      align-items: center;
+    }
+    header h1 { font-size: 1.05rem; font-weight: 650; }
+    header p { color: var(--muted); font-size: 0.75rem; margin-top: 0.15rem; }
+    .nav { display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .nav a {
+      color: var(--muted); padding: 0.2rem 0.45rem; border-radius: 6px;
+    }
+    .nav a:hover { color: var(--text); background: var(--chip); text-decoration: none; }
+    main { max-width: 960px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+    .hero {
+      padding: 1.5rem 0 1.1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .hero .kicker {
+      font-size: 0.72rem; color: var(--amber); font-weight: 650;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem;
+    }
+    .hero h2 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem); font-weight: 700;
+      line-height: 1.3; max-width: 36ch;
+    }
+    .hero .one-liner {
+      margin-top: 0.75rem; font-size: 1rem; color: #cbd5e1;
+      max-width: 54ch; line-height: 1.55;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+    .tag {
+      font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px;
+      background: var(--chip); color: var(--muted); border: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .tag.hot { color: #93c5fd; border-color: #1e3a5f; }
+    .tag.ok { color: #86efac; border-color: #14532d; }
+    .section { margin-bottom: 2rem; scroll-margin-top: 4rem; }
+    .section > h3 {
+      font-size: 1.05rem; font-weight: 650; margin-bottom: 0.85rem;
+      display: flex; align-items: center; gap: 0.45rem;
+    }
+    .section > h3 .num {
+      font-size: 0.72rem; color: var(--accent); font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1rem 1.05rem;
+    }
+    .layers {
+      display: grid; gap: 0.75rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .layers { grid-template-columns: repeat(3, 1fr); }
+    }
+    .layer {
+      border-radius: 12px; border: 1px solid var(--border);
+      padding: 0.9rem; background: #0f1620;
+    }
+    .layer h4 { font-size: 0.9rem; margin-bottom: 0.35rem; color: #7dd3fc; }
+    .layer p { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+    ul { margin: 0.35rem 0 0 1.1rem; color: #cbd5e1; font-size: 0.88rem; }
+    li { margin: 0.28rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    th, td {
+      text-align: left; padding: 0.55rem 0.45rem;
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    th { color: var(--muted); font-size: 0.72rem; font-weight: 650; }
+    code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.78rem; color: #93c5fd;
+    }
+    .shot {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 0 auto 1rem;
+      max-width: 920px;
+    }
+    .shot img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #fff;
+      cursor: zoom-in;
+    }
+    .shot .cap { padding: 0.75rem 0.95rem 0.95rem; }
+    .shot .cap .idx {
+      font-size: 0.68rem; color: var(--accent); font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .shot .cap h4 {
+      font-size: 0.95rem; font-weight: 650; margin: 0.2rem 0 0.35rem;
+    }
+    .shot .cap p {
+      font-size: 0.8rem; color: var(--muted); line-height: 1.45;
+    }
+    .gallery { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+    .takeaway {
+      border-left: 3px solid var(--accent);
+      background: #0f1620; padding: 0.75rem 1rem;
+      border-radius: 0 10px 10px 0; margin: 0.75rem 0;
+      font-size: 0.9rem; color: #bfdbfe;
+    }
+    .infra {
+      display: grid; gap: 0.55rem;
+      grid-template-columns: 1fr;
+      font-size: 0.82rem; color: var(--muted);
+    }
+    @media (min-width: 640px) {
+      .infra { grid-template-columns: 1fr 1fr; }
+    }
+    .infra code { color: #93c5fd; }
+    footer {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.72rem; line-height: 1.55;
+    }
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,.9); align-items: center; justify-content: center;
+      padding: 1.25rem; cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: min(1100px, 96vw);
+      max-height: 92vh;
+      width: auto; height: auto;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px #000a;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Cordys CRM Hub 架構</h1>
+      <p>test0714b · Qwen · PG · FastAPI · Redis · Ollama · Gimi 配圖</p>
+    </div>
+    <nav class="nav">
+      <a href="#stack">服務</a>
+      <a href="#gallery">配圖</a>
+      <a href="#pipeline">管線</a>
+      <a href="#panels">分頁</a>
+      <a href="#compare">Hub vs 官方</a>
+      <a href="#run">怎麼跑</a>
+      <a href="./architecture.md">MD</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">test0714b · 2026-07-14</div>
+      <h2>Cordys 生態 × tailnet 基建的網頁中樞</h2>
+      <p class="one-liner">
+        本機 Hub 串遠端 PostgreSQL／Qwen／Ollama／FastAPI／Redis；
+        輕量 CRM + 資料庫後台立刻可用；官方 CordysCRM Docker 可選、與 Hub 不同步。
+      </p>
+      <div class="meta">
+        <span class="tag hot">CordysCRM</span>
+        <span class="tag hot">Qwen :8080</span>
+        <span class="tag ok">Postgres :5432</span>
+        <span class="tag ok">FastAPI :9000</span>
+        <span class="tag ok">Redis :6379</span>
+        <span class="tag">Ollama :11434</span>
+        <span class="tag">gimi · quirky-sketch</span>
+      </div>
+    </div>
+
+    <section class="section" id="stack">
+      <h3><span class="num">01</span> 服務地圖</h3>
+      <div class="layers">
+        <div class="layer">
+          <h4>Hub 中樞</h4>
+          <p>本機 :8791 · 網頁 UI + API 代理</p>
+        </div>
+        <div class="layer">
+          <h4>帳本 + AI</h4>
+          <p>PG cordys_hub · Qwen 銷售助理 · Ollama 標籤</p>
+        </div>
+        <div class="layer">
+          <h4>基建探活</h4>
+          <p>FastAPI glasses_backend · Redis · Adminer</p>
+        </div>
+      </div>
+      <div class="takeaway">中央是門面；官方 Cordys 是<strong>虛線可選路徑</strong>——資料不自動同步。</div>
+    </section>
+
+    <section class="section" id="gallery">
+      <h3><span class="num">02</span> 配圖（點圖放大）</h3>
+      <div class="gallery">
+        <article class="shot">
+          <img src="./assets/01-stack-overview.jpg" alt="Hub 總覽" data-full="./assets/01-stack-overview.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 01</div>
+            <h4>Cordys Hub 總覽</h4>
+            <p>Hub 居中；PG · Qwen · Ollama · FastAPI · Redis 環繞；Cordys 可選。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/02-chat-pipeline.jpg" alt="Qwen 對話管線" data-full="./assets/02-chat-pipeline.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 02</div>
+            <h4>Qwen 對話管線</h4>
+            <p>①輸入 → ②注入 CRM 快照並呼叫 Qwen → ③寫入 PostgreSQL。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/03-five-panels.jpg" alt="五個網頁分頁" data-full="./assets/03-five-panels.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 03</div>
+            <h4>五個網頁分頁</h4>
+            <p>總覽 · CRM · Qwen · 資料庫 · 基建——各做一件事。</p>
+          </div>
+        </article>
+        <article class="shot">
+          <img src="./assets/04-hub-vs-official.jpg" alt="Hub vs 官方 Cordys" data-full="./assets/04-hub-vs-official.jpg" />
+          <div class="cap">
+            <div class="idx">SHOT 04</div>
+            <h4>Hub vs 官方 Cordys</h4>
+            <p>左：PG 輕量立刻用；右：Docker 完整版；中間「不同步」；可並存。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="pipeline">
+      <h3><span class="num">03</span> 一次 /api/chat</h3>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>步</th><th>做什麼</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>①</td><td>使用者送出訊息（可勾選注入 CRM 快照）</td></tr>
+            <tr><td>②</td><td>讀 accounts／opportunities 組 system + CATCH 定價話術</td></tr>
+            <tr><td>③</td><td>POST Qwen <code>:8080/v1/chat/completions</code>（enable_thinking=false）</td></tr>
+            <tr><td>④</td><td>user + assistant 寫入 <code>sessions</code> / <code>messages</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="panels">
+      <h3><span class="num">04</span> 五個分頁</h3>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>分頁</th><th>職責</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>總覽</td><td>探活燈號、統計、官方 Docker 指令</td></tr>
+            <tr><td>CRM</td><td>客戶／商機寫入 <code>cordys_hub</code></td></tr>
+            <tr><td>Qwen</td><td>銷售助理對話</td></tr>
+            <tr><td>資料庫</td><td>統計、SELECT、Adminer</td></tr>
+            <tr><td>基建</td><td>Ollama／LLM／FastAPI／Redis</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="compare">
+      <h3><span class="num">05</span> Hub vs 官方</h3>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th></th><th>Hub</th><th>官方 Cordys</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>部署</td><td><code>python server.py</code></td><td>Docker <code>1panel/cordys-crm</code></td></tr>
+            <tr><td>DB</td><td>PostgreSQL</td><td>MySQL（映像內）</td></tr>
+            <tr><td>AI</td><td>接你的 Qwen :8080</td><td>內建／Skills</td></tr>
+            <tr><td>資料</td><td><code>cordys_hub</code></td><td>不與 Hub 自動同步</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="takeaway">日常用 Hub 管商機；有 Linux Docker 再上官方完整版——<strong>可並存</strong>。</div>
+    </section>
+
+    <section class="section" id="run">
+      <h3><span class="num">06</span> 怎麼跑（本機產品）</h3>
+      <div class="card">
+        <div class="infra">
+          <div>目錄 <code>cordys-crm-hub</code></div>
+          <div><code>pip install -r requirements.txt</code></div>
+          <div><code>python setup_postgres.py</code></div>
+          <div><code>python server.py</code> → <code>http://127.0.0.1:8791/</code></div>
+          <div>Adminer：System=PostgreSQL · DB=<code>cordys_hub</code></div>
+          <div>上游 <a href="https://github.com/1Panel-dev/CordysCRM" target="_blank" rel="noopener">1Panel-dev/CordysCRM</a></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      test0714b · 靜態說明頁 · 配圖 gimi-illustration-skill ·
+      完整產品在工作區 <code>cordys-crm-hub</code> ·
+      <a href="https://github.com/aijackliu/cbot/tree/main/test0714b">GitHub</a>
+    </footer>
+  </main>
+
+  <div class="lightbox" id="lb" role="dialog" aria-modal="true">
+    <img id="lbImg" alt="放大預覽" />
+  </div>
+  <script>
+    const lb = document.getElementById("lb");
+    const lbImg = document.getElementById("lbImg");
+    document.querySelectorAll(".shot img").forEach((img) => {
+      img.addEventListener("click", () => {
+        lbImg.src = img.getAttribute("data-full") || img.src;
+        lb.classList.add("open");
+      });
+    });
+    lb.addEventListener("click", () => lb.classList.remove("open"));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") lb.classList.remove("open");
+    });
+  </script>
+</body>
+</html>
