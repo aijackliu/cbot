@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CATCH 客戶版 · test0715b</title>
+<meta name="description" content="CATCH：CRM 核心先上 · TCO · 經營戰情 Demo · gimi 配圖" />
+<style>
+  :root {
+    --bg: #0b1220; --card: #151e2e; --ink: #e8eef6; --muted: #8b9cb3;
+    --line: #2a3a52; --jade: #34d399; --cyan: #22d3ee; --blue: #3b82f6;
+    --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 400px at 10% 0%, #1e3a5f55, transparent),
+      radial-gradient(700px 360px at 100% 0%, #22d3ee18, transparent),
+      var(--bg);
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 20px 16px 56px; }
+  header { margin-bottom: 22px; }
+  h1 { margin: 0 0 8px; font-size: 1.45rem; }
+  .sub { color: var(--muted); font-size: .9rem; line-height: 1.55; max-width: 42rem; }
+  .badge {
+    display: inline-block; margin: 10px 6px 0 0; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line); font-size: .72rem; color: var(--jade);
+  }
+  .badge a { color: var(--cyan); text-decoration: none; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px; margin: 16px 0;
+  }
+  .card h2 { margin: 0 0 6px; font-size: 1.05rem; }
+  .card h3 { margin: 0 0 4px; font-size: .78rem; color: var(--cyan); font-weight: 600; letter-spacing: .04em; }
+  .muted { color: var(--muted); font-size: .82rem; line-height: 1.5; }
+  .speak {
+    margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+    background: #0f1724; border: 1px solid var(--line);
+    font-size: .88rem; line-height: 1.5; color: var(--ink);
+  }
+  .speak strong { color: var(--jade); font-weight: 600; }
+  img.art {
+    width: 100%; display: block; border-radius: 12px;
+    border: 1px solid var(--line); background: #fff;
+  }
+  .grid3 {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px;
+  }
+  @media (max-width: 800px) { .grid3 { grid-template-columns: 1fr; } }
+  .pill {
+    background: #0f1724; border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+  }
+  .pill b { display: block; color: var(--cyan); margin-bottom: 4px; font-size: .9rem; }
+  .pill span { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+  .line { font-family: ui-monospace, Consolas, monospace; font-size: .78rem; color: var(--jade); }
+  a { color: var(--cyan); }
+  footer { margin-top: 28px; color: var(--muted); font-size: .78rem; line-height: 1.65; }
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .toc a {
+    font-size: .75rem; padding: 5px 10px; border-radius: 8px;
+    border: 1px solid var(--line); text-decoration: none; color: var(--muted);
+    background: var(--card);
+  }
+  .toc a:hover { color: var(--ink); border-color: var(--blue); }
+  .hero-line {
+    margin-top: 14px; padding: 14px 16px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--card);
+    font-size: 1rem; line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>CATCH 客戶版 · 定位 × TCO × Demo</h1>
+    <p class="sub">
+      給連鎖門市決策者：為什麼先 CRM 核心、第一年怎麼比總帳、老闆週一看什麼。
+      配圖 gimi · quirky-sketch · 繁中標註（2026-07-15b）
+    </p>
+    <span class="badge">test0715b</span>
+    <span class="badge"><a href="../test0715a/">← 0715a 戰情數據</a></span>
+    <span class="badge"><a href="../test0715/">0715 CRM 四水管</a></span>
+    <div class="hero-line">
+      <strong>定位：</strong>連鎖門市的 CRM 核心先上——帳準、分得清、推得出；串接與 AI 再擴充，完整 OMO 另議。
+    </div>
+    <nav class="toc" aria-label="章節">
+      <a href="#s1">1 痛點</a>
+      <a href="#s2">2 定位</a>
+      <a href="#s3">3 路徑</a>
+      <a href="#s4">4 TCO</a>
+      <a href="#s5">5 戰情 Demo</a>
+      <a href="#s6">6 下一步</a>
+    </nav>
+  </header>
+
+  <section class="card" id="s1">
+    <h3>01 · 痛點共鳴</h3>
+    <h2>多數連鎖卡住的，不是「沒系統」</h2>
+    <p class="muted">系統上了，帳對不齊、推播傷毛利、年費一層層疊、OMO 一次買滿用不到。</p>
+    <img class="art" src="./assets/01-pain-stuck.jpg" alt="痛點：帳不準、推不動、費疊加、買太滿" width="1920" height="1080" loading="lazy" />
+    <div class="speak"><strong>口播：</strong>很多連鎖不是沒上會員，是上了以後帳對不齊、只能群發傷毛利、年費疊加，還一次買滿用不到。</div>
+  </section>
+
+  <section class="card" id="s2">
+    <h3>02 · 定位</h3>
+    <h2>門市經營的數位地基</h2>
+    <div class="grid3">
+      <div class="pill"><b>先核心</b><span>不逼你一次買滿 OMO</span></div>
+      <div class="pill"><b>比 TCO</b><span>第一年總帳與 2 年總包</span></div>
+      <div class="pill"><b>為決策</b><span>戰情可追溯，不堆功能</span></div>
+    </div>
+    <img class="art" style="margin-top:14px" src="./assets/02-position-foundation.jpg" alt="數位地基：先核心" width="1920" height="1080" loading="lazy" />
+    <div class="speak"><strong>口播：</strong>定位是門市數位地基：先把 CRM 核心跑起來，不是一開始就蓋完整 OMO 大樓。</div>
+  </section>
+
+  <section class="card" id="s3">
+    <h3>03 · 路徑</h3>
+    <h2>路徑清楚，才不會買錯層</h2>
+    <div class="grid3">
+      <div class="pill"><b>① CRM 核心</b><span>會員 · 分群 · 券 · RFM</span></div>
+      <div class="pill"><b>② 串接</b><span>POS／電商 · 一次＋年維</span></div>
+      <div class="pill"><b>③ AI → ④ OMO</b><span>加購人審 · OMO 另議</span></div>
+    </div>
+    <img class="art" style="margin-top:14px" src="./assets/03-path-core-first.jpg" alt="先 CRM 再擴充" width="1920" height="1080" loading="lazy" />
+    <div class="speak"><strong>口播：</strong>路徑很清楚：先 CRM，再串接，AI 可選，完整 OMO 另議。別用一次買滿當預設。</div>
+  </section>
+
+  <section class="card" id="s4">
+    <h3>04 · 第一年成本</h3>
+    <h2>要比總帳，不只比年費</h2>
+    <p class="muted">決策框架（金額以正式報價單為準）：核心年費 · 建置／匯入／串接 · 可選加購。</p>
+    <img class="art" src="./assets/04-tco-total-bill.jpg" alt="第一年總帳 vs 只比年費" width="1920" height="1080" loading="lazy" />
+    <div class="speak"><strong>口播：</strong>別只比年費表。把建置、匯入、串接、另購模組加起來，才是第一年總帳。再對 CATCH 穩健 2 年包。</div>
+  </section>
+
+  <section class="card" id="s5">
+    <h3>05 · Demo 腳本</h3>
+    <h2>老闆週一看「總指揮台」</h2>
+    <p class="muted">現場只深挖這一條（約 5–7 分鐘）。其它模組當「水管有接上」一句帶過。</p>
+    <img class="art" src="./assets/05-war-room-demo.jpg" alt="經營戰情總指揮台四步" width="1920" height="1080" loading="lazy" />
+    <div class="grid3" style="margin-top:12px">
+      <div class="pill"><b>① 異常</b><span>ROAS／回購／流失</span></div>
+      <div class="pill"><b>② 銷售</b><span>90 日營收 · 回購 · 品項</span></div>
+      <div class="pill"><b>③④ 熱力 · 財報</b><span>名單 · 月結快照</span></div>
+    </div>
+    <p class="line" style="margin-top:12px">cd catch-crm-hub → python server.py → http://127.0.0.1:8791/ 經營戰情</p>
+    <div class="speak"><strong>口播：</strong>先看異常哪裡漏，再看官網銷售，熱力與流失名單，最後月結快照可追溯整年。</div>
+  </section>
+
+  <section class="card" id="s6">
+    <h3>06 · 成交下一步</h3>
+    <h2>三選一（或組合）</h2>
+    <div class="grid3">
+      <div class="pill"><b>主推 · 穩健 2 年包</b><span>鎖 CRM 核心年費路徑</span></div>
+      <div class="pill"><b>遷移 · 搬家包</b><span>約滿匯入 · 雙軌 · 長約可折抵</span></div>
+      <div class="pill"><b>低風險 · 2 週 POC</b><span>帳規則 · 分群 · 戰情一頁</span></div>
+    </div>
+    <img class="art" style="margin-top:14px" src="./assets/06-next-steps.jpg" alt="穩健2年、搬家包、2週POC" width="1920" height="1080" loading="lazy" />
+    <div class="speak"><strong>會後帶走：</strong>① 第一年 TCO 對照（門市檔）　② 穩健包／搬家包報價範圍　③ POC 兩週驗收清單</div>
+  </section>
+
+  <footer>
+    配圖策略：<a href="./shot-config.md">shot-config.md</a> ·
+    繁中說明：<a href="./captions-zh-Hant.md">captions-zh-Hant.md</a><br>
+    數據展示：<a href="../test0715a/">test0715a 經營戰情</a> ·
+    CRM 四水管：<a href="../test0715/">test0715</a><br>
+    GitHub：<a href="https://github.com/aijackliu/cbot/tree/main/test0715b">aijackliu/cbot/test0715b</a><br>
+    IP：gimi · quirky-sketch（gimi-illustration-skill）
+  </footer>
+</div>
+</body>
+</html>
