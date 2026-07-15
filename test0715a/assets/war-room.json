@@ -1,0 +1,1388 @@
+{
+  "ok": true,
+  "title": "經營戰情中心 · 公司總指揮台",
+  "as_of": "2026-07-15",
+  "anomalies": [
+    {
+      "type": "churn",
+      "severity": "med",
+      "msg": "流失風險顧客 15 位，建議啟動喚醒檔"
+    }
+  ],
+  "kpis": {
+    "web_revenue_90d": 923570,
+    "web_orders_90d": 263,
+    "repeat_rate_90d": 0.593,
+    "aov_90d": 3511,
+    "ad_spend_30d": 316465,
+    "ad_roas_30d": 6.33,
+    "finance_latest_revenue": 214575,
+    "finance_revenue_yoy_pct": 27.6,
+    "product_sales_yoy_pct": 13.6
+  },
+  "website_sales": {
+    "ok": true,
+    "window_days": 90,
+    "orders": 263,
+    "revenue": 923570,
+    "repeat_orders": 156,
+    "repeat_rate": 0.593,
+    "aov": 3511,
+    "segments": [
+      {
+        "segment": "champion",
+        "n": 48,
+        "ltv": "2747695"
+      },
+      {
+        "segment": "potential",
+        "n": 12,
+        "ltv": "406585"
+      },
+      {
+        "segment": "at_risk",
+        "n": 12,
+        "ltv": "659315"
+      },
+      {
+        "segment": "hibernating",
+        "n": 8,
+        "ltv": "423428"
+      }
+    ],
+    "top_products": [
+      {
+        "sku": "SP-006",
+        "qty": 132,
+        "amount": 102085
+      },
+      {
+        "sku": "SP-011",
+        "qty": 133,
+        "amount": 95159
+      },
+      {
+        "sku": "SP-002",
+        "qty": 127,
+        "amount": 85137
+      },
+      {
+        "sku": "SP-008",
+        "qty": 123,
+        "amount": 79671
+      },
+      {
+        "sku": "SP-004",
+        "qty": 112,
+        "amount": 78191
+      },
+      {
+        "sku": "SP-012",
+        "qty": 99,
+        "amount": 77423
+      },
+      {
+        "sku": "SP-007",
+        "qty": 106,
+        "amount": 76192
+      },
+      {
+        "sku": "SP-010",
+        "qty": 109,
+        "amount": 74704
+      },
+      {
+        "sku": "SP-009",
+        "qty": 94,
+        "amount": 71378
+      },
+      {
+        "sku": "SP-005",
+        "qty": 102,
+        "amount": 66487
+      },
+      {
+        "sku": "SP-003",
+        "qty": 91,
+        "amount": 62546
+      },
+      {
+        "sku": "SP-001",
+        "qty": 76,
+        "amount": 54597
+      }
+    ]
+  },
+  "trends_heat_churn": {
+    "ok": true,
+    "monthly_trends": [
+      {
+        "month": "2025-07",
+        "orders": 47,
+        "revenue": 136090
+      },
+      {
+        "month": "2025-08",
+        "orders": 83,
+        "revenue": 292367
+      },
+      {
+        "month": "2025-09",
+        "orders": 90,
+        "revenue": 309424
+      },
+      {
+        "month": "2025-10",
+        "orders": 72,
+        "revenue": 262670
+      },
+      {
+        "month": "2025-11",
+        "orders": 85,
+        "revenue": 274335
+      },
+      {
+        "month": "2025-12",
+        "orders": 97,
+        "revenue": 366433
+      },
+      {
+        "month": "2026-01",
+        "orders": 89,
+        "revenue": 280172
+      },
+      {
+        "month": "2026-02",
+        "orders": 79,
+        "revenue": 282946
+      },
+      {
+        "month": "2026-03",
+        "orders": 88,
+        "revenue": 301970
+      },
+      {
+        "month": "2026-04",
+        "orders": 87,
+        "revenue": 323190
+      },
+      {
+        "month": "2026-05",
+        "orders": 98,
+        "revenue": 350303
+      },
+      {
+        "month": "2026-06",
+        "orders": 80,
+        "revenue": 276051
+      },
+      {
+        "month": "2026-07",
+        "orders": 45,
+        "revenue": 149577
+      }
+    ],
+    "heat_matrix": {
+      "months": [
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07"
+      ],
+      "rows": [
+        {
+          "sku": "SP-007",
+          "months": {
+            "2026-01": 14419,
+            "2026-02": 39280,
+            "2026-03": 24696,
+            "2026-04": 26227,
+            "2026-05": 27749,
+            "2026-06": 19339,
+            "2026-07": 15103
+          },
+          "total": 166813
+        },
+        {
+          "sku": "SP-008",
+          "months": {
+            "2026-01": 19504,
+            "2026-02": 27125,
+            "2026-03": 25717,
+            "2026-04": 30235,
+            "2026-05": 39290,
+            "2026-06": 14922,
+            "2026-07": 9462
+          },
+          "total": 166255
+        },
+        {
+          "sku": "SP-006",
+          "months": {
+            "2026-01": 8664,
+            "2026-02": 12331,
+            "2026-03": 29186,
+            "2026-04": 24016,
+            "2026-05": 31453,
+            "2026-06": 36561,
+            "2026-07": 22952
+          },
+          "total": 165163
+        },
+        {
+          "sku": "SP-011",
+          "months": {
+            "2026-01": 4062,
+            "2026-02": 15600,
+            "2026-03": 31804,
+            "2026-04": 32480,
+            "2026-05": 43527,
+            "2026-06": 17010,
+            "2026-07": 15609
+          },
+          "total": 160092
+        },
+        {
+          "sku": "SP-004",
+          "months": {
+            "2026-01": 22532,
+            "2026-02": 21815,
+            "2026-03": 16987,
+            "2026-04": 27523,
+            "2026-05": 32119,
+            "2026-06": 26599,
+            "2026-07": 8616
+          },
+          "total": 156191
+        },
+        {
+          "sku": "SP-010",
+          "months": {
+            "2026-01": 9447,
+            "2026-02": 27183,
+            "2026-03": 27783,
+            "2026-04": 26539,
+            "2026-05": 35635,
+            "2026-06": 18198,
+            "2026-07": 7997
+          },
+          "total": 152782
+        },
+        {
+          "sku": "SP-002",
+          "months": {
+            "2026-01": 12331,
+            "2026-02": 18829,
+            "2026-03": 22152,
+            "2026-04": 22274,
+            "2026-05": 32307,
+            "2026-06": 29639,
+            "2026-07": 11857
+          },
+          "total": 149389
+        },
+        {
+          "sku": "SP-009",
+          "months": {
+            "2026-01": 23022,
+            "2026-02": 19083,
+            "2026-03": 17184,
+            "2026-04": 28729,
+            "2026-05": 10594,
+            "2026-06": 27235,
+            "2026-07": 23333
+          },
+          "total": 149180
+        },
+        {
+          "sku": "SP-003",
+          "months": {
+            "2026-01": 20596,
+            "2026-02": 27404,
+            "2026-03": 24151,
+            "2026-04": 19070,
+            "2026-05": 28338,
+            "2026-06": 20473,
+            "2026-07": 8894
+          },
+          "total": 148926
+        },
+        {
+          "sku": "SP-001",
+          "months": {
+            "2026-01": 14908,
+            "2026-02": 34830,
+            "2026-03": 23138,
+            "2026-04": 33642,
+            "2026-05": 22441,
+            "2026-06": 16622,
+            "2026-07": 2338
+          },
+          "total": 147919
+        },
+        {
+          "sku": "SP-012",
+          "months": {
+            "2026-01": 592,
+            "2026-02": 12872,
+            "2026-03": 35320,
+            "2026-04": 26447,
+            "2026-05": 21402,
+            "2026-06": 26800,
+            "2026-07": 16280
+          },
+          "total": 139713
+        },
+        {
+          "sku": "SP-005",
+          "months": {
+            "2026-01": 7436,
+            "2026-02": 26594,
+            "2026-03": 23852,
+            "2026-04": 26008,
+            "2026-05": 25448,
+            "2026-06": 22653,
+            "2026-07": 7136
+          },
+          "total": 139127
+        }
+      ]
+    },
+    "potential_customers": [
+      {
+        "id": "a3058eff-ce30-447c-b490-a2194e810bd0",
+        "name": "官網顧客02",
+        "email": "c02@demo.local",
+        "segment": "potential",
+        "order_count": 9,
+        "lifetime_value": 36246,
+        "last_order_date": "2026-07-14",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "d22691d3-3c43-47b2-99e1-9c331d31d85c",
+        "name": "官網顧客74",
+        "email": "c74@demo.local",
+        "segment": "potential",
+        "order_count": 11,
+        "lifetime_value": 36537,
+        "last_order_date": "2026-07-12",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "0c2c4e87-6a09-4cd6-9c85-913d3c1de426",
+        "name": "官網顧客01",
+        "email": "c01@demo.local",
+        "segment": "potential",
+        "order_count": 14,
+        "lifetime_value": 35200,
+        "last_order_date": "2026-07-12",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "abd95d6c-d432-40ef-b041-13ed8530ed47",
+        "name": "官網顧客54",
+        "email": "c54@demo.local",
+        "segment": "potential",
+        "order_count": 10,
+        "lifetime_value": 28091,
+        "last_order_date": "2026-07-10",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "14dda9ab-74ae-4be4-a410-4704a9edf7d7",
+        "name": "官網顧客10",
+        "email": "c10@demo.local",
+        "segment": "potential",
+        "order_count": 9,
+        "lifetime_value": 31457,
+        "last_order_date": "2026-06-25",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "ab66a59a-4312-40de-86bc-34337ff1a0e6",
+        "name": "官網顧客53",
+        "email": "c53@demo.local",
+        "segment": "potential",
+        "order_count": 8,
+        "lifetime_value": 29551,
+        "last_order_date": "2026-06-22",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "5e653e0d-31d8-4af5-bd4c-d89b4674a40f",
+        "name": "官網顧客11",
+        "email": "c11@demo.local",
+        "segment": "potential",
+        "order_count": 9,
+        "lifetime_value": 36367,
+        "last_order_date": "2026-06-13",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "10d667ac-7c50-48f3-8c68-c6d1d21aded9",
+        "name": "官網顧客29",
+        "email": "c29@demo.local",
+        "segment": "potential",
+        "order_count": 7,
+        "lifetime_value": 30603,
+        "last_order_date": "2026-06-10",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "3c153a01-ff6b-4e4b-ba7a-7879dda5ac29",
+        "name": "官網顧客67",
+        "email": "c67@demo.local",
+        "segment": "potential",
+        "order_count": 11,
+        "lifetime_value": 34927,
+        "last_order_date": "2026-05-31",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "55a2987a-1277-4b20-8731-6280a95592f9",
+        "name": "官網顧客76",
+        "email": "c76@demo.local",
+        "segment": "potential",
+        "order_count": 12,
+        "lifetime_value": 35563,
+        "last_order_date": "2026-05-24",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "b6ee91a6-c26f-453f-b2b1-8d8998d1e665",
+        "name": "官網顧客48",
+        "email": "c48@demo.local",
+        "segment": "potential",
+        "order_count": 11,
+        "lifetime_value": 35933,
+        "last_order_date": "2026-05-19",
+        "risk_flag": "potential"
+      },
+      {
+        "id": "429936f7-d2b3-422e-b9a5-4154977e6855",
+        "name": "官網顧客40",
+        "email": "c40@demo.local",
+        "segment": "potential",
+        "order_count": 13,
+        "lifetime_value": 36110,
+        "last_order_date": "2026-05-19",
+        "risk_flag": "potential"
+      }
+    ],
+    "churn_risk_customers": [
+      {
+        "id": "1cd9e225-a294-4f41-b9e7-981d1c019cf1",
+        "name": "官網顧客28",
+        "email": "c28@demo.local",
+        "segment": "at_risk",
+        "order_count": 21,
+        "lifetime_value": 78163,
+        "last_order_date": "2026-04-26",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "b446f484-1a8d-4ff9-8578-62cc0954a0d2",
+        "name": "官網顧客57",
+        "email": "c57@demo.local",
+        "segment": "hibernating",
+        "order_count": 17,
+        "lifetime_value": 71269,
+        "last_order_date": "2026-06-04",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "fa15257f-1220-4f57-bea3-e1cd94e499c1",
+        "name": "官網顧客24",
+        "email": "c24@demo.local",
+        "segment": "hibernating",
+        "order_count": 18,
+        "lifetime_value": 66432,
+        "last_order_date": "2026-06-07",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "c6faeade-d0a4-490a-8098-d89074f029b6",
+        "name": "官網顧客09",
+        "email": "c09@demo.local",
+        "segment": "hibernating",
+        "order_count": 19,
+        "lifetime_value": 63792,
+        "last_order_date": "2026-06-12",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "ce1e7f3f-dcca-4871-ba25-a150731c98b7",
+        "name": "官網顧客80",
+        "email": "c80@demo.local",
+        "segment": "at_risk",
+        "order_count": 14,
+        "lifetime_value": 61889,
+        "last_order_date": "2026-05-25",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "7ea0cc5e-8b32-45f8-b990-02fecbf4ba45",
+        "name": "官網顧客16",
+        "email": "c16@demo.local",
+        "segment": "at_risk",
+        "order_count": 18,
+        "lifetime_value": 60836,
+        "last_order_date": "2026-04-13",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "77ce5d8b-ebbe-4438-909b-6b8aa1e1ec6e",
+        "name": "官網顧客63",
+        "email": "c63@demo.local",
+        "segment": "at_risk",
+        "order_count": 14,
+        "lifetime_value": 60764,
+        "last_order_date": "2026-04-20",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "9fdc5323-3c20-4f65-adf1-f5533e1985fe",
+        "name": "官網顧客77",
+        "email": "c77@demo.local",
+        "segment": "at_risk",
+        "order_count": 20,
+        "lifetime_value": 57663,
+        "last_order_date": "2026-05-30",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "2f35aae8-2421-45bb-9743-df0e8fa9e510",
+        "name": "官網顧客05",
+        "email": "c05@demo.local",
+        "segment": "at_risk",
+        "order_count": 19,
+        "lifetime_value": 57564,
+        "last_order_date": "2026-06-01",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "4dda9624-f964-48fe-b964-92fb12403836",
+        "name": "官網顧客58",
+        "email": "c58@demo.local",
+        "segment": "at_risk",
+        "order_count": 16,
+        "lifetime_value": 56413,
+        "last_order_date": "2026-05-12",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "fbb3f790-4551-415c-acc2-9c664bfc919a",
+        "name": "官網顧客38",
+        "email": "c38@demo.local",
+        "segment": "at_risk",
+        "order_count": 11,
+        "lifetime_value": 52930,
+        "last_order_date": "2026-05-27",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "40520d5b-22a1-46db-8d67-9eb95a7a9eb9",
+        "name": "官網顧客56",
+        "email": "c56@demo.local",
+        "segment": "hibernating",
+        "order_count": 14,
+        "lifetime_value": 50757,
+        "last_order_date": "2026-06-06",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "c6b403a7-3cc8-4129-86ba-d4f0fbda8887",
+        "name": "官網顧客35",
+        "email": "c35@demo.local",
+        "segment": "at_risk",
+        "order_count": 14,
+        "lifetime_value": 50109,
+        "last_order_date": "2026-05-05",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "b4330825-a668-442b-9812-c61f83192106",
+        "name": "官網顧客17",
+        "email": "c17@demo.local",
+        "segment": "hibernating",
+        "order_count": 11,
+        "lifetime_value": 45578,
+        "last_order_date": "2026-06-12",
+        "risk_flag": "churn_risk"
+      },
+      {
+        "id": "a14f120e-e61f-4ba2-9bd7-a36477092bf3",
+        "name": "官網顧客41",
+        "email": "c41@demo.local",
+        "segment": "at_risk",
+        "order_count": 15,
+        "lifetime_value": 45294,
+        "last_order_date": "2026-05-07",
+        "risk_flag": "churn_risk"
+      }
+    ]
+  },
+  "ads": {
+    "spend": 316465,
+    "revenue_attr": 2003223,
+    "clicks": 25951,
+    "conversions": 1253,
+    "roas": 6.33,
+    "by_campaign": [
+      {
+        "campaign": "AN_MKT_DEV_開站",
+        "spend": 140281,
+        "revenue": 875116,
+        "roas": 6.24
+      },
+      {
+        "campaign": "WP03_SITE_TCO",
+        "spend": 107303,
+        "revenue": 752330,
+        "roas": 7.01
+      },
+      {
+        "campaign": "WP01_語錄暖池",
+        "spend": 68881,
+        "revenue": 375777,
+        "roas": 5.46
+      }
+    ]
+  },
+  "finance": {
+    "ok": true,
+    "months": [
+      {
+        "year_month": "2026-07",
+        "revenue": 214575,
+        "cogs": 99029,
+        "ad_spend": 28430,
+        "opex": 45907,
+        "gross_profit": 115546,
+        "net_profit": 41209,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2026-06",
+        "revenue": 184527,
+        "cogs": 90194,
+        "ad_spend": 18944,
+        "opex": 39074,
+        "gross_profit": 94333,
+        "net_profit": 36315,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2026-05",
+        "revenue": 214125,
+        "cogs": 92181,
+        "ad_spend": 19612,
+        "opex": 46131,
+        "gross_profit": 121944,
+        "net_profit": 56201,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2026-04",
+        "revenue": 197624,
+        "cogs": 89774,
+        "ad_spend": 17745,
+        "opex": 46884,
+        "gross_profit": 107850,
+        "net_profit": 43221,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2026-03",
+        "revenue": 193382,
+        "cogs": 86249,
+        "ad_spend": 23756,
+        "opex": 43663,
+        "gross_profit": 107133,
+        "net_profit": 39714,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2026-02",
+        "revenue": 247170,
+        "cogs": 111348,
+        "ad_spend": 26095,
+        "opex": 45228,
+        "gross_profit": 135822,
+        "net_profit": 64499,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2026-01",
+        "revenue": 205679,
+        "cogs": 105252,
+        "ad_spend": 17858,
+        "opex": 41413,
+        "gross_profit": 100427,
+        "net_profit": 41156,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-12",
+        "revenue": 178906,
+        "cogs": 89492,
+        "ad_spend": 24980,
+        "opex": 39116,
+        "gross_profit": 89414,
+        "net_profit": 25318,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-11",
+        "revenue": 208392,
+        "cogs": 94789,
+        "ad_spend": 26929,
+        "opex": 41721,
+        "gross_profit": 113603,
+        "net_profit": 44953,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-10",
+        "revenue": 185245,
+        "cogs": 94086,
+        "ad_spend": 20215,
+        "opex": 42692,
+        "gross_profit": 91159,
+        "net_profit": 28252,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-09",
+        "revenue": 172948,
+        "cogs": 77325,
+        "ad_spend": 22307,
+        "opex": 36891,
+        "gross_profit": 95623,
+        "net_profit": 36425,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-08",
+        "revenue": 202995,
+        "cogs": 86756,
+        "ad_spend": 27637,
+        "opex": 36855,
+        "gross_profit": 116239,
+        "net_profit": 51747,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-07",
+        "revenue": 168156,
+        "cogs": 83281,
+        "ad_spend": 16191,
+        "opex": 40750,
+        "gross_profit": 84875,
+        "net_profit": 27934,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      },
+      {
+        "year_month": "2025-06",
+        "revenue": 223492,
+        "cogs": 94760,
+        "ad_spend": 24111,
+        "opex": 48626,
+        "gross_profit": 128732,
+        "net_profit": 55995,
+        "notes": "demo 月結",
+        "meta": {
+          "demo": true
+        }
+      }
+    ],
+    "latest": {
+      "year_month": "2026-07",
+      "revenue": 214575,
+      "cogs": 99029,
+      "ad_spend": 28430,
+      "opex": 45907,
+      "gross_profit": 115546,
+      "net_profit": 41209,
+      "notes": "demo 月結",
+      "meta": {
+        "demo": true
+      }
+    },
+    "revenue_yoy_pct": 27.6
+  },
+  "marketing_plan": {
+    "ok": true,
+    "plan": {
+      "id": "3abcd05d-ba00-47f6-895f-39733bc2e171",
+      "year": 2026,
+      "theme": "2026 CATCH 素食會員與 CRM 增長年",
+      "quarters": [
+        {
+          "q": "Q1",
+          "kpi": "填單 +20%",
+          "focus": "暖池教育＋語錄節奏",
+          "budget": 400000
+        },
+        {
+          "q": "Q2",
+          "kpi": "proposal 轉化 +15%",
+          "focus": "Ocard 對照話術＋穩健包",
+          "budget": 520000
+        },
+        {
+          "q": "Q3",
+          "kpi": "新客 +25%",
+          "focus": "市場開發（新地區）",
+          "budget": 600000
+        },
+        {
+          "q": "Q4",
+          "kpi": "WP06 ROAS > 3",
+          "focus": "回購檔＋新品楔子",
+          "budget": 480000
+        }
+      ],
+      "budget_ntd": 2000000,
+      "kpis": {
+        "pipeline": 8000000,
+        "repeat_rate": 0.35,
+        "new_accounts": 120
+      },
+      "status": "active",
+      "body_md": "## 年度主軸\n- 以 CRM 為核心\n- 暖池 6 包標準化投放\n- 競品 TCO 差異化\n",
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    }
+  },
+  "customer_profiles": {
+    "ok": true,
+    "by_segment": [
+      {
+        "segment": "champion",
+        "n": 48,
+        "avg_rfm": "80",
+        "ltv": "2747695",
+        "avg_orders": "16.2"
+      },
+      {
+        "segment": "potential",
+        "n": 12,
+        "avg_rfm": "85",
+        "ltv": "406585",
+        "avg_orders": "10.3"
+      },
+      {
+        "segment": "at_risk",
+        "n": 12,
+        "avg_rfm": "78",
+        "ltv": "659315",
+        "avg_orders": "15.3"
+      },
+      {
+        "segment": "hibernating",
+        "n": 8,
+        "avg_rfm": "80",
+        "ltv": "423428",
+        "avg_orders": "14.6"
+      }
+    ],
+    "top_customers": [
+      {
+        "name": "官網顧客22",
+        "email": "c22@demo.local",
+        "segment": "champion",
+        "rfm_score": 78,
+        "order_count": 25,
+        "lifetime_value": 100189,
+        "last_order_date": "2026-06-22",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客64",
+        "email": "c64@demo.local",
+        "segment": "champion",
+        "rfm_score": 76,
+        "order_count": 20,
+        "lifetime_value": 93153,
+        "last_order_date": "2026-07-13",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客45",
+        "email": "c45@demo.local",
+        "segment": "champion",
+        "rfm_score": 95,
+        "order_count": 21,
+        "lifetime_value": 79945,
+        "last_order_date": "2026-06-29",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客28",
+        "email": "c28@demo.local",
+        "segment": "at_risk",
+        "rfm_score": 72,
+        "order_count": 21,
+        "lifetime_value": 78163,
+        "last_order_date": "2026-04-26",
+        "risk_flag": "churn_risk",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客06",
+        "email": "c06@demo.local",
+        "segment": "champion",
+        "rfm_score": 94,
+        "order_count": 19,
+        "lifetime_value": 74495,
+        "last_order_date": "2026-07-05",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客79",
+        "email": "c79@demo.local",
+        "segment": "champion",
+        "rfm_score": 61,
+        "order_count": 19,
+        "lifetime_value": 74473,
+        "last_order_date": "2026-07-14",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客47",
+        "email": "c47@demo.local",
+        "segment": "champion",
+        "rfm_score": 93,
+        "order_count": 18,
+        "lifetime_value": 71955,
+        "last_order_date": "2026-07-03",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "南"
+        }
+      },
+      {
+        "name": "官網顧客57",
+        "email": "c57@demo.local",
+        "segment": "hibernating",
+        "rfm_score": 83,
+        "order_count": 17,
+        "lifetime_value": 71269,
+        "last_order_date": "2026-06-04",
+        "risk_flag": "churn_risk",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客43",
+        "email": "c43@demo.local",
+        "segment": "champion",
+        "rfm_score": 97,
+        "order_count": 17,
+        "lifetime_value": 68198,
+        "last_order_date": "2026-07-14",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客24",
+        "email": "c24@demo.local",
+        "segment": "hibernating",
+        "rfm_score": 76,
+        "order_count": 18,
+        "lifetime_value": 66432,
+        "last_order_date": "2026-06-07",
+        "risk_flag": "churn_risk",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客15",
+        "email": "c15@demo.local",
+        "segment": "champion",
+        "rfm_score": 85,
+        "order_count": 14,
+        "lifetime_value": 66349,
+        "last_order_date": "2026-06-28",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客59",
+        "email": "c59@demo.local",
+        "segment": "champion",
+        "rfm_score": 81,
+        "order_count": 15,
+        "lifetime_value": 65156,
+        "last_order_date": "2026-07-04",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "南"
+        }
+      },
+      {
+        "name": "官網顧客50",
+        "email": "c50@demo.local",
+        "segment": "champion",
+        "rfm_score": 90,
+        "order_count": 18,
+        "lifetime_value": 64139,
+        "last_order_date": "2026-06-16",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "南"
+        }
+      },
+      {
+        "name": "官網顧客09",
+        "email": "c09@demo.local",
+        "segment": "hibernating",
+        "rfm_score": 91,
+        "order_count": 19,
+        "lifetime_value": 63792,
+        "last_order_date": "2026-06-12",
+        "risk_flag": "churn_risk",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客78",
+        "email": "c78@demo.local",
+        "segment": "champion",
+        "rfm_score": 62,
+        "order_count": 17,
+        "lifetime_value": 63691,
+        "last_order_date": "2026-07-12",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "北"
+        }
+      },
+      {
+        "name": "官網顧客52",
+        "email": "c52@demo.local",
+        "segment": "champion",
+        "rfm_score": 88,
+        "order_count": 17,
+        "lifetime_value": 62983,
+        "last_order_date": "2026-07-09",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客55",
+        "email": "c55@demo.local",
+        "segment": "champion",
+        "rfm_score": 85,
+        "order_count": 19,
+        "lifetime_value": 62421,
+        "last_order_date": "2026-07-03",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客23",
+        "email": "c23@demo.local",
+        "segment": "champion",
+        "rfm_score": 77,
+        "order_count": 16,
+        "lifetime_value": 62406,
+        "last_order_date": "2026-06-14",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "南"
+        }
+      },
+      {
+        "name": "官網顧客70",
+        "email": "c70@demo.local",
+        "segment": "champion",
+        "rfm_score": 70,
+        "order_count": 14,
+        "lifetime_value": 62048,
+        "last_order_date": "2026-06-22",
+        "risk_flag": "",
+        "meta": {
+          "demo": true,
+          "region": "中"
+        }
+      },
+      {
+        "name": "官網顧客80",
+        "email": "c80@demo.local",
+        "segment": "at_risk",
+        "rfm_score": 100,
+        "order_count": 14,
+        "lifetime_value": 61889,
+        "last_order_date": "2026-05-25",
+        "risk_flag": "churn_risk",
+        "meta": {
+          "demo": true,
+          "region": "南"
+        }
+      }
+    ],
+    "profile_dims": [
+      "RFM",
+      "回購次數",
+      "LTV",
+      "地區",
+      "風險標記"
+    ]
+  },
+  "monthly_snapshots": [
+    {
+      "id": "ff395e15-dc19-4f82-a181-ac2d6f24ff89",
+      "snap_month": "2026-07",
+      "title": "月結快照 2026-07",
+      "summary": "2026-07 營收 214,575 · 廣告 28,430 · 淨利 41,209",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 214575,
+        "ad_spend": 28430,
+        "net_profit": 41209
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "d40b7140-ef2c-4416-a5fa-9391e5735594",
+      "snap_month": "2026-06",
+      "title": "月結快照 2026-06",
+      "summary": "2026-06 營收 184,527 · 廣告 18,944 · 淨利 36,315",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 184527,
+        "ad_spend": 18944,
+        "net_profit": 36315
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "682f99c4-a0a8-40cb-b7c1-411c939b736f",
+      "snap_month": "2026-05",
+      "title": "月結快照 2026-05",
+      "summary": "2026-05 營收 214,125 · 廣告 19,612 · 淨利 56,201",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 214125,
+        "ad_spend": 19612,
+        "net_profit": 56201
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "86986297-1554-49ab-b4f4-e940ca8df336",
+      "snap_month": "2026-04",
+      "title": "月結快照 2026-04",
+      "summary": "2026-04 營收 197,624 · 廣告 17,745 · 淨利 43,221",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 197624,
+        "ad_spend": 17745,
+        "net_profit": 43221
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "ac7b235c-8d83-4e76-871b-c43cc41a94ae",
+      "snap_month": "2026-03",
+      "title": "月結快照 2026-03",
+      "summary": "2026-03 營收 193,382 · 廣告 23,756 · 淨利 39,714",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 193382,
+        "ad_spend": 23756,
+        "net_profit": 39714
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "cd9b8b80-caef-488f-9435-18166df007c4",
+      "snap_month": "2026-02",
+      "title": "月結快照 2026-02",
+      "summary": "2026-02 營收 247,170 · 廣告 26,095 · 淨利 64,499",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 247170,
+        "ad_spend": 26095,
+        "net_profit": 64499
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "d377595b-05d9-497b-bbd7-9221c6a7d7f2",
+      "snap_month": "2026-01",
+      "title": "月結快照 2026-01",
+      "summary": "2026-01 營收 205,679 · 廣告 17,858 · 淨利 41,156",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 205679,
+        "ad_spend": 17858,
+        "net_profit": 41156
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "f17f4656-87a9-442d-b337-82c9c3f67203",
+      "snap_month": "2025-12",
+      "title": "月結快照 2025-12",
+      "summary": "2025-12 營收 178,906 · 廣告 24,980 · 淨利 25,318",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 178906,
+        "ad_spend": 24980,
+        "net_profit": 25318
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "bae2a889-b360-4a21-9018-02f2b9196ff1",
+      "snap_month": "2025-11",
+      "title": "月結快照 2025-11",
+      "summary": "2025-11 營收 208,392 · 廣告 26,929 · 淨利 44,953",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 208392,
+        "ad_spend": 26929,
+        "net_profit": 44953
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "b07d5763-6bf4-4d81-a312-e0a72b2a99eb",
+      "snap_month": "2025-10",
+      "title": "月結快照 2025-10",
+      "summary": "2025-10 營收 185,245 · 廣告 20,215 · 淨利 28,252",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 185245,
+        "ad_spend": 20215,
+        "net_profit": 28252
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "13cdedda-0f52-427c-95e2-23a712cd8c29",
+      "snap_month": "2025-09",
+      "title": "月結快照 2025-09",
+      "summary": "2025-09 營收 172,948 · 廣告 22,307 · 淨利 36,425",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 172948,
+        "ad_spend": 22307,
+        "net_profit": 36425
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    },
+    {
+      "id": "9c33f6d3-2e06-470a-b3dc-bebc8a4094c3",
+      "snap_month": "2025-08",
+      "title": "月結快照 2025-08",
+      "summary": "2025-08 營收 202,995 · 廣告 27,637 · 淨利 51,747",
+      "anomalies": [],
+      "metrics": {
+        "revenue": 202995,
+        "ad_spend": 27637,
+        "net_profit": 51747
+      },
+      "created_at": "2026-07-15 04:59:47.567618+00:00"
+    }
+  ],
+  "modules": [
+    "經營戰情中心",
+    "官網銷售分析",
+    "月度趨勢／熱力／潛力流失",
+    "報表分析（財務）",
+    "年度行銷企劃",
+    "官網顧客輪廓"
+  ]
+}

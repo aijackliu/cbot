@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CATCH 經營戰情 · test0715a</title>
+<style>
+  :root {
+    --bg: #0b1220; --card: #151e2e; --ink: #e8eef6; --muted: #8b9cb3;
+    --line: #2a3a52; --jade: #34d399; --amber: #fbbf24; --coral: #f87171;
+    --cyan: #22d3ee; --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+    color: var(--ink);
+    background: radial-gradient(900px 400px at 10% 0%, #1e3a5f55, transparent),
+      radial-gradient(700px 360px at 100% 0%, #22d3ee18, transparent), var(--bg);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { margin-bottom: 18px; }
+  h1 { margin: 0 0 6px; font-size: 1.4rem; }
+  .sub { color: var(--muted); font-size: .9rem; line-height: 1.5; }
+  .badge {
+    display: inline-block; margin: 8px 6px 0 0; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line); font-size: .72rem; color: var(--jade);
+  }
+  .badge.dim { color: var(--muted); }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 960px) {
+    .grid4, .grid3, .grid2 { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+  }
+  .card h2 { margin: 0 0 8px; font-size: .95rem; }
+  .card h3 { margin: 0 0 4px; font-size: .75rem; color: var(--muted); font-weight: 600; }
+  .stat { font-size: 1.25rem; font-weight: 800; color: var(--jade); letter-spacing: .02em; }
+  .muted { color: var(--muted); font-size: .8rem; }
+  .tag {
+    display: inline-block; font-size: .68rem; padding: 2px 7px; border-radius: 999px;
+    border: 1px solid var(--line); margin-right: 4px; color: var(--muted);
+  }
+  .tag.war { color: #93c5fd; border-color: #1e3a8a; }
+  .tag.ad { color: #fca5a5; border-color: #7f1d1d; }
+  .tag.ok { color: var(--jade); border-color: #14532d; }
+  .tag.warn { color: var(--amber); border-color: #854d0e; }
+  .feed-item { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .82rem; line-height: 1.4; }
+  .feed-item:last-child { border-bottom: 0; }
+  .feed-item .b { color: var(--muted); font-size: .75rem; margin-top: 3px; }
+  table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  a { color: var(--cyan); }
+  footer { margin-top: 28px; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+  .arch {
+    font-family: ui-monospace, Consolas, monospace; font-size: .74rem;
+    white-space: pre; overflow: auto; background: #0f1724; padding: 12px;
+    border-radius: 10px; border: 1px solid var(--line); color: #c6d4e8; line-height: 1.45;
+  }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 8px; }
+  .tab {
+    border: 1px solid var(--line); background: #0f1724; color: var(--muted);
+    padding: 7px 12px; border-radius: 9px; cursor: pointer; font-size: .78rem;
+  }
+  .tab.active { color: var(--ink); border-color: var(--blue); background: var(--card); }
+  .pane { display: none; }
+  .pane.active { display: grid; gap: 12px; }
+  .heat-cell { text-align: right; font-family: ui-monospace, Consolas, monospace; font-size: .66rem; min-width: 48px; }
+  .heat-cell.lv1 { background: rgba(59,130,246,.12); }
+  .heat-cell.lv2 { background: rgba(59,130,246,.28); }
+  .heat-cell.lv3 { background: rgba(34,211,238,.35); }
+  .heat-cell.lv4 { background: rgba(52,211,153,.4); font-weight: 700; }
+  .sev-high { color: var(--coral); }
+  .sev-med { color: var(--amber); }
+  .err { color: var(--coral); }
+  .oktext { color: var(--jade); }
+  .mono { font-family: ui-monospace, Consolas, monospace; font-size: .75rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>經營戰情中心 · 公司總指揮台</h1>
+    <p class="sub">
+      CATCH CRM 之上的分析層：整合<strong>官網銷售＋廣告＋月度財報</strong>，
+      異常洞察、月結快照可追溯整年。（2026-07-15a）
+    </p>
+    <span class="badge">test0715a · 靜態展示</span>
+    <span class="badge dim">可執行 → catch-crm-hub :8791</span>
+    <span class="badge dim"><a href="../test0715/">← test0715 CRM 四水管</a></span>
+  </header>
+
+  <div class="card">
+    <h2>架構（一句）</h2>
+    <div class="arch" id="arch"></div>
+  </div>
+
+  <div class="grid4" id="kpis"></div>
+
+  <div class="card">
+    <h2><span class="tag warn">異常</span> 洞察</h2>
+    <div id="anomalies"></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-p="cmd">總指揮</button>
+    <button class="tab" data-p="web">官網銷售</button>
+    <button class="tab" data-p="heat">趨勢·熱力·潛力流失</button>
+    <button class="tab" data-p="fin">財務報表</button>
+    <button class="tab" data-p="mkt">年度行銷企劃</button>
+    <button class="tab" data-p="cust">顧客輪廓</button>
+    <button class="tab" data-p="snap">月結快照</button>
+  </div>
+
+  <div class="pane active" id="p-cmd">
+    <div class="grid2">
+      <div class="card">
+        <h2><span class="tag ad">廣告</span> 近 30 日</h2>
+        <div class="stat" id="adRoas">—</div>
+        <p class="muted" id="adMeta"></p>
+        <div style="overflow:auto;margin-top:8px">
+          <table>
+            <thead><tr><th>Campaign</th><th>Spend</th><th>Rev</th><th>ROAS</th></tr></thead>
+            <tbody id="adBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>模組一覽</h2>
+        <div id="modules" class="muted" style="line-height:1.75"></div>
+        <p class="muted" style="margin-top:10px" id="asOf"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="p-web">
+    <div class="grid3" id="webStats"></div>
+    <div class="grid2">
+      <div class="card">
+        <h2>客群分佈</h2>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>Segment</th><th>人數</th><th>LTV</th></tr></thead>
+            <tbody id="segBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>品項 TOP（90 日）</h2>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>SKU</th><th>量</th><th>營收</th></tr></thead>
+            <tbody id="prodBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="p-heat">
+    <div class="card">
+      <h2>月度趨勢</h2>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>月</th><th>訂單</th><th>營收</th></tr></thead>
+          <tbody id="trendBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2>商品熱力矩陣</h2>
+      <div style="overflow:auto" id="heatWrap"></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>潛力顧客</h2>
+        <div id="potential"></div>
+      </div>
+      <div class="card">
+        <h2>流失風險</h2>
+        <div id="churn"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="p-fin">
+    <div class="card">
+      <h2>月度財務 <span class="muted" id="finYoy"></span></h2>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr><th>年月</th><th>營收</th><th>COGS</th><th>廣告</th><th>Opex</th><th>毛利</th><th>淨利</th></tr>
+          </thead>
+          <tbody id="finBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="p-mkt">
+    <div class="card">
+      <h2 id="mktTheme">年度行銷企劃</h2>
+      <p class="muted" id="mktMeta"></p>
+      <div class="grid2" id="mktQ"></div>
+      <pre class="arch" id="mktBody" style="margin-top:10px;max-height:160px"></pre>
+    </div>
+  </div>
+
+  <div class="pane" id="p-cust">
+    <div class="card">
+      <h2>輪廓維度</h2>
+      <p class="muted" id="custDims"></p>
+      <div style="overflow:auto;margin-top:8px">
+        <table>
+          <thead><tr><th>Segment</th><th>人數</th><th>RFM</th><th>平均單數</th><th>LTV</th></tr></thead>
+          <tbody id="custSeg"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2>高 LTV TOP</h2>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr><th>名稱</th><th>Seg</th><th>RFM</th><th>單</th><th>LTV</th><th>最近</th><th>風險</th></tr>
+          </thead>
+          <tbody id="custTop"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="p-snap">
+    <div class="card">
+      <h2>月結快照（整年可追溯）</h2>
+      <div id="snaps"></div>
+    </div>
+  </div>
+
+  <footer>
+    完整可執行：工作區 <code>catch-crm-hub</code> → <code>http://127.0.0.1:8791/</code> 分頁「經營戰情」<br>
+    架構：<a href="./architecture.md">architecture.md</a> ·
+    資料：<a href="./assets/war-room.json">war-room.json</a> ·
+    GitHub：<a href="https://github.com/aijackliu/cbot/tree/main/test0715a">test0715a</a> ·
+    上版：<a href="../test0715/">test0715 CRM</a>
+  </footer>
+</div>
+<script>
+const money = n => Number(n || 0).toLocaleString("zh-TW");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function heatLevel(v, max) {
+  if (!v || !max) return "";
+  const r = v / max;
+  if (r >= 0.75) return "lv4";
+  if (r >= 0.5) return "lv3";
+  if (r >= 0.25) return "lv2";
+  return "lv1";
+}
+
+function custList(list) {
+  if (!list?.length) return '<p class="muted">無</p>';
+  return list.map(c => `
+    <div class="feed-item">
+      <strong>${esc(c.name)}</strong>
+      <span class="tag">${esc(c.segment)}</span>
+      <span class="muted"> · LTV ${money(c.lifetime_value)} · 單 ${c.order_count}
+        · ${esc(c.last_order_date || "—")}</span>
+    </div>`).join("");
+}
+
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("p-" + btn.dataset.p)?.classList.add("active");
+  });
+});
+
+document.getElementById("arch").textContent = `
+        【經營戰情中心 · 總指揮台】
+   KPI · 異常 · 廣告 ROAS · 月結快照（12 月）
+                    │
+ ┌──────────┬───────┼───────┬──────────┐
+官網銷售  趨勢熱力  財務月報  年度企劃  顧客輪廓
+回購/品項 潛力流失  P&L YoY  Q1–Q4    RFM/LTV
+                    │
+          【CATCH CRM 核心 · test0715】
+        客戶·商機 · 戰情·告警·客服·廣告
+`.trim();
+
+fetch("./assets/war-room.json")
+  .then(r => r.json())
+  .then(d => {
+    const k = d.kpis || {};
+    document.getElementById("kpis").innerHTML = [
+      ["官網 90 日營收", "NT$ " + money(k.web_revenue_90d)],
+      ["訂單 · 回購率", `${k.web_orders_90d ?? "—"} · ${((k.repeat_rate_90d || 0) * 100).toFixed(1)}%`],
+      ["AOV", "NT$ " + money(k.aov_90d)],
+      ["廣告 ROAS 30 日", k.ad_roas_30d ?? "—"],
+      ["財報最新營收", "NT$ " + money(k.finance_latest_revenue)],
+      ["財報營收 YoY", k.finance_revenue_yoy_pct != null ? k.finance_revenue_yoy_pct + "%" : "—"],
+      ["廣告花費 30 日", "NT$ " + money(k.ad_spend_30d)],
+      ["商品銷售 YoY", k.product_sales_yoy_pct != null ? k.product_sales_yoy_pct + "%" : "—"],
+    ].map(([t, v]) =>
+      `<div class="card"><h3>${esc(t)}</h3><div class="stat">${v}</div></div>`
+    ).join("");
+
+    const anoms = d.anomalies || [];
+    document.getElementById("anomalies").innerHTML = anoms.length
+      ? anoms.map(a => `
+          <div class="feed-item">
+            <span class="sev-${esc(a.severity || "med")}">● ${esc(a.severity || "")}</span>
+            <strong> ${esc(a.msg || a.type || "")}</strong>
+            ${a.from_snapshot ? `<span class="muted"> · 快照 ${esc(a.from_snapshot)}</span>` : ""}
+          </div>`).join("")
+      : '<p class="oktext">目前無重大異常</p>';
+
+    const ads = d.ads || {};
+    document.getElementById("adRoas").textContent =
+      ads.roas != null ? "ROAS " + ads.roas : "—";
+    document.getElementById("adMeta").textContent =
+      `Spend ${money(ads.spend)} · 歸因 ${money(ads.revenue_attr)} · 點擊 ${ads.clicks ?? 0} · 轉換 ${ads.conversions ?? 0}`;
+    document.getElementById("adBody").innerHTML = (ads.by_campaign || []).map(c =>
+      `<tr><td>${esc(c.campaign)}</td><td>${money(c.spend)}</td><td>${money(c.revenue)}</td><td>${c.roas ?? "—"}</td></tr>`
+    ).join("") || '<tr><td colspan="4" class="muted">無</td></tr>';
+    document.getElementById("modules").innerHTML =
+      (d.modules || []).map(m => "· " + esc(m)).join("<br>");
+    document.getElementById("asOf").textContent = "資料截至 " + (d.as_of || "");
+
+    const web = d.website_sales || {};
+    document.getElementById("webStats").innerHTML = [
+      ["近 90 日營收", "NT$ " + money(web.revenue)],
+      ["訂單數", web.orders ?? "—"],
+      ["回購率", ((web.repeat_rate || 0) * 100).toFixed(1) + "% · 回購單 " + (web.repeat_orders ?? 0)],
+    ].map(([t, v]) =>
+      `<div class="card"><h3>${esc(t)}</h3><div class="stat">${v}</div></div>`
+    ).join("");
+    document.getElementById("segBody").innerHTML = (web.segments || []).map(s =>
+      `<tr><td>${esc(s.segment)}</td><td>${s.n}</td><td>${money(s.ltv)}</td></tr>`
+    ).join("") || '<tr><td colspan="3" class="muted">無</td></tr>';
+    document.getElementById("prodBody").innerHTML = (web.top_products || []).map(p =>
+      `<tr><td class="mono">${esc(p.sku)}</td><td>${p.qty}</td><td>${money(p.amount)}</td></tr>`
+    ).join("") || '<tr><td colspan="3" class="muted">無</td></tr>';
+
+    const th = d.trends_heat_churn || {};
+    document.getElementById("trendBody").innerHTML = (th.monthly_trends || []).map(t =>
+      `<tr><td>${esc(t.month)}</td><td>${t.orders}</td><td>${money(t.revenue)}</td></tr>`
+    ).join("") || '<tr><td colspan="3" class="muted">無</td></tr>';
+
+    const hm = th.heat_matrix || {};
+    const months = hm.months || [];
+    const rows = hm.rows || [];
+    let maxCell = 1;
+    rows.forEach(r => months.forEach(m => {
+      maxCell = Math.max(maxCell, (r.months || {})[m] || 0);
+    }));
+    if (rows.length) {
+      let html = `<table><thead><tr><th>SKU</th>${months.map(m =>
+        `<th>${esc(String(m).slice(5))}</th>`).join("")}<th>合計</th></tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td class="mono">${esc(r.sku)}</td>`;
+        months.forEach(m => {
+          const v = (r.months || {})[m] || 0;
+          html += `<td class="heat-cell ${heatLevel(v, maxCell)}">${v ? money(v) : "·"}</td>`;
+        });
+        html += `<td class="mono">${money(r.total)}</td></tr>`;
+      });
+      html += "</tbody></table>";
+      document.getElementById("heatWrap").innerHTML = html;
+    } else {
+      document.getElementById("heatWrap").innerHTML = '<p class="muted">無熱力資料</p>';
+    }
+    document.getElementById("potential").innerHTML = custList(th.potential_customers);
+    document.getElementById("churn").innerHTML = custList(th.churn_risk_customers);
+
+    const fin = d.finance || {};
+    document.getElementById("finYoy").textContent =
+      fin.revenue_yoy_pct != null ? `· 最新月營收 YoY ${fin.revenue_yoy_pct}%` : "";
+    document.getElementById("finBody").innerHTML = (fin.months || []).map(r =>
+      `<tr>
+        <td>${esc(r.year_month)}</td>
+        <td>${money(r.revenue)}</td>
+        <td>${money(r.cogs)}</td>
+        <td>${money(r.ad_spend)}</td>
+        <td>${money(r.opex)}</td>
+        <td>${money(r.gross_profit)}</td>
+        <td class="${Number(r.net_profit) < 0 ? "err" : "oktext"}">${money(r.net_profit)}</td>
+      </tr>`
+    ).join("") || '<tr><td colspan="7" class="muted">無</td></tr>';
+
+    const plan = (d.marketing_plan || {}).plan || {};
+    document.getElementById("mktTheme").textContent = plan.theme || "年度行銷企劃";
+    document.getElementById("mktMeta").textContent =
+      `${plan.year || ""} · 預算 NT$ ${money(plan.budget_ntd)} · ${plan.status || ""}`;
+    let qs = plan.quarters || [];
+    if (typeof qs === "string") { try { qs = JSON.parse(qs); } catch { qs = []; } }
+    document.getElementById("mktQ").innerHTML = qs.map(q =>
+      `<div class="card" style="background:#0f1724">
+        <h2>${esc(q.q)}</h2>
+        <p>${esc(q.focus || "")}</p>
+        <p class="muted">預算 ${money(q.budget)} · KPI ${esc(q.kpi || "")}</p>
+      </div>`
+    ).join("") || '<p class="muted">無</p>';
+    document.getElementById("mktBody").textContent =
+      plan.body_md || JSON.stringify(plan.kpis || {}, null, 2);
+
+    const prof = d.customer_profiles || {};
+    document.getElementById("custDims").textContent = (prof.profile_dims || []).join(" · ");
+    document.getElementById("custSeg").innerHTML = (prof.by_segment || []).map(s =>
+      `<tr><td>${esc(s.segment)}</td><td>${s.n}</td><td>${s.avg_rfm ?? "—"}</td>
+        <td>${s.avg_orders ?? "—"}</td><td>${money(s.ltv)}</td></tr>`
+    ).join("") || '<tr><td colspan="5" class="muted">無</td></tr>';
+    document.getElementById("custTop").innerHTML = (prof.top_customers || []).slice(0, 15).map(c =>
+      `<tr>
+        <td>${esc(c.name)}</td><td>${esc(c.segment)}</td><td>${c.rfm_score ?? ""}</td>
+        <td>${c.order_count ?? ""}</td><td>${money(c.lifetime_value)}</td>
+        <td>${esc(c.last_order_date || "—")}</td><td>${esc(c.risk_flag || "")}</td>
+      </tr>`
+    ).join("") || '<tr><td colspan="7" class="muted">無</td></tr>';
+
+    document.getElementById("snaps").innerHTML = (d.monthly_snapshots || []).map(s => {
+      let an = s.anomalies || [];
+      if (typeof an === "string") { try { an = JSON.parse(an); } catch { an = []; } }
+      let met = s.metrics || {};
+      if (typeof met === "string") { try { met = JSON.parse(met); } catch { met = {}; } }
+      return `<div class="feed-item">
+        <div><strong>${esc(s.title || s.snap_month)}</strong>
+          <span class="muted"> · 營收 ${money(met.revenue)} · 淨利 ${money(met.net_profit)}</span></div>
+        <div class="b">${esc(s.summary || "")}</div>
+        ${an.length ? `<div class="b sev-med">${an.map(a => esc(a.msg || a.type)).join("；")}</div>` : ""}
+      </div>`;
+    }).join("") || '<p class="muted">尚無月結快照</p>';
+  })
+  .catch(e => {
+    document.getElementById("anomalies").innerHTML =
+      '<p class="err">載入 war-room.json 失敗：' + esc(e.message) + "</p>";
+  });
+</script>
+</body>
+</html>

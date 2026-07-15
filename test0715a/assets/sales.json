@@ -1,0 +1,287 @@
+{
+  "ok": true,
+  "title": "商品銷售 · 日報 / 月報 / YoY",
+  "daily": {
+    "ok": true,
+    "type": "daily",
+    "date": "2026-07-15",
+    "date_ly": "2025-07-15",
+    "total": {
+      "qty": 113,
+      "amount": 9095,
+      "qty_ly": 89,
+      "amount_ly": 7134,
+      "qty_yoy_pct": 27.0,
+      "amount_yoy_pct": 27.5,
+      "qty_dod_pct": 25.6,
+      "amount_dod_pct": 14.9
+    },
+    "by_sku": [
+      {
+        "sku": "SP-001",
+        "name": "植物蛋皮（千張裝）",
+        "category": "蛋皮",
+        "qty": 8,
+        "amount": 2860,
+        "qty_yoy_pct": 14.3,
+        "amount_yoy_pct": 18.3,
+        "qty_ly": 7,
+        "amount_ly": 2418
+      },
+      {
+        "sku": "SP-090",
+        "name": "火鍋料組合包",
+        "category": "火鍋",
+        "qty": 7,
+        "amount": 1228,
+        "qty_yoy_pct": 75.0,
+        "amount_yoy_pct": 67.5,
+        "qty_ly": 4,
+        "amount_ly": 733
+      },
+      {
+        "sku": "SP-012",
+        "name": "素食漢堡排 80g",
+        "category": "漢堡",
+        "qty": 16,
+        "amount": 1218,
+        "qty_yoy_pct": 33.3,
+        "amount_yoy_pct": 29.0,
+        "qty_ly": 12,
+        "amount_ly": 944
+      },
+      {
+        "sku": "SP-041",
+        "name": "冷凍蔬菜水餃",
+        "category": "點心",
+        "qty": 22,
+        "amount": 1120,
+        "qty_yoy_pct": 37.5,
+        "amount_yoy_pct": 35.6,
+        "qty_ly": 16,
+        "amount_ly": 826
+      },
+      {
+        "sku": "SP-020",
+        "name": "燕麥奶 1L",
+        "category": "飲品",
+        "qty": 29,
+        "amount": 879,
+        "qty_yoy_pct": 16.0,
+        "amount_yoy_pct": 13.6,
+        "qty_ly": 25,
+        "amount_ly": 774
+      },
+      {
+        "sku": "SP-055",
+        "name": "植物優格 400g",
+        "category": "乳品替代",
+        "qty": 13,
+        "amount": 658,
+        "qty_yoy_pct": 18.2,
+        "amount_yoy_pct": 15.8,
+        "qty_ly": 11,
+        "amount_ly": 568
+      },
+      {
+        "sku": "SP-033",
+        "name": "素食高湯粉 500g",
+        "category": "調味",
+        "qty": 8,
+        "amount": 609,
+        "qty_yoy_pct": 100.0,
+        "amount_yoy_pct": 94.6,
+        "qty_ly": 4,
+        "amount_ly": 313
+      },
+      {
+        "sku": "SP-060",
+        "name": "素食香腸 200g",
+        "category": "加工",
+        "qty": 10,
+        "amount": 523,
+        "qty_yoy_pct": 0.0,
+        "amount_yoy_pct": -6.3,
+        "qty_ly": 10,
+        "amount_ly": 558
+      }
+    ]
+  },
+  "monthly": {
+    "ok": true,
+    "type": "monthly",
+    "year": 2026,
+    "month": 7,
+    "period": "2026-07-01 ~ 2026-07-15",
+    "period_ly": "2025-07-01 ~ 2025-07-15",
+    "total": {
+      "qty": 1349,
+      "amount": 114596,
+      "qty_ly": 1220,
+      "amount_ly": 100839,
+      "qty_yoy_pct": 10.6,
+      "amount_yoy_pct": 13.6
+    },
+    "by_sku": [
+      {
+        "sku": "SP-001",
+        "name": "植物蛋皮（千張裝）",
+        "category": "蛋皮",
+        "qty": 118,
+        "amount": 41304,
+        "qty_yoy_pct": 15.7,
+        "amount_yoy_pct": 16.9,
+        "qty_ly": 102,
+        "amount_ly": 35320
+      },
+      {
+        "sku": "SP-012",
+        "name": "素食漢堡排 80g",
+        "category": "漢堡",
+        "qty": 184,
+        "amount": 14769,
+        "qty_yoy_pct": 5.1,
+        "amount_yoy_pct": 5.9,
+        "qty_ly": 175,
+        "amount_ly": 13945
+      },
+      {
+        "sku": "SP-090",
+        "name": "火鍋料組合包",
+        "category": "火鍋",
+        "qty": 77,
+        "amount": 13627,
+        "qty_yoy_pct": 16.7,
+        "amount_yoy_pct": 16.6,
+        "qty_ly": 66,
+        "amount_ly": 11689
+      },
+      {
+        "sku": "SP-041",
+        "name": "冷凍蔬菜水餃",
+        "category": "點心",
+        "qty": 234,
+        "amount": 11718,
+        "qty_yoy_pct": 9.9,
+        "amount_yoy_pct": 9.7,
+        "qty_ly": 213,
+        "amount_ly": 10684
+      },
+      {
+        "sku": "SP-020",
+        "name": "燕麥奶 1L",
+        "category": "飲品",
+        "qty": 342,
+        "amount": 10363,
+        "qty_yoy_pct": 6.2,
+        "amount_yoy_pct": 8.4,
+        "qty_ly": 322,
+        "amount_ly": 9564
+      },
+      {
+        "sku": "SP-060",
+        "name": "素食香腸 200g",
+        "category": "加工",
+        "qty": 150,
+        "amount": 8054,
+        "qty_yoy_pct": 18.1,
+        "amount_yoy_pct": 18.1,
+        "qty_ly": 127,
+        "amount_ly": 6819
+      },
+      {
+        "sku": "SP-055",
+        "name": "植物優格 400g",
+        "category": "乳品替代",
+        "qty": 150,
+        "amount": 7715,
+        "qty_yoy_pct": 3.4,
+        "amount_yoy_pct": 2.5,
+        "qty_ly": 145,
+        "amount_ly": 7530
+      },
+      {
+        "sku": "SP-033",
+        "name": "素食高湯粉 500g",
+        "category": "調味",
+        "qty": 94,
+        "amount": 7046,
+        "qty_yoy_pct": 34.3,
+        "amount_yoy_pct": 33.2,
+        "qty_ly": 70,
+        "amount_ly": 5288
+      }
+    ],
+    "top_gainers": [
+      {
+        "sku": "SP-033",
+        "name": "素食高湯粉 500g",
+        "category": "調味",
+        "qty": 94,
+        "amount": 7046,
+        "qty_yoy_pct": 34.3,
+        "amount_yoy_pct": 33.2,
+        "qty_ly": 70,
+        "amount_ly": 5288
+      },
+      {
+        "sku": "SP-060",
+        "name": "素食香腸 200g",
+        "category": "加工",
+        "qty": 150,
+        "amount": 8054,
+        "qty_yoy_pct": 18.1,
+        "amount_yoy_pct": 18.1,
+        "qty_ly": 127,
+        "amount_ly": 6819
+      },
+      {
+        "sku": "SP-001",
+        "name": "植物蛋皮（千張裝）",
+        "category": "蛋皮",
+        "qty": 118,
+        "amount": 41304,
+        "qty_yoy_pct": 15.7,
+        "amount_yoy_pct": 16.9,
+        "qty_ly": 102,
+        "amount_ly": 35320
+      }
+    ],
+    "top_losers": [
+      {
+        "sku": "SP-055",
+        "name": "植物優格 400g",
+        "category": "乳品替代",
+        "qty": 150,
+        "amount": 7715,
+        "qty_yoy_pct": 3.4,
+        "amount_yoy_pct": 2.5,
+        "qty_ly": 145,
+        "amount_ly": 7530
+      },
+      {
+        "sku": "SP-012",
+        "name": "素食漢堡排 80g",
+        "category": "漢堡",
+        "qty": 184,
+        "amount": 14769,
+        "qty_yoy_pct": 5.1,
+        "amount_yoy_pct": 5.9,
+        "qty_ly": 175,
+        "amount_ly": 13945
+      },
+      {
+        "sku": "SP-020",
+        "name": "燕麥奶 1L",
+        "category": "飲品",
+        "qty": 342,
+        "amount": 10363,
+        "qty_yoy_pct": 6.2,
+        "amount_yoy_pct": 8.4,
+        "qty_ly": 322,
+        "amount_ly": 9564
+      }
+    ]
+  },
+  "generated_at": "2026-07-15T05:06:28.265177+00:00"
+}

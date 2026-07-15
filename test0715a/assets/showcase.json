@@ -1,0 +1,970 @@
+{
+  "ok": true,
+  "demo": true,
+  "headline": "CRM 核心展示 · 戰情／告警／客服／廣告",
+  "war_room": {
+    "title": "戰情",
+    "pipeline_open_ntd": 2532000,
+    "by_stage": {
+      "qualify": {
+        "count": 6,
+        "amount": 1350000
+      },
+      "proposal": {
+        "count": 2,
+        "amount": 762000
+      },
+      "won": {
+        "count": 1,
+        "amount": 180000
+      },
+      "lost": {
+        "count": 1,
+        "amount": 96000
+      },
+      "negotiate": {
+        "count": 1,
+        "amount": 420000
+      }
+    },
+    "accounts": 10,
+    "opportunities": 11,
+    "board": "【漏斗】won 1 · negotiate 1 · proposal 2 · qualify 3 · lost 1\n【告警】中部便當 B 下滑 · 高雄超市 F 潛力 — 待回寫 activity\n【廣告】北區百貨 A 真 ROAS 1.4＜平台 3.2 — 縮 C 版\n【客服】南區電商 C 已升級商機 · 草稿採用\n【核心】全部以 CATCH CRM（catch_crm）為準",
+    "recent": [
+      {
+        "id": 35,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[戰略] 建議選 C — 產品楔子：對 Ocard／自研話術強化",
+        "body": "CRM 開放管道 NT$2,532,000；階段 {'qualify': 6, 'proposal': 2, 'won': 1, 'lost': 1, 'negotiate': 1}；月營收 YoY 13.6%；競品週 2026-W29 訊號 16。\n\n以 CRM 漏斗與銷售 YoY 為事實底；競品訊號決定話術優先序；受眾標準化決定預算落在暖池哪一包。\n風險：若只加大投放不補 TCO／客服容量，會拉高 CAC 且轉換失真。",
+        "created_at": "2026-07-15 04:54:02.962694+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 34,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[戰略] 建議選 C — 產品楔子：對 Ocard／自研話術強化",
+        "body": "CRM 開放管道 NT$2,532,000；階段 {'qualify': 6, 'proposal': 2, 'won': 1, 'lost': 1, 'negotiate': 1}；月營收 YoY 13.6%；競品週 2026-W29 訊號 16。\n\n以 CRM 漏斗與銷售 YoY 為事實底；競品訊號決定話術優先序；受眾標準化決定預算落在暖池哪一包。\n風險：若只加大投放不補 TCO／客服容量，會拉高 CAC 且轉換失真。",
+        "created_at": "2026-07-15 04:53:46.007447+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 33,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "note",
+        "subject": "[填單] LINE 客服",
+        "body": "API客 <a@b.com>\nhi",
+        "created_at": "2026-07-15 04:48:57.624460+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 32,
+        "account_id": "5647d1d6-e9bd-41b6-a35a-f9386d624051",
+        "opportunity_id": null,
+        "kind": "note",
+        "subject": "[填單] CRM 穩健 2 年包",
+        "body": "展示用客戶 <demo@example.com>\n想約 demo",
+        "created_at": "2026-07-15 04:48:48.222059+00:00",
+        "account_name": "綠意食堂"
+      },
+      {
+        "id": 28,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[語錄] 2026-W29 已產 7 張",
+        "body": "目錄：out/quotes/2026-W29\n1. 簡約菜單，豐盛心意。\n2. 把複雜留給廚房，把開心留給你。\n3. 今天的選擇，是明天的習慣。\n4. 下一口，更接近你想成為的樣子。\n5. 今天也為地球按了一次讚。\n6. 餐桌小改變，生活大不同。\n7. 綠意上桌，話題自然來。",
+        "created_at": "2026-07-15 04:42:22.629449+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 27,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[DEMO] 競品週報 2026-W29",
+        "body": "2026-W29：Ocard 2 年對照表上線、綠食幫打免年費、LINE/Omnichat 搶私訊；建議立刻補 TCO 一頁與反年費攻擊話術。\n（詳見 weekly_reports）",
+        "created_at": "2026-07-15 04:40:04.591646+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 24,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "call",
+        "subject": "[DEMO] 初訪",
+        "body": "客戶卡在跨店點數與節慶發券成本；主推穩健2年",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 23,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "war",
+        "subject": "[DEMO] 週管報·漏斗",
+        "body": "proposal 2 案、negotiate 1、qualify 3；本週焦點：烘焙20店+聯盟12店",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      }
+    ],
+    "accounts_sample": [
+      {
+        "name": "中部連鎖便當 B",
+        "stage": "qualify",
+        "source": "B端告警·下滑",
+        "stores": 28,
+        "pipes": [
+          "alert"
+        ]
+      },
+      {
+        "name": "南區生鮮電商 C",
+        "stage": "prospect",
+        "source": "LINE客服升級",
+        "stores": 1,
+        "pipes": [
+          "cs"
+        ]
+      },
+      {
+        "name": "示例烘焙連鎖",
+        "stage": "proposal",
+        "source": "Ocard 約滿",
+        "stores": 20,
+        "pipes": [
+          "war",
+          "ad"
+        ]
+      },
+      {
+        "name": "得來素旗艦聯名店",
+        "stage": "won",
+        "source": "官網回購",
+        "stores": 1,
+        "pipes": [
+          "web",
+          "war"
+        ]
+      },
+      {
+        "name": "竹科園區餐廳聯盟 E",
+        "stage": "negotiate",
+        "source": "廠商表單",
+        "stores": 12,
+        "pipes": [
+          "form",
+          "war"
+        ]
+      },
+      {
+        "name": "高雄素食超市 F",
+        "stage": "qualify",
+        "source": "B端告警·潛力",
+        "stores": 5,
+        "pipes": [
+          "alert"
+        ]
+      },
+      {
+        "name": "東部休閒農場 D",
+        "stage": "lost",
+        "source": "開團曝光",
+        "stores": 2,
+        "pipes": [
+          "ad"
+        ]
+      },
+      {
+        "name": "北區素食百貨 A",
+        "stage": "proposal",
+        "source": "FB廣告·暖池6包",
+        "stores": 3,
+        "pipes": [
+          "ad"
+        ]
+      }
+    ]
+  },
+  "alerts": {
+    "title": "告警",
+    "count": 2,
+    "items": [
+      {
+        "id": 18,
+        "account_id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "opportunity_id": "5f0837d6-7d2f-47a0-b4e1-9f82ce0dec77",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·潛力",
+        "body": "近 14 日回溫 +22%；建議推 5 店點數互通方案",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "高雄素食超市 F"
+      },
+      {
+        "id": 17,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·下滑",
+        "body": "近 30 日銷量 -18%、銷退 +9%；建議今日電話·更新 stage=qualify",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      }
+    ],
+    "hint": "09:00 B 端告警 → 人認領後寫 activity／改 stage"
+  },
+  "cs": {
+    "title": "客服",
+    "count": 10,
+    "items": [
+      {
+        "id": 39,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[Instagram 私訊草稿] 漢堡排",
+        "body": "草稿ID 45449400-031d-4285-8dd2-36319cd1aee8\n通路 ig\n---\n嗨～查過規格卡＋官網庫存：\n\n· 素食漢堡排（經典）（SP-007）\n  官網可售約 200（官網主倉）\n  18 片／箱｜MOQ 1 箱\n\n· 厚切素排（家庭）（SP-008）\n  官網可售約 79（北倉-官網）\n  24 片／箱｜MOQ 1 箱\n\n· 菇菌排（餐飲）（SP-009）\n  官網暫無現貨，到貨日確認中\n  30 片／箱｜MOQ 2 箱\n\n· 黑胡椒排（分享）（SP-010）\n  官網可售約 116（官網主倉）\n  6 片／箱｜MOQ 1 箱\n\n（草稿·IG）專人會再確認細節 🌿",
+        "created_at": "2026-07-15 04:56:20.880420+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 38,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[Instagram 私訊草稿] 漢堡排怎麼煮",
+        "body": "草稿ID 29a92753-ca4a-4551-9c20-9d30fb08856e\n通路 ig\n---\n嗨～查過規格卡＋官網庫存：\n\n· 素食漢堡排（經典）（SP-007）\n  官網可售約 200（官網主倉）\n  18 片／箱｜MOQ 1 箱\n\n· 厚切素排（家庭）（SP-008）\n  官網可售約 79（北倉-官網）\n  24 片／箱｜MOQ 1 箱\n\n· 菇菌排（餐飲）（SP-009）\n  官網暫無現貨，到貨日確認中\n  30 片／箱｜MOQ 2 箱\n\n· 黑胡椒排（分享）（SP-010）\n  官網可售約 116（官網主倉）\n  6 片／箱｜MOQ 1 箱\n\n（草稿·IG）專人會再確認細節 🌿",
+        "created_at": "2026-07-15 04:55:46.748533+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 37,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[Facebook Messenger草稿] 燕麥奶還有嗎",
+        "body": "草稿ID 314a1cbb-38f3-4550-b83d-6977dc109732\n通路 fb\n---\n您好，關於您透過 Facebook Messenger 的詢問，資料如下：\n\n【燕麥奶（經典）／SP-013】\n燕麥奶·經典規格；飲品類；適合門市／電商；解凍或即食說明見外包裝。\n規格：24 瓶／箱｜MOQ：1 箱\n過敏原：視品項\n保存：依外包裝；冷凍品 6–12 個月、冷藏品 7–30 日\n官網庫存：官網暫無現貨，預計 3 日內\n\n— 以上為系統草稿，專人將儘快確認訂單細節。",
+        "created_at": "2026-07-15 04:55:46.533460+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 36,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 植物蛋皮現貨週配",
+        "body": "草稿ID 158478cc-aa16-4804-973a-6796cb9a2b8e\n通路 line\n---\n您好，關於您的詢問，依規格卡與官網庫存整理：\n\n【植物蛋皮（經典）／SP-001】\n植物蛋皮·經典規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：12 張／箱｜MOQ：1 箱\n過敏原：大豆\n保存：依外包裝；冷凍品 6–12 個月、冷藏品 7–30 日\n官網庫存：官網暫無現貨，預計 一週內\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n【全素蛋皮（家庭）／SP-002】\n全素蛋皮·家庭規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：18 張／箱｜MOQ：1 箱\n過敏原：大豆\n保存：冷凍 9 個月；解凍後 48h\n官網庫存：官網可售約 5（北倉-官網）\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n【菠菜蛋皮（餐飲）／SP-003】\n菠菜蛋皮·餐飲規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：24 張／箱｜MOQ：2 箱\n過敏原：大豆\n保存：依外包裝；冷凍品 6–12 個月、冷藏品 7–30 日\n官網庫存：官網可售約 200（南倉-官網）\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n【南瓜蛋皮（分享）／SP-004】\n南瓜蛋皮·分享規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：30 張／箱｜MOQ：1 箱\n過敏原：大豆\n保存：冷凍 9 個月；解凍後 48h\n官網庫存：官網暫無現貨，預計 3 日內\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n以上為系統草稿，專人會再與您確認訂單細節 🌿",
+        "created_at": "2026-07-15 04:55:46.367802+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 31,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 燕麥奶還有貨嗎",
+        "body": "草稿ID 0a8c4c8c-df88-43ab-aea1-5cface0d7f95\n---\n您好，關於您的詢問，整理如下：\n\n【燕麥奶 1L（原味）／SP-020】\n無加糖原味燕麥奶；可打拿鐵；需冷藏。\n規格：12 瓶／箱｜MOQ：1 箱\n過敏原：燕麥（麩質來源視產線標示）\n保存：未開封冷藏依標示；開封 5 日\n庫存：現貨約 6（主倉）\n\n以上為系統草稿，專人會再與您確認訂單細節 🌿",
+        "created_at": "2026-07-15 04:45:16.506097+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 30,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 燕麥奶還有貨嗎",
+        "body": "草稿ID c4a90c13-1af7-44aa-aba9-c4baec3dac05\n---\n您好，已收到：「燕麥奶還有貨嗎」。\n我先幫您確認品項與庫存，稍請專人補充細節。（若方便請提供商品名稱或用途）",
+        "created_at": "2026-07-15 04:44:57.011611+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 29,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 請問植物蛋皮千張裝有現貨嗎？能不能週配？",
+        "body": "草稿ID 7ea7c5bf-2ee2-4f2a-8460-abad3f7ee1ca\n---\n您好，關於您的詢問，整理如下：\n\n【植物蛋皮（千張裝）／SP-001】\n植物蛋白蛋皮，無蛋無奶；直徑約 20cm；解凍即用。\n規格：1000 張／箱｜MOQ：1 箱\n過敏原：可能含大豆；產線無蛋奶\n保存：冷凍 12 個月；冷藏解凍後 48 小時\n庫存：現貨約 110（主倉）\nQ：能不能週配？ → 可。週三中午前下單，週五到貨（本島）。\nQ：素食認證？ → 全素配方；認證標章以當批外包裝為準。\n\n以上為系統草稿，專人會再與您確認訂單細節 🌿",
+        "created_at": "2026-07-15 04:44:47.350848+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 22,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "cs",
+        "subject": "[DEMO] 售後讚美",
+        "body": "旗艦店私訊五星；已標 won 客戶健康",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 21,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] 客服升級商機",
+        "body": "連續 3 則詢大宗 → 建立商機「大宗訂貨+會員」·轉業務A",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": 20,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] LINE 草稿·庫存",
+        "body": "問：千張蛋餅皮能不能週配？草稿：可，週三截單週五到·規格卡#12",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      }
+    ],
+    "hint": "LINE 草稿＋庫存 → 升級則建商機"
+  },
+  "ads": {
+    "title": "廣告",
+    "count": 3,
+    "items": [
+      {
+        "id": 16,
+        "account_id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "opportunity_id": "d2fa2c16-414e-4f81-87a1-396936c2f822",
+        "kind": "ad",
+        "subject": "[DEMO] 開團曝光",
+        "body": "素材來自 DerLife Studio；點擊有、詢單無，後改輸單",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "東部休閒農場 D"
+      },
+      {
+        "id": 14,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 廣告建檔",
+        "body": "活動「素食暖池-春季」· 組合 A/B/C 三版文案 API 已建·預設暫停·待人啟用",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 15,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 每日對帳",
+        "body": "FB 自報 ROAS 3.2；官網實銷歸因 ROAS 1.4 → 真投產偏低，建議縮 C 版",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      }
+    ],
+    "hint": "API 建檔預設暫停 · 每日 FB vs 官網對帳"
+  },
+  "crm": {
+    "accounts": [
+      {
+        "id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "name": "店",
+        "industry": "待確認",
+        "stores": 3,
+        "stage": "prospect",
+        "source": "填單·api",
+        "owner": "表單進線",
+        "notes": "[EDM] API客 / a@b.com / \n興趣：LINE 客服\nhi",
+        "meta": {},
+        "created_at": "2026-07-15 04:48:57.586798+00:00",
+        "updated_at": "2026-07-15 04:48:57.586798+00:00"
+      },
+      {
+        "id": "5647d1d6-e9bd-41b6-a35a-f9386d624051",
+        "name": "綠意食堂",
+        "industry": "待確認",
+        "stores": 5,
+        "stage": "prospect",
+        "source": "填單·cli_test",
+        "owner": "表單進線",
+        "notes": "[EDM] 展示用客戶 / demo@example.com / \n興趣：CRM 穩健 2 年包\n想約 demo",
+        "meta": {},
+        "created_at": "2026-07-15 04:48:48.194877+00:00",
+        "updated_at": "2026-07-15 04:48:48.194877+00:00"
+      },
+      {
+        "id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "name": "中部連鎖便當 B",
+        "industry": "餐飲連鎖",
+        "stores": 28,
+        "stage": "qualify",
+        "source": "B端告警·下滑",
+        "owner": "業務B",
+        "notes": "[DEMO] 09:00 告警：近 30 日銷退↑ 銷量↓",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "alert"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "name": "南區生鮮電商 C",
+        "industry": "電商",
+        "stores": 1,
+        "stage": "prospect",
+        "source": "LINE客服升級",
+        "owner": "客服組長",
+        "notes": "[DEMO] 私訊問大宗訂貨 → 升級商機",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "cs"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "name": "示例烘焙連鎖",
+        "industry": "烘焙／西點",
+        "stores": 20,
+        "stage": "proposal",
+        "source": "Ocard 約滿",
+        "owner": "業務A",
+        "notes": "[DEMO] CATCH 定價示範；對打 Ocard",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "war",
+            "ad"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "name": "得來素旗艦聯名店",
+        "industry": "素食餐飲",
+        "stores": 1,
+        "stage": "won",
+        "source": "官網回購",
+        "owner": "球長",
+        "notes": "[DEMO] 已成交範例；戰情漏斗 won 用",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "web",
+            "war"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "name": "竹科園區餐廳聯盟 E",
+        "industry": "餐飲聯盟",
+        "stores": 12,
+        "stage": "negotiate",
+        "source": "廠商表單",
+        "owner": "業務B",
+        "notes": "[DEMO] 新戶表單即時進 CRM",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "form",
+            "war"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "name": "高雄素食超市 F",
+        "industry": "零售",
+        "stores": 5,
+        "stage": "qualify",
+        "source": "B端告警·潛力",
+        "owner": "業務A",
+        "notes": "[DEMO] 告警：潛力客近 14 日回溫",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "alert"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "name": "東部休閒農場 D",
+        "industry": "休閒農場",
+        "stores": 2,
+        "stage": "lost",
+        "source": "開團曝光",
+        "owner": "業務C",
+        "notes": "[DEMO] 輸單：預算改做社群代操",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "ad"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "name": "北區素食百貨 A",
+        "industry": "通路／百貨",
+        "stores": 3,
+        "stage": "proposal",
+        "source": "FB廣告·暖池6包",
+        "owner": "業務A",
+        "notes": "[DEMO] 廣告進來；對帳 ROAS 偏低需跟",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "ad"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "3cca987d-304a-4c1a-b06d-a2eab3e4cc9b",
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "title": "LINE 客服 · 店",
+        "amount_ntd": 0,
+        "package_code": "B",
+        "stage": "qualify",
+        "probability": 20,
+        "close_date": null,
+        "competitor": "",
+        "notes": "線上填單自動建立",
+        "created_at": "2026-07-15 04:48:57.639591+00:00",
+        "updated_at": "2026-07-15 04:48:57.639591+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": "7e294d8f-cfaa-4d76-bdd2-9601be57913f",
+        "account_id": "5647d1d6-e9bd-41b6-a35a-f9386d624051",
+        "title": "CRM 穩健 2 年包 · 綠意食堂",
+        "amount_ntd": 0,
+        "package_code": "B",
+        "stage": "qualify",
+        "probability": 20,
+        "close_date": null,
+        "competitor": "",
+        "notes": "線上填單自動建立",
+        "created_at": "2026-07-15 04:48:48.240765+00:00",
+        "updated_at": "2026-07-15 04:48:48.240765+00:00",
+        "account_name": "綠意食堂"
+      },
+      {
+        "id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "title": "B端專案·28店導入",
+        "amount_ntd": 890000,
+        "package_code": "G",
+        "stage": "qualify",
+        "probability": 30,
+        "close_date": null,
+        "competitor": "自建",
+        "notes": "[DEMO] 告警轉商機",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "title": "大宗訂貨+會員",
+        "amount_ntd": 120000,
+        "package_code": "A",
+        "stage": "qualify",
+        "probability": 25,
+        "close_date": null,
+        "competitor": "",
+        "notes": "[DEMO] 客服升級",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "title": "CRM 穩健 20店·2年",
+        "amount_ntd": 564000,
+        "package_code": "B",
+        "stage": "proposal",
+        "probability": 40,
+        "close_date": null,
+        "competitor": "Ocard",
+        "notes": "[DEMO] CATCH 主案",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "title": "得來素旗艦·續約年費",
+        "amount_ntd": 180000,
+        "package_code": "A",
+        "stage": "won",
+        "probability": 100,
+        "close_date": null,
+        "competitor": "",
+        "notes": "[DEMO] 已收款",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": "d2fa2c16-414e-4f81-87a1-396936c2f822",
+        "account_id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "title": "社群代操（輸）",
+        "amount_ntd": 96000,
+        "package_code": "X",
+        "stage": "lost",
+        "probability": 0,
+        "close_date": null,
+        "competitor": "網紅公司",
+        "notes": "[DEMO] 輸單存檔",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "東部休閒農場 D"
+      },
+      {
+        "id": "77deb757-50b1-4fed-878e-730e2524c50a",
+        "account_id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "title": "聯盟 12 店一次上",
+        "amount_ntd": 420000,
+        "package_code": "B",
+        "stage": "negotiate",
+        "probability": 55,
+        "close_date": null,
+        "competitor": "kintone",
+        "notes": "[DEMO] 談授權數",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "竹科園區餐廳聯盟 E"
+      },
+      {
+        "id": "5f0837d6-7d2f-47a0-b4e1-9f82ce0dec77",
+        "account_id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "title": "超市 5 店點數互通",
+        "amount_ntd": 260000,
+        "package_code": "B",
+        "stage": "qualify",
+        "probability": 35,
+        "close_date": null,
+        "competitor": "",
+        "notes": "[DEMO] 潛力告警",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "高雄素食超市 F"
+      },
+      {
+        "id": "fe85e046-b08b-4e90-9184-2baf66da1d14",
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "title": "節慶發券加購",
+        "amount_ntd": 80000,
+        "package_code": "Add",
+        "stage": "qualify",
+        "probability": 20,
+        "close_date": null,
+        "competitor": "Ocard",
+        "notes": "[DEMO] 附加商機",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "title": "CRM 穩健 3店·2年",
+        "amount_ntd": 198000,
+        "package_code": "B",
+        "stage": "proposal",
+        "probability": 45,
+        "close_date": null,
+        "competitor": "Ocard",
+        "notes": "[DEMO] 廣告落地商機",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      }
+    ],
+    "activities": [
+      {
+        "id": 39,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[Instagram 私訊草稿] 漢堡排",
+        "body": "草稿ID 45449400-031d-4285-8dd2-36319cd1aee8\n通路 ig\n---\n嗨～查過規格卡＋官網庫存：\n\n· 素食漢堡排（經典）（SP-007）\n  官網可售約 200（官網主倉）\n  18 片／箱｜MOQ 1 箱\n\n· 厚切素排（家庭）（SP-008）\n  官網可售約 79（北倉-官網）\n  24 片／箱｜MOQ 1 箱\n\n· 菇菌排（餐飲）（SP-009）\n  官網暫無現貨，到貨日確認中\n  30 片／箱｜MOQ 2 箱\n\n· 黑胡椒排（分享）（SP-010）\n  官網可售約 116（官網主倉）\n  6 片／箱｜MOQ 1 箱\n\n（草稿·IG）專人會再確認細節 🌿",
+        "created_at": "2026-07-15 04:56:20.880420+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 38,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[Instagram 私訊草稿] 漢堡排怎麼煮",
+        "body": "草稿ID 29a92753-ca4a-4551-9c20-9d30fb08856e\n通路 ig\n---\n嗨～查過規格卡＋官網庫存：\n\n· 素食漢堡排（經典）（SP-007）\n  官網可售約 200（官網主倉）\n  18 片／箱｜MOQ 1 箱\n\n· 厚切素排（家庭）（SP-008）\n  官網可售約 79（北倉-官網）\n  24 片／箱｜MOQ 1 箱\n\n· 菇菌排（餐飲）（SP-009）\n  官網暫無現貨，到貨日確認中\n  30 片／箱｜MOQ 2 箱\n\n· 黑胡椒排（分享）（SP-010）\n  官網可售約 116（官網主倉）\n  6 片／箱｜MOQ 1 箱\n\n（草稿·IG）專人會再確認細節 🌿",
+        "created_at": "2026-07-15 04:55:46.748533+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 37,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[Facebook Messenger草稿] 燕麥奶還有嗎",
+        "body": "草稿ID 314a1cbb-38f3-4550-b83d-6977dc109732\n通路 fb\n---\n您好，關於您透過 Facebook Messenger 的詢問，資料如下：\n\n【燕麥奶（經典）／SP-013】\n燕麥奶·經典規格；飲品類；適合門市／電商；解凍或即食說明見外包裝。\n規格：24 瓶／箱｜MOQ：1 箱\n過敏原：視品項\n保存：依外包裝；冷凍品 6–12 個月、冷藏品 7–30 日\n官網庫存：官網暫無現貨，預計 3 日內\n\n— 以上為系統草稿，專人將儘快確認訂單細節。",
+        "created_at": "2026-07-15 04:55:46.533460+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 36,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 植物蛋皮現貨週配",
+        "body": "草稿ID 158478cc-aa16-4804-973a-6796cb9a2b8e\n通路 line\n---\n您好，關於您的詢問，依規格卡與官網庫存整理：\n\n【植物蛋皮（經典）／SP-001】\n植物蛋皮·經典規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：12 張／箱｜MOQ：1 箱\n過敏原：大豆\n保存：依外包裝；冷凍品 6–12 個月、冷藏品 7–30 日\n官網庫存：官網暫無現貨，預計 一週內\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n【全素蛋皮（家庭）／SP-002】\n全素蛋皮·家庭規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：18 張／箱｜MOQ：1 箱\n過敏原：大豆\n保存：冷凍 9 個月；解凍後 48h\n官網庫存：官網可售約 5（北倉-官網）\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n【菠菜蛋皮（餐飲）／SP-003】\n菠菜蛋皮·餐飲規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：24 張／箱｜MOQ：2 箱\n過敏原：大豆\n保存：依外包裝；冷凍品 6–12 個月、冷藏品 7–30 日\n官網庫存：官網可售約 200（南倉-官網）\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n【南瓜蛋皮（分享）／SP-004】\n南瓜蛋皮·分享規格；蛋皮類；適合門市／電商；解凍或即食說明見外包裝。\n規格：30 張／箱｜MOQ：1 箱\n過敏原：大豆\n保存：冷凍 9 個月；解凍後 48h\n官網庫存：官網暫無現貨，預計 3 日內\nQ：有現貨嗎？ → 請以官網庫存為準；本系統同步主倉可售量。\nQ：怎麼保存？ → 依品類冷凍或冷藏，開封後盡速食用。\n\n以上為系統草稿，專人會再與您確認訂單細節 🌿",
+        "created_at": "2026-07-15 04:55:46.367802+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 35,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[戰略] 建議選 C — 產品楔子：對 Ocard／自研話術強化",
+        "body": "CRM 開放管道 NT$2,532,000；階段 {'qualify': 6, 'proposal': 2, 'won': 1, 'lost': 1, 'negotiate': 1}；月營收 YoY 13.6%；競品週 2026-W29 訊號 16。\n\n以 CRM 漏斗與銷售 YoY 為事實底；競品訊號決定話術優先序；受眾標準化決定預算落在暖池哪一包。\n風險：若只加大投放不補 TCO／客服容量，會拉高 CAC 且轉換失真。",
+        "created_at": "2026-07-15 04:54:02.962694+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 34,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[戰略] 建議選 C — 產品楔子：對 Ocard／自研話術強化",
+        "body": "CRM 開放管道 NT$2,532,000；階段 {'qualify': 6, 'proposal': 2, 'won': 1, 'lost': 1, 'negotiate': 1}；月營收 YoY 13.6%；競品週 2026-W29 訊號 16。\n\n以 CRM 漏斗與銷售 YoY 為事實底；競品訊號決定話術優先序；受眾標準化決定預算落在暖池哪一包。\n風險：若只加大投放不補 TCO／客服容量，會拉高 CAC 且轉換失真。",
+        "created_at": "2026-07-15 04:53:46.007447+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 33,
+        "account_id": "8a2b63fd-c10c-4332-b5d8-19f205539041",
+        "opportunity_id": null,
+        "kind": "note",
+        "subject": "[填單] LINE 客服",
+        "body": "API客 <a@b.com>\nhi",
+        "created_at": "2026-07-15 04:48:57.624460+00:00",
+        "account_name": "店"
+      },
+      {
+        "id": 32,
+        "account_id": "5647d1d6-e9bd-41b6-a35a-f9386d624051",
+        "opportunity_id": null,
+        "kind": "note",
+        "subject": "[填單] CRM 穩健 2 年包",
+        "body": "展示用客戶 <demo@example.com>\n想約 demo",
+        "created_at": "2026-07-15 04:48:48.222059+00:00",
+        "account_name": "綠意食堂"
+      },
+      {
+        "id": 31,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 燕麥奶還有貨嗎",
+        "body": "草稿ID 0a8c4c8c-df88-43ab-aea1-5cface0d7f95\n---\n您好，關於您的詢問，整理如下：\n\n【燕麥奶 1L（原味）／SP-020】\n無加糖原味燕麥奶；可打拿鐵；需冷藏。\n規格：12 瓶／箱｜MOQ：1 箱\n過敏原：燕麥（麩質來源視產線標示）\n保存：未開封冷藏依標示；開封 5 日\n庫存：現貨約 6（主倉）\n\n以上為系統草稿，專人會再與您確認訂單細節 🌿",
+        "created_at": "2026-07-15 04:45:16.506097+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 30,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 燕麥奶還有貨嗎",
+        "body": "草稿ID c4a90c13-1af7-44aa-aba9-c4baec3dac05\n---\n您好，已收到：「燕麥奶還有貨嗎」。\n我先幫您確認品項與庫存，稍請專人補充細節。（若方便請提供商品名稱或用途）",
+        "created_at": "2026-07-15 04:44:57.011611+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 29,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "cs",
+        "subject": "[LINE草稿] 請問植物蛋皮千張裝有現貨嗎？能不能週配？",
+        "body": "草稿ID 7ea7c5bf-2ee2-4f2a-8460-abad3f7ee1ca\n---\n您好，關於您的詢問，整理如下：\n\n【植物蛋皮（千張裝）／SP-001】\n植物蛋白蛋皮，無蛋無奶；直徑約 20cm；解凍即用。\n規格：1000 張／箱｜MOQ：1 箱\n過敏原：可能含大豆；產線無蛋奶\n保存：冷凍 12 個月；冷藏解凍後 48 小時\n庫存：現貨約 110（主倉）\nQ：能不能週配？ → 可。週三中午前下單，週五到貨（本島）。\nQ：素食認證？ → 全素配方；認證標章以當批外包裝為準。\n\n以上為系統草稿，專人會再與您確認訂單細節 🌿",
+        "created_at": "2026-07-15 04:44:47.350848+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 28,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[語錄] 2026-W29 已產 7 張",
+        "body": "目錄：out/quotes/2026-W29\n1. 簡約菜單，豐盛心意。\n2. 把複雜留給廚房，把開心留給你。\n3. 今天的選擇，是明天的習慣。\n4. 下一口，更接近你想成為的樣子。\n5. 今天也為地球按了一次讚。\n6. 餐桌小改變，生活大不同。\n7. 綠意上桌，話題自然來。",
+        "created_at": "2026-07-15 04:42:22.629449+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 27,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": null,
+        "kind": "war",
+        "subject": "[DEMO] 競品週報 2026-W29",
+        "body": "2026-W29：Ocard 2 年對照表上線、綠食幫打免年費、LINE/Omnichat 搶私訊；建議立刻補 TCO 一頁與反年費攻擊話術。\n（詳見 weekly_reports）",
+        "created_at": "2026-07-15 04:40:04.591646+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 24,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "call",
+        "subject": "[DEMO] 初訪",
+        "body": "客戶卡在跨店點數與節慶發券成本；主推穩健2年",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 23,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "war",
+        "subject": "[DEMO] 週管報·漏斗",
+        "body": "proposal 2 案、negotiate 1、qualify 3；本週焦點：烘焙20店+聯盟12店",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 16,
+        "account_id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "opportunity_id": "d2fa2c16-414e-4f81-87a1-396936c2f822",
+        "kind": "ad",
+        "subject": "[DEMO] 開團曝光",
+        "body": "素材來自 DerLife Studio；點擊有、詢單無，後改輸單",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "東部休閒農場 D"
+      },
+      {
+        "id": 25,
+        "account_id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "opportunity_id": "77deb757-50b1-4fed-878e-730e2524c50a",
+        "kind": "note",
+        "subject": "[DEMO] 表單進線",
+        "body": "廠商資料系統 TG 通知 → 已建 account·負責人黃總",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "竹科園區餐廳聯盟 E"
+      },
+      {
+        "id": 19,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "call",
+        "subject": "[DEMO] 告警跟進",
+        "body": "已通話林採購：承認庫存不準；約週四 demo",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": 14,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 廣告建檔",
+        "body": "活動「素食暖池-春季」· 組合 A/B/C 三版文案 API 已建·預設暫停·待人啟用",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 15,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 每日對帳",
+        "body": "FB 自報 ROAS 3.2；官網實銷歸因 ROAS 1.4 → 真投產偏低，建議縮 C 版",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 22,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "cs",
+        "subject": "[DEMO] 售後讚美",
+        "body": "旗艦店私訊五星；已標 won 客戶健康",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 26,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "war",
+        "subject": "[DEMO] 月結快照",
+        "body": "官網+已成交旗艦店·廣告費 12.4 萬·真實營收歸因 18.1 萬",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 18,
+        "account_id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "opportunity_id": "5f0837d6-7d2f-47a0-b4e1-9f82ce0dec77",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·潛力",
+        "body": "近 14 日回溫 +22%；建議推 5 店點數互通方案",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "高雄素食超市 F"
+      },
+      {
+        "id": 17,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·下滑",
+        "body": "近 30 日銷量 -18%、銷退 +9%；建議今日電話·更新 stage=qualify",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": 21,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] 客服升級商機",
+        "body": "連續 3 則詢大宗 → 建立商機「大宗訂貨+會員」·轉業務A",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": 20,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] LINE 草稿·庫存",
+        "body": "問：千張蛋餅皮能不能週配？草稿：可，週三截單週五到·規格卡#12",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      }
+    ]
+  }
+}
