@@ -1,0 +1,684 @@
+{
+  "ok": true,
+  "demo": true,
+  "headline": "CRM 核心展示 · 戰情／告警／客服／廣告",
+  "war_room": {
+    "title": "戰情",
+    "pipeline_open_ntd": 2532000,
+    "by_stage": {
+      "won": {
+        "count": 1,
+        "amount": 180000
+      },
+      "proposal": {
+        "count": 2,
+        "amount": 762000
+      },
+      "qualify": {
+        "count": 4,
+        "amount": 1350000
+      },
+      "lost": {
+        "count": 1,
+        "amount": 96000
+      },
+      "negotiate": {
+        "count": 1,
+        "amount": 420000
+      }
+    },
+    "accounts": 8,
+    "opportunities": 9,
+    "board": "【漏斗】won 1 · negotiate 1 · proposal 2 · qualify 3 · lost 1\n【告警】中部便當 B 下滑 · 高雄超市 F 潛力 — 待回寫 activity\n【廣告】北區百貨 A 真 ROAS 1.4＜平台 3.2 — 縮 C 版\n【客服】南區電商 C 已升級商機 · 草稿採用\n【核心】全部以 CATCH CRM（catch_crm）為準",
+    "recent": [
+      {
+        "id": 19,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "call",
+        "subject": "[DEMO] 告警跟進",
+        "body": "已通話林採購：承認庫存不準；約週四 demo",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": 23,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "war",
+        "subject": "[DEMO] 週管報·漏斗",
+        "body": "proposal 2 案、negotiate 1、qualify 3；本週焦點：烘焙20店+聯盟12店",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 24,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "call",
+        "subject": "[DEMO] 初訪",
+        "body": "客戶卡在跨店點數與節慶發券成本；主推穩健2年",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 25,
+        "account_id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "opportunity_id": "77deb757-50b1-4fed-878e-730e2524c50a",
+        "kind": "note",
+        "subject": "[DEMO] 表單進線",
+        "body": "廠商資料系統 TG 通知 → 已建 account·負責人黃總",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "竹科園區餐廳聯盟 E"
+      },
+      {
+        "id": 26,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "war",
+        "subject": "[DEMO] 月結快照",
+        "body": "官網+已成交旗艦店·廣告費 12.4 萬·真實營收歸因 18.1 萬",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      }
+    ],
+    "accounts_sample": [
+      {
+        "name": "得來素旗艦聯名店",
+        "stage": "won",
+        "source": "官網回購",
+        "stores": 1,
+        "pipes": [
+          "web",
+          "war"
+        ]
+      },
+      {
+        "name": "北區素食百貨 A",
+        "stage": "proposal",
+        "source": "FB廣告·暖池6包",
+        "stores": 3,
+        "pipes": [
+          "ad"
+        ]
+      },
+      {
+        "name": "中部連鎖便當 B",
+        "stage": "qualify",
+        "source": "B端告警·下滑",
+        "stores": 28,
+        "pipes": [
+          "alert"
+        ]
+      },
+      {
+        "name": "南區生鮮電商 C",
+        "stage": "prospect",
+        "source": "LINE客服升級",
+        "stores": 1,
+        "pipes": [
+          "cs"
+        ]
+      },
+      {
+        "name": "示例烘焙連鎖",
+        "stage": "proposal",
+        "source": "Ocard 約滿",
+        "stores": 20,
+        "pipes": [
+          "war",
+          "ad"
+        ]
+      },
+      {
+        "name": "東部休閒農場 D",
+        "stage": "lost",
+        "source": "開團曝光",
+        "stores": 2,
+        "pipes": [
+          "ad"
+        ]
+      },
+      {
+        "name": "竹科園區餐廳聯盟 E",
+        "stage": "negotiate",
+        "source": "廠商表單",
+        "stores": 12,
+        "pipes": [
+          "form",
+          "war"
+        ]
+      },
+      {
+        "name": "高雄素食超市 F",
+        "stage": "qualify",
+        "source": "B端告警·潛力",
+        "stores": 5,
+        "pipes": [
+          "alert"
+        ]
+      }
+    ]
+  },
+  "alerts": {
+    "title": "告警",
+    "count": 2,
+    "items": [
+      {
+        "id": 17,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·下滑",
+        "body": "近 30 日銷量 -18%、銷退 +9%；建議今日電話·更新 stage=qualify",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": 18,
+        "account_id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "opportunity_id": "5f0837d6-7d2f-47a0-b4e1-9f82ce0dec77",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·潛力",
+        "body": "近 14 日回溫 +22%；建議推 5 店點數互通方案",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "高雄素食超市 F"
+      }
+    ],
+    "hint": "09:00 B 端告警 → 人認領後寫 activity／改 stage"
+  },
+  "cs": {
+    "title": "客服",
+    "count": 3,
+    "items": [
+      {
+        "id": 20,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] LINE 草稿·庫存",
+        "body": "問：千張蛋餅皮能不能週配？草稿：可，週三截單週五到·規格卡#12",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": 21,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] 客服升級商機",
+        "body": "連續 3 則詢大宗 → 建立商機「大宗訂貨+會員」·轉業務A",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": 22,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "cs",
+        "subject": "[DEMO] 售後讚美",
+        "body": "旗艦店私訊五星；已標 won 客戶健康",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      }
+    ],
+    "hint": "LINE 草稿＋庫存 → 升級則建商機"
+  },
+  "ads": {
+    "title": "廣告",
+    "count": 3,
+    "items": [
+      {
+        "id": 14,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 廣告建檔",
+        "body": "活動「素食暖池-春季」· 組合 A/B/C 三版文案 API 已建·預設暫停·待人啟用",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 15,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 每日對帳",
+        "body": "FB 自報 ROAS 3.2；官網實銷歸因 ROAS 1.4 → 真投產偏低，建議縮 C 版",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 16,
+        "account_id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "opportunity_id": "d2fa2c16-414e-4f81-87a1-396936c2f822",
+        "kind": "ad",
+        "subject": "[DEMO] 開團曝光",
+        "body": "素材來自 DerLife Studio；點擊有、詢單無，後改輸單",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "東部休閒農場 D"
+      }
+    ],
+    "hint": "API 建檔預設暫停 · 每日 FB vs 官網對帳"
+  },
+  "crm": {
+    "accounts": [
+      {
+        "id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "name": "得來素旗艦聯名店",
+        "industry": "素食餐飲",
+        "stores": 1,
+        "stage": "won",
+        "source": "官網回購",
+        "owner": "球長",
+        "notes": "[DEMO] 已成交範例；戰情漏斗 won 用",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "web",
+            "war"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "name": "北區素食百貨 A",
+        "industry": "通路／百貨",
+        "stores": 3,
+        "stage": "proposal",
+        "source": "FB廣告·暖池6包",
+        "owner": "業務A",
+        "notes": "[DEMO] 廣告進來；對帳 ROAS 偏低需跟",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "ad"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "name": "中部連鎖便當 B",
+        "industry": "餐飲連鎖",
+        "stores": 28,
+        "stage": "qualify",
+        "source": "B端告警·下滑",
+        "owner": "業務B",
+        "notes": "[DEMO] 09:00 告警：近 30 日銷退↑ 銷量↓",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "alert"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "name": "南區生鮮電商 C",
+        "industry": "電商",
+        "stores": 1,
+        "stage": "prospect",
+        "source": "LINE客服升級",
+        "owner": "客服組長",
+        "notes": "[DEMO] 私訊問大宗訂貨 → 升級商機",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "cs"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "name": "示例烘焙連鎖",
+        "industry": "烘焙／西點",
+        "stores": 20,
+        "stage": "proposal",
+        "source": "Ocard 約滿",
+        "owner": "業務A",
+        "notes": "[DEMO] CATCH 定價示範；對打 Ocard",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "war",
+            "ad"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "name": "東部休閒農場 D",
+        "industry": "休閒農場",
+        "stores": 2,
+        "stage": "lost",
+        "source": "開團曝光",
+        "owner": "業務C",
+        "notes": "[DEMO] 輸單：預算改做社群代操",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "ad"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "name": "竹科園區餐廳聯盟 E",
+        "industry": "餐飲聯盟",
+        "stores": 12,
+        "stage": "negotiate",
+        "source": "廠商表單",
+        "owner": "業務B",
+        "notes": "[DEMO] 新戶表單即時進 CRM",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "form",
+            "war"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      },
+      {
+        "id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "name": "高雄素食超市 F",
+        "industry": "零售",
+        "stores": 5,
+        "stage": "qualify",
+        "source": "B端告警·潛力",
+        "owner": "業務A",
+        "notes": "[DEMO] 告警：潛力客近 14 日回溫",
+        "meta": {
+          "demo": true,
+          "pipes": [
+            "alert"
+          ]
+        },
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00"
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "title": "得來素旗艦·續約年費",
+        "amount_ntd": 180000,
+        "package_code": "A",
+        "stage": "won",
+        "probability": 100,
+        "close_date": null,
+        "competitor": "",
+        "notes": "[DEMO] 已收款",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "title": "CRM 穩健 3店·2年",
+        "amount_ntd": 198000,
+        "package_code": "B",
+        "stage": "proposal",
+        "probability": 45,
+        "close_date": null,
+        "competitor": "Ocard",
+        "notes": "[DEMO] 廣告落地商機",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "title": "B端專案·28店導入",
+        "amount_ntd": 890000,
+        "package_code": "G",
+        "stage": "qualify",
+        "probability": 30,
+        "close_date": null,
+        "competitor": "自建",
+        "notes": "[DEMO] 告警轉商機",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "title": "大宗訂貨+會員",
+        "amount_ntd": 120000,
+        "package_code": "A",
+        "stage": "qualify",
+        "probability": 25,
+        "close_date": null,
+        "competitor": "",
+        "notes": "[DEMO] 客服升級",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "title": "CRM 穩健 20店·2年",
+        "amount_ntd": 564000,
+        "package_code": "B",
+        "stage": "proposal",
+        "probability": 40,
+        "close_date": null,
+        "competitor": "Ocard",
+        "notes": "[DEMO] CATCH 主案",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": "fe85e046-b08b-4e90-9184-2baf66da1d14",
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "title": "節慶發券加購",
+        "amount_ntd": 80000,
+        "package_code": "Add",
+        "stage": "qualify",
+        "probability": 20,
+        "close_date": null,
+        "competitor": "Ocard",
+        "notes": "[DEMO] 附加商機",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": "d2fa2c16-414e-4f81-87a1-396936c2f822",
+        "account_id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "title": "社群代操（輸）",
+        "amount_ntd": 96000,
+        "package_code": "X",
+        "stage": "lost",
+        "probability": 0,
+        "close_date": null,
+        "competitor": "網紅公司",
+        "notes": "[DEMO] 輸單存檔",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "東部休閒農場 D"
+      },
+      {
+        "id": "77deb757-50b1-4fed-878e-730e2524c50a",
+        "account_id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "title": "聯盟 12 店一次上",
+        "amount_ntd": 420000,
+        "package_code": "B",
+        "stage": "negotiate",
+        "probability": 55,
+        "close_date": null,
+        "competitor": "kintone",
+        "notes": "[DEMO] 談授權數",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "竹科園區餐廳聯盟 E"
+      },
+      {
+        "id": "5f0837d6-7d2f-47a0-b4e1-9f82ce0dec77",
+        "account_id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "title": "超市 5 店點數互通",
+        "amount_ntd": 260000,
+        "package_code": "B",
+        "stage": "qualify",
+        "probability": 35,
+        "close_date": null,
+        "competitor": "",
+        "notes": "[DEMO] 潛力告警",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "updated_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "高雄素食超市 F"
+      }
+    ],
+    "activities": [
+      {
+        "id": 14,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 廣告建檔",
+        "body": "活動「素食暖池-春季」· 組合 A/B/C 三版文案 API 已建·預設暫停·待人啟用",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 15,
+        "account_id": "f410d75c-adfd-4e4e-9ac5-04b40e96d6f0",
+        "opportunity_id": "90d3466c-16bb-4358-a215-e9273564b610",
+        "kind": "ad",
+        "subject": "[DEMO] 每日對帳",
+        "body": "FB 自報 ROAS 3.2；官網實銷歸因 ROAS 1.4 → 真投產偏低，建議縮 C 版",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "北區素食百貨 A"
+      },
+      {
+        "id": 16,
+        "account_id": "e51e3f82-386a-4dd1-a28a-f62b9e6e77a5",
+        "opportunity_id": "d2fa2c16-414e-4f81-87a1-396936c2f822",
+        "kind": "ad",
+        "subject": "[DEMO] 開團曝光",
+        "body": "素材來自 DerLife Studio；點擊有、詢單無，後改輸單",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "東部休閒農場 D"
+      },
+      {
+        "id": 17,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·下滑",
+        "body": "近 30 日銷量 -18%、銷退 +9%；建議今日電話·更新 stage=qualify",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": 18,
+        "account_id": "4c3c6a41-e17c-49c3-90f8-eaea36ec6763",
+        "opportunity_id": "5f0837d6-7d2f-47a0-b4e1-9f82ce0dec77",
+        "kind": "alert",
+        "subject": "[DEMO] 09:00 B端告警·潛力",
+        "body": "近 14 日回溫 +22%；建議推 5 店點數互通方案",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "高雄素食超市 F"
+      },
+      {
+        "id": 19,
+        "account_id": "d33d095e-38a8-4ad8-823f-73bf09f3466b",
+        "opportunity_id": "80445457-488e-4b8d-98d6-47e402004e52",
+        "kind": "call",
+        "subject": "[DEMO] 告警跟進",
+        "body": "已通話林採購：承認庫存不準；約週四 demo",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "中部連鎖便當 B"
+      },
+      {
+        "id": 20,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] LINE 草稿·庫存",
+        "body": "問：千張蛋餅皮能不能週配？草稿：可，週三截單週五到·規格卡#12",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": 21,
+        "account_id": "bc04185b-a4d2-4be6-a440-d058c78c447e",
+        "opportunity_id": "37ce6466-20ef-4cd1-acd9-c3f28d563d75",
+        "kind": "cs",
+        "subject": "[DEMO] 客服升級商機",
+        "body": "連續 3 則詢大宗 → 建立商機「大宗訂貨+會員」·轉業務A",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "南區生鮮電商 C"
+      },
+      {
+        "id": 22,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "cs",
+        "subject": "[DEMO] 售後讚美",
+        "body": "旗艦店私訊五星；已標 won 客戶健康",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      },
+      {
+        "id": 23,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "war",
+        "subject": "[DEMO] 週管報·漏斗",
+        "body": "proposal 2 案、negotiate 1、qualify 3；本週焦點：烘焙20店+聯盟12店",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 24,
+        "account_id": "842f01b0-9d47-4ad1-a5dd-abaca0419791",
+        "opportunity_id": "066fe9e2-e06f-4844-9b74-5c5537ffe46f",
+        "kind": "call",
+        "subject": "[DEMO] 初訪",
+        "body": "客戶卡在跨店點數與節慶發券成本；主推穩健2年",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "示例烘焙連鎖"
+      },
+      {
+        "id": 25,
+        "account_id": "43f7f11e-d084-4e9b-9fe3-516bdf3a8cc0",
+        "opportunity_id": "77deb757-50b1-4fed-878e-730e2524c50a",
+        "kind": "note",
+        "subject": "[DEMO] 表單進線",
+        "body": "廠商資料系統 TG 通知 → 已建 account·負責人黃總",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "竹科園區餐廳聯盟 E"
+      },
+      {
+        "id": 26,
+        "account_id": "538f26d1-8fd6-44e1-a664-90f39d0e7ce6",
+        "opportunity_id": "586e57d8-57a2-4a11-b694-eded6f5fd66d",
+        "kind": "war",
+        "subject": "[DEMO] 月結快照",
+        "body": "官網+已成交旗艦店·廣告費 12.4 萬·真實營收歸因 18.1 萬",
+        "created_at": "2026-07-15 04:25:48.393889+00:00",
+        "account_name": "得來素旗艦聯名店"
+      }
+    ]
+  }
+}

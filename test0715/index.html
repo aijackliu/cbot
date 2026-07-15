@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CATCH CRM · test0715</title>
+<style>
+  :root {
+    --bg: #0b1220; --card: #151e2e; --ink: #e8eef6; --muted: #8b9cb3;
+    --line: #2a3a52; --jade: #34d399; --amber: #fbbf24; --coral: #f87171; --cyan: #22d3ee; --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+    color: var(--ink); background: radial-gradient(900px 400px at 10% 0%, #1e3a5f55, transparent), var(--bg);
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { margin-bottom: 20px; }
+  h1 { margin: 0 0 6px; font-size: 1.45rem; }
+  .sub { color: var(--muted); font-size: .9rem; line-height: 1.5; }
+  .badge {
+    display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line); font-size: .75rem; color: var(--jade);
+  }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .grid4, .grid2 { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+  }
+  .card h2 { margin: 0 0 8px; font-size: .95rem; }
+  .stat { font-size: 1.5rem; font-weight: 800; color: var(--jade); }
+  .muted { color: var(--muted); font-size: .8rem; }
+  .tag {
+    display: inline-block; font-size: .68rem; padding: 2px 7px; border-radius: 999px;
+    border: 1px solid var(--line); margin-right: 4px;
+  }
+  .tag.ad { color: #fca5a5; border-color: #7f1d1d; }
+  .tag.alert { color: #fde68a; border-color: #854d0e; }
+  .tag.cs { color: #86efac; border-color: #14532d; }
+  .tag.war { color: #93c5fd; border-color: #1e3a8a; }
+  .feed-item { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .82rem; line-height: 1.4; }
+  .feed-item:last-child { border-bottom: 0; }
+  .feed-item .b { color: var(--muted); font-size: .75rem; margin-top: 3px; white-space: pre-wrap; }
+  .board {
+    white-space: pre-wrap; font-size: .85rem; line-height: 1.55;
+    padding: 12px; background: #0f1724; border-radius: 10px; border: 1px solid var(--line);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); }
+  a { color: var(--cyan); }
+  footer { margin-top: 28px; color: var(--muted); font-size: .78rem; }
+  .arch {
+    font-family: ui-monospace, Consolas, monospace; font-size: .78rem;
+    white-space: pre; overflow: auto; background: #0f1724; padding: 12px;
+    border-radius: 10px; border: 1px solid var(--line); color: #c6d4e8;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>CATCH CRM Hub</h1>
+    <p class="sub">自有品牌 CRM 核心 · 戰情 / 告警 / 客服 / 廣告四水管展示（2026-07-15）</p>
+    <span class="badge">test0715 · 靜態展示 · 不需官方 Cordys</span>
+  </header>
+
+  <div class="card">
+    <h2>架構（一句）</h2>
+    <div class="arch" id="arch">載入中…</div>
+  </div>
+
+  <div class="grid4" id="kpis"></div>
+
+  <div class="card">
+    <h2><span class="tag war">戰情</span> 今日看板</h2>
+    <div class="stat" id="pipeMoney">—</div>
+    <p class="muted">開放管道金額（未 won / lost）</p>
+    <div class="board" id="board">—</div>
+    <div style="overflow:auto;margin-top:12px">
+      <table>
+        <thead><tr><th>階段</th><th>商機數</th><th>金額 NTD</th></tr></thead>
+        <tbody id="stages"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid2" id="feeds"></div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>展示客戶（pipes）</h2>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>名稱</th><th>階段</th><th>來源</th><th>店</th><th>水管</th></tr></thead>
+        <tbody id="accs"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>商機管道</h2>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>標題</th><th>客戶</th><th>金額</th><th>包</th><th>階段</th></tr></thead>
+        <tbody id="opps"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    完整可執行：工作區 <code>catch-crm-hub</code> → <code>http://127.0.0.1:8791/</code><br>
+    架構說明：<a href="./architecture.md">architecture.md</a> ·
+    資料：<a href="./assets/showcase.json">showcase.json</a> ·
+    GitHub：<a href="https://github.com/aijackliu/cbot/tree/main/test0715">test0715</a>
+  </footer>
+</div>
+<script>
+const money = n => Number(n||0).toLocaleString("zh-TW");
+const esc = s => String(s??"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function feed(items) {
+  if (!items?.length) return '<p class="muted">無</p>';
+  return items.map(it => `
+    <div class="feed-item">
+      <div><strong>${esc(it.subject||it.kind)}</strong>
+        <span class="muted"> · ${esc(it.account_name||"")}</span></div>
+      <div class="b">${esc(it.body||"")}</div>
+    </div>`).join("");
+}
+
+fetch("./assets/showcase.json")
+  .then(r => r.json())
+  .then(s => {
+    document.getElementById("arch").textContent = `
+              【CATCH CRM 核心】
+         客戶 · 商機 · 活動 · Qwen 快照
+                    │
+     ┌──────────────┼──────────────┐
+   廣告進水       告警進水       客服進水
+   FB建檔/對帳   B端 09:00      LINE草稿升級
+                    │
+              戰情看板（只讀）
+`.trim();
+
+    const wr = s.war_room || {};
+    document.getElementById("pipeMoney").textContent = "NT$ " + money(wr.pipeline_open_ntd);
+    document.getElementById("board").textContent = wr.board || "";
+    document.getElementById("kpis").innerHTML = [
+      ["開放管道", "NT$ " + money(wr.pipeline_open_ntd), "war"],
+      ["告警", (s.alerts||{}).count ?? 0, "alert"],
+      ["客服", (s.cs||{}).count ?? 0, "cs"],
+      ["廣告", (s.ads||{}).count ?? 0, "ad"],
+    ].map(([k,v,t]) =>
+      `<div class="card"><h2><span class="tag ${t}">${t}</span> ${k}</h2><div class="stat">${v}</div></div>`
+    ).join("");
+
+    const stages = wr.by_stage || {};
+    document.getElementById("stages").innerHTML = Object.keys(stages).map(st => {
+      const x = stages[st];
+      return `<tr><td>${esc(st)}</td><td>${x.count}</td><td>${money(x.amount)}</td></tr>`;
+    }).join("");
+
+    document.getElementById("feeds").innerHTML = [
+      ["war", "戰情跟進", wr.recent, (s.alerts||{}).hint],
+      ["alert", "B 端告警", (s.alerts||{}).items, (s.alerts||{}).hint],
+      ["cs", "客服 LINE", (s.cs||{}).items, (s.cs||{}).hint],
+      ["ad", "廣告 FB", (s.ads||{}).items, (s.ads||{}).hint],
+    ].map(([t, title, items, hint]) => `
+      <div class="card">
+        <h2><span class="tag ${t}">${t}</span> ${title}</h2>
+        <p class="muted">${esc(hint||"")}</p>
+        ${feed(items)}
+      </div>`).join("");
+
+    document.getElementById("accs").innerHTML = (wr.accounts_sample||[]).map(a => `
+      <tr>
+        <td>${esc(a.name)}</td>
+        <td>${esc(a.stage)}</td>
+        <td>${esc(a.source)}</td>
+        <td>${a.stores??""}</td>
+        <td>${(a.pipes||[]).map(p=>`<span class="tag ${esc(p)}">${esc(p)}</span>`).join(" ")}</td>
+      </tr>`).join("");
+
+    document.getElementById("opps").innerHTML = ((s.crm||{}).opportunities||[]).map(o => `
+      <tr>
+        <td>${esc(o.title)}</td>
+        <td>${esc(o.account_name||"")}</td>
+        <td>${money(o.amount_ntd)}</td>
+        <td>${esc(o.package_code)}</td>
+        <td>${esc(o.stage)}</td>
+      </tr>`).join("");
+  })
+  .catch(e => {
+    document.getElementById("board").textContent = "載入 showcase.json 失敗：" + e.message;
+  });
+</script>
+</body>
+</html>
