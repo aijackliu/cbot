@@ -19,6 +19,7 @@
         <a href="#audiences">受眾</a>
         <a href="#pricing">方案</a>
         <a href="#ai">AI 文案</a>
+        <a href="#brand">品牌監控</a>
         <a href="#rag">RAG</a>
         <a href="#clinic">診斷診所</a>
         <a href="#travel">旅遊記憶</a>
@@ -162,6 +163,32 @@
           <button class="btn primary" id="btnCopy">生成文案</button>
         </div>
         <pre class="ai-out" id="copyOut">點擊生成後，Qwen 會依看板數據產出可上稿文案…</pre>
+      </div>
+    </section>
+
+    <section class="section soft" id="brand">
+      <div class="section-head">
+        <h2>輕量品牌監控</h2>
+        <p>
+          熱搜關鍵字匹配 · Hacker News · Google News RSS · Qwen 繁中情報簡報
+          （無 Scrapingdog；模式簡化自 brand_monitor_agent）
+        </p>
+      </div>
+      <div class="ai-box brand-box">
+        <div class="ai-form">
+          <label>品牌名稱</label>
+          <input id="brandName" value="OpenAI" />
+          <button class="btn primary" type="button" id="btnBrand">執行監控</button>
+          <p class="muted" id="brandStatus"></p>
+          <p class="muted">提示：熱搜需本機 <code>F:\grok\2\hot-search\data\latest.json</code>（可先跑 grok/2 熱搜）。</p>
+        </div>
+        <div>
+          <pre class="ai-out" id="brandOut">輸入品牌後執行…</pre>
+          <div class="panel" style="margin-top:12px">
+            <h3>通道原始條目</h3>
+            <div id="brandChannels" class="muted">—</div>
+          </div>
+        </div>
       </div>
     </section>
 

@@ -538,6 +538,78 @@ function bindAI() {
   };
 }
 
+function bindBrand() {
+  const btn = $("#btnBrand");
+  if (!btn) return;
+  btn.onclick = async () => {
+    const brand = ($("#brandName").value || "").trim();
+    const out = $("#brandOut");
+    const ch = $("#brandChannels");
+    const st = $("#brandStatus");
+    if (!brand) {
+      st.textContent = "請輸入品牌名稱";
+      return;
+    }
+    btn.disabled = true;
+    st.textContent = "抓取 HN／News／熱搜並呼叫 Qwen…";
+    out.textContent = "分析中…";
+    ch.innerHTML = "—";
+    try {
+      const res = await api("/api/brand/monitor", {
+        method: "POST",
+        body: JSON.stringify({ brand }),
+      });
+      const b = res.brief || {};
+      const lines = [
+        `品牌：${res.brand}`,
+        `總覽：${b.headline_zh || "—"}`,
+        `情緒：${b.sentiment || "—"} · ${b.sentiment_zh || ""}`,
+        "",
+        "要點：",
+        ...((b.key_points_zh || []).map((x) => `· ${x}`) || []),
+        "",
+        "風險：",
+        ...((b.risks_zh || []).map((x) => `· ${x}`) || ["· —"]),
+        "",
+        "機會：",
+        ...((b.opportunities_zh || []).map((x) => `· ${x}`) || ["· —"]),
+        "",
+        "分通道：",
+        ...((b.channels || []).map(
+          (c) => `· [${c.platform}] ${c.sentiment || ""} ${c.summary_zh || ""}`
+        ) || []),
+        "",
+        res.sources_note || "",
+      ];
+      out.textContent = lines.join("\n");
+      ch.innerHTML = (res.channels || [])
+        .map((c) => {
+          const err = c.error ? `<div class="muted">失敗：${c.error}</div>` : "";
+          const items = (c.items || [])
+            .slice(0, 6)
+            .map((it) => {
+              const t = it.title || "";
+              const u = it.url || "";
+              return u
+                ? `<li><a href="${u}" target="_blank" rel="noopener">${t}</a></li>`
+                : `<li>${t}</li>`;
+            })
+            .join("");
+          return `<div class="brand-ch"><strong>${c.label || c.platform}</strong> · ${
+            c.ok ? "OK" : "部分失敗"
+          }${err}<ul>${items || "<li class='muted'>無命中</li>"}</ul></div>`;
+        })
+        .join("");
+      st.textContent = "完成";
+    } catch (e) {
+      out.textContent = "錯誤：" + e.message;
+      st.textContent = "失敗";
+    } finally {
+      btn.disabled = false;
+    }
+  };
+}
+
 function bindLead() {
   $("#leadForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -565,6 +637,7 @@ function bindLead() {
 
 async function boot() {
   bindAI();
+  bindBrand();
   bindLead();
   bindRag();
   bindKbForm();

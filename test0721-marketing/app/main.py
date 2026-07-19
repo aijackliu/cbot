@@ -31,6 +31,7 @@ from .rag import (
 )
 from .seed import SEED_KEY, TEAM, run_seed
 from . import travel_memory as travel
+from . import brand_monitor
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
@@ -680,6 +681,24 @@ def ai_copy(body: CopyIn) -> dict:
     except Exception:  # noqa: BLE001
         pass
     return {"copy": text, "model": raw.get("model") or config.QWEN_MODEL}
+
+
+class BrandIn(BaseModel):
+    brand: str = Field(..., min_length=1, max_length=80)
+
+
+@app.post("/api/brand/monitor")
+def api_brand_monitor(body: BrandIn) -> dict:
+    """
+    Lightweight brand monitor: hot-search match + HN + Google News RSS + Qwen.
+    No Scrapingdog / Orq (simplified brand_monitor_agent).
+    """
+    try:
+        return {"ok": True, **brand_monitor.run_monitor(body.brand)}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"brand monitor failed: {e}") from e
 
 
 @app.get("/")

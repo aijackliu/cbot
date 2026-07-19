@@ -30,6 +30,13 @@ cd test0721-marketing
 - **知識庫**：PG 語料目錄 + 內部文章 + 可新增文章（寫 Redis，重建索引後進 RAG）
 - 啟動時自動 seed 假證言／方案／團隊／知識文章／補充詢盤
 
+### 輕量品牌監控
+
+- 頁面：`#brand`
+- API：`POST /api/brand/monitor` `{ "brand": "OpenAI" }`
+- 來源：熱搜 latest.json 關鍵字 · HN Algolia · Google News RSS · Qwen 繁中簡報  
+- **無** Scrapingdog / Orq（簡化 brand_monitor_agent）
+
 ### 核心架構說明頁（不含診所／旅遊記憶）
 
 專頁：**`/core-explain`**（`static/core-explain.html`）  

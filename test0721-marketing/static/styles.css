@@ -351,3 +351,8 @@ th { color: var(--muted); font-size: 11px; letter-spacing: 0.04em; }
   margin: 0 0 8px;
 }
 .arch-steps { margin: 0; padding-left: 1.25rem; line-height: 1.7; }
+
+.brand-box { align-items: start; }
+.brand-ch { margin-bottom: 12px; font-size: 13px; line-height: 1.5; }
+.brand-ch ul { margin: 6px 0 0; padding-left: 1.2rem; }
+.brand-ch a { color: var(--accent, #0f766e); }
