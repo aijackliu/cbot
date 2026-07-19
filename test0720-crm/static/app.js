@@ -7,7 +7,8 @@ const titles = {
   opps: ["銷售機會", "管道階段與金額（NTD）"],
   customers: ["電商客戶", "web_customers RFM / LTV"],
   competitors: ["競品情報", "competitors + signals"],
-  ai: ["客服 AI · 路由", "記憶 + 輕量路由 + 填表 + 查庫"],
+  ai: ["客服 AI · 路由", "記憶 + 輕量路由 + 填表 + 查庫（總線）"],
+  agri: ["農業客戶", "天氣 · 作物曆 · 病蟲害檢索 · Qwen 多工具"],
   infra: ["基礎設施", "Qwen · FastAPI · Redis · PostgreSQL"],
 };
 
@@ -893,6 +894,125 @@ function loadAI() {
   };
 }
 
+function loadAgri() {
+  const el = $("#view-agri");
+  el.innerHTML = `
+    <div class="card">
+      <h3>農業客戶助理</h3>
+      <p class="muted">
+        與客服總線並列的<strong>垂直分頁</strong>：多工具 Agent（天氣 / 作物曆 / 農業新聞檢索）→ Qwen 繁中建議。
+        模式參考 llm_agri_bot；天氣預設 wttr.in（可設 OPENWEATHER_API_KEY）。
+        <em>非正式農藥處方。</em>
+      </p>
+      <div class="sql-samples muted" id="agriSamples"></div>
+    </div>
+    <div class="ai-split">
+      <div class="chat">
+        <div class="chat-log" id="agriLog">
+          <div class="bubble bot">你好，我是農業客戶助理。可問天氣、種植曆、病蟲害一般建議。</div>
+        </div>
+        <div class="chat-input">
+          <input id="agriInput" placeholder="例：番茄黃葉怎麼辦？一期水稻何時插秧？" />
+          <button class="btn primary" id="agriSend">送出</button>
+        </div>
+      </div>
+      <div class="card form-panel">
+        <div class="form-panel-head">
+          <h3>工具軌跡</h3>
+          <span class="pill" id="agriPill">待命</span>
+        </div>
+        <pre class="sql-box" id="agriPlan">—</pre>
+        <div class="muted" id="agriTools"></div>
+        <p class="muted" id="agriDisc" style="margin-top:12px"></p>
+      </div>
+    </div>`;
+
+  const log = $("#agriLog");
+  const input = $("#agriInput");
+  const send = $("#agriSend");
+
+  const push = (role, text) => {
+    const d = document.createElement("div");
+    d.className = `bubble ${role === "user" ? "user" : "bot"}`;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  };
+
+  api("/api/agri/samples")
+    .then((d) => {
+      const box = $("#agriSamples");
+      box.innerHTML =
+        "<span class='muted'>示例：</span> " +
+        (d.items || [])
+          .map(
+            (q) =>
+              `<button type="button" class="chip-btn" data-aq="${q.replace(/"/g, "&quot;")}">${q}</button>`
+          )
+          .join(" ");
+      box.querySelectorAll("[data-aq]").forEach((b) => {
+        b.onclick = () => {
+          input.value = b.getAttribute("data-aq");
+          input.focus();
+        };
+      });
+    })
+    .catch(() => {});
+
+  const go = async () => {
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = "";
+    push("user", msg);
+    send.disabled = true;
+    push("bot", "選工具 → 抓資料 → 生成建議…");
+    const thinking = log.lastChild;
+    $("#agriPill").textContent = "執行中";
+    $("#agriPill").className = "pill warn";
+    try {
+      const res = await api("/api/agri/ask", {
+        method: "POST",
+        body: JSON.stringify({ question: msg }),
+      });
+      thinking.textContent = res.answer_zh || "（空）";
+      $("#agriPlan").textContent = JSON.stringify(res.plan || {}, null, 2);
+      const tools = res.tools || [];
+      $("#agriTools").innerHTML = tools
+        .map((t) => {
+          const ok = t.ok ? "OK" : "失敗";
+          let extra = "";
+          if (t.tool === "weather" && t.ok) {
+            extra = `${t.location} ${t.temp_c}°C ${t.desc || ""} 濕度${t.humidity}`;
+          } else if (t.tool === "crop_calendar" && t.crops) {
+            extra = t.crops.map((c) => c.crop).join("、");
+          } else if (t.tool === "agri_search") {
+            extra = `${(t.items || []).length} 則`;
+          } else if (t.error) {
+            extra = t.error;
+          }
+          return `<div class="brand-ch"><strong>${t.tool}</strong> · ${ok}<div class="muted">${extra}</div></div>`;
+        })
+        .join("");
+      $("#agriDisc").textContent = res.disclaimer_zh || "";
+      $("#agriPill").textContent = "完成";
+      $("#agriPill").className = "pill ok";
+    } catch (e) {
+      thinking.textContent = "錯誤：" + e.message;
+      thinking.classList.add("err");
+      $("#agriPill").textContent = "失敗";
+      $("#agriPill").className = "pill warn";
+    } finally {
+      send.disabled = false;
+      log.scrollTop = log.scrollHeight;
+    }
+  };
+
+  send.onclick = go;
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") go();
+  });
+}
+
 const loaders = {
   dashboard: loadDashboard,
   accounts: loadAccounts,
@@ -900,6 +1020,7 @@ const loaders = {
   customers: loadCustomers,
   competitors: loadCompetitors,
   ai: loadAI,
+  agri: loadAgri,
   infra: loadInfra,
 };
 

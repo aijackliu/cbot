@@ -20,6 +20,7 @@ from . import form_fill
 from . import sql_agent
 from . import support_memory as csmem
 from . import query_router
+from . import agri_agent
 from .db import fetch_all, fetch_one, json_safe
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -112,6 +113,10 @@ class CsChatIn(BaseModel):
 class CsRouteIn(BaseModel):
     customer_id: str = Field("Alex", min_length=1, max_length=64)
     message: str = Field(..., min_length=1, max_length=4000)
+
+
+class AgriAskIn(BaseModel):
+    question: str = Field(..., min_length=2, max_length=2000)
 
 
 @app.get("/api/health")
@@ -526,6 +531,33 @@ def cs_route(body: CsRouteIn) -> dict:
         raise HTTPException(400, str(e)) from e
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"route failed: {e}") from e
+
+
+# ----- Agriculture vertical (tool-calling bus sibling tab) -----
+
+
+@app.get("/api/agri/crops")
+def agri_crops() -> dict:
+    return {"ok": True, "crops": agri_agent.list_crops()}
+
+
+@app.get("/api/agri/samples")
+def agri_samples() -> dict:
+    return {"ok": True, "items": agri_agent.sample_questions()}
+
+
+@app.post("/api/agri/ask")
+def agri_ask(body: AgriAskIn) -> dict:
+    """
+    Multi-tool agri assistant: weather + crop calendar + news search → Qwen.
+    Pattern from llm_agri_bot; LAN Qwen, no Mistral required.
+    """
+    try:
+        return {"ok": True, **agri_agent.ask(body.question)}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"agri agent failed: {e}") from e
 
 
 @app.post("/api/ai/chat")
