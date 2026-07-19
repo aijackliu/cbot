@@ -207,6 +207,110 @@ async function loadClinic() {
   }
 }
 
+function travelUser() {
+  return ($("#travelUser").value || "demo_traveler").trim();
+}
+
+function pushTravel(role, text) {
+  const log = $("#travelLog");
+  const d = document.createElement("div");
+  d.className = `bubble ${role === "user" ? "user" : "bot"}`;
+  d.textContent = text;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function refreshTravelMemory() {
+  const uid = travelUser();
+  try {
+    const d = await api(`/api/travel/memory?user_id=${encodeURIComponent(uid)}`);
+    const list = d.results || [];
+    if (!list.length) {
+      $("#travelMemList").textContent = "（尚無記憶）";
+      return;
+    }
+    $("#travelMemList").innerHTML =
+      `<ul>${list
+        .map(
+          (m) =>
+            `<li><span class="muted">[${m.role || "?"}]</span> ${m.memory || ""}</li>`
+        )
+        .join("")}</ul>`;
+  } catch (e) {
+    $("#travelMemList").textContent = "讀取失敗：" + e.message;
+  }
+}
+
+function bindTravel() {
+  $("#btnTravelSeed").onclick = async () => {
+    const uid = travelUser();
+    $("#travelStatus").textContent = "寫入示範記憶…";
+    try {
+      await api(`/api/travel/seed?user_id=${encodeURIComponent(uid)}`, {
+        method: "POST",
+        body: "{}",
+      });
+      await refreshTravelMemory();
+      $("#travelStatus").textContent = "已載入 demo_traveler 偏好（慢旅行／自然／咖啡／火車…）";
+    } catch (e) {
+      $("#travelStatus").textContent = e.message;
+    }
+  };
+
+  $("#btnTravelMem").onclick = () => refreshTravelMemory();
+
+  $("#btnTravelClear").onclick = async () => {
+    const uid = travelUser();
+    try {
+      await api(`/api/travel/memory?user_id=${encodeURIComponent(uid)}`, {
+        method: "DELETE",
+      });
+      $("#travelLog").innerHTML = "";
+      await refreshTravelMemory();
+      $("#travelStatus").textContent = "已清除記憶與對話";
+    } catch (e) {
+      $("#travelStatus").textContent = e.message;
+    }
+  };
+
+  const send = async () => {
+    const uid = travelUser();
+    const msg = $("#travelInput").value.trim();
+    if (!msg) return;
+    $("#travelInput").value = "";
+    pushTravel("user", msg);
+    $("#btnTravelSend").disabled = true;
+    $("#travelStatus").textContent = "思考中（會先檢索記憶再呼叫 Qwen）…";
+    pushTravel("bot", "…");
+    const thinking = $("#travelLog").lastChild;
+    try {
+      const res = await api("/api/travel/chat", {
+        method: "POST",
+        body: JSON.stringify({ user_id: uid, message: msg }),
+      });
+      thinking.textContent = res.reply || "（空）";
+      const rel = res.relevant_memories || [];
+      if (rel.length) {
+        $("#travelStatus").textContent =
+          `用到 ${rel.length} 條相關記憶 · model ${res.model || ""}`;
+      } else {
+        $("#travelStatus").textContent = `無舊記憶命中 · model ${res.model || ""}`;
+      }
+      await refreshTravelMemory();
+    } catch (e) {
+      thinking.textContent = "錯誤：" + e.message;
+      $("#travelStatus").textContent = "失敗";
+    } finally {
+      $("#btnTravelSend").disabled = false;
+    }
+  };
+
+  $("#btnTravelSend").onclick = send;
+  $("#travelInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") send();
+  });
+}
+
 function bindClinic() {
   $("#btnClinic").onclick = async () => {
     const bug = $("#clinicBug").value.trim();
@@ -465,6 +569,7 @@ async function boot() {
   bindRag();
   bindKbForm();
   bindClinic();
+  bindTravel();
   await Promise.all([
     loadInfra(),
     loadOllamaTags(),
@@ -475,6 +580,10 @@ async function boot() {
       $("#kpis").innerHTML = `<div class="kpi"><label>錯誤</label><b style="font-size:14px">${e.message}</b></div>`;
     }),
   ]);
+  // soft seed travel demo user for showcase
+  api("/api/travel/seed?user_id=demo_traveler", { method: "POST", body: "{}" })
+    .then(() => refreshTravelMemory())
+    .catch(() => {});
 }
 
 boot();

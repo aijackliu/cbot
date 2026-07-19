@@ -29,6 +29,7 @@ from .rag import (
     search as rag_search,
 )
 from .seed import SEED_KEY, TEAM, run_seed
+from . import travel_memory as travel
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
@@ -328,6 +329,68 @@ def api_clinic_diagnose(body: ClinicIn) -> dict:
         raise HTTPException(400, str(e)) from e
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"clinic failed: {e}") from e
+
+
+# ----- AI Travel Agent with Memory (upstream tutorial adapted) -----
+
+
+class TravelChatIn(BaseModel):
+    user_id: str = Field("demo_traveler", min_length=1, max_length=64)
+    message: str = Field(..., min_length=1, max_length=2000)
+
+
+@app.post("/api/travel/seed")
+def api_travel_seed(user_id: str = "demo_traveler") -> dict:
+    try:
+        mems = travel.seed_demo_user(user_id)
+        return {"ok": True, "user_id": user_id, "memories": mems, "count": len(mems)}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.get("/api/travel/memory")
+def api_travel_memory(user_id: str = "demo_traveler", limit: int = 50) -> dict:
+    try:
+        mems = travel.get_all_memories(user_id, limit=limit)
+        return {"ok": True, "user_id": user_id, "results": mems, "count": len(mems)}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.delete("/api/travel/memory")
+def api_travel_memory_clear(user_id: str = "demo_traveler") -> dict:
+    try:
+        n = travel.clear_memories(user_id)
+        return {"ok": True, "user_id": user_id, "cleared": n}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.get("/api/travel/history")
+def api_travel_history(user_id: str = "demo_traveler") -> dict:
+    try:
+        return {
+            "ok": True,
+            "user_id": user_id,
+            "messages": travel.get_chat_history(user_id),
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/travel/chat")
+def api_travel_chat(body: TravelChatIn) -> dict:
+    """
+    Travel agent with memory — pattern from ai_travel_agent_memory.
+    Memory: Redis; LLM: Qwen (instead of Mem0/Qdrant + gpt-4o for this demo stack).
+    """
+    try:
+        result = travel.chat(body.user_id, body.message)
+        return {"ok": True, **result}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"travel chat failed: {e}") from e
 
 
 @app.post("/api/knowledge/articles")

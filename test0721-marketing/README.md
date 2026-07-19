@@ -53,3 +53,17 @@ cd test0721-marketing
 上游：`clinic/`（clone from awesome-llm-apps）  
 測試頁：站內導覽 **診斷診所**（`#clinic`）  
 報告輸出：`clinic/reports/rag_failure_report.json`
+
+### AI Travel Agent with Memory
+
+上游：`travel_agent_memory/`（from awesome-llm-apps）  
+測試頁：站內 **旅遊記憶**（`#travel`）  
+本站實作：Redis 記憶 + Qwen（原版為 Streamlit + Mem0 + Qdrant）
+
+| 方法 | 路徑 |
+|------|------|
+| POST | `/api/travel/seed` |
+| GET | `/api/travel/memory` |
+| DELETE | `/api/travel/memory` |
+| POST | `/api/travel/chat` |
+| GET | `/api/travel/history` |

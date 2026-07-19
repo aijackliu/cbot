@@ -21,6 +21,7 @@
         <a href="#ai">AI 文案</a>
         <a href="#rag">RAG</a>
         <a href="#clinic">診斷診所</a>
+        <a href="#travel">旅遊記憶</a>
         <a href="#infra">基建</a>
         <a class="btn small" href="#lead">預約演示</a>
       </nav>
@@ -221,7 +222,43 @@
       </div>
     </section>
 
-    <section class="section" id="infra">
+    <section class="section" id="travel">
+      <div class="section-head">
+        <h2>AI 旅遊助理（記憶）</h2>
+        <p>
+          整合
+          <a href="https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory" target="_blank" rel="noopener">ai_travel_agent_memory</a>
+          · 原版 Streamlit+Mem0+Qdrant · 本站改為 <strong>Redis 記憶 + Qwen</strong>
+        </p>
+      </div>
+      <div class="travel-layout">
+        <div class="panel">
+          <h3>使用者</h3>
+          <label class="muted">Username（記憶按 user 隔離）</label>
+          <input id="travelUser" value="demo_traveler" />
+          <div class="travel-actions">
+            <button class="btn primary" type="button" id="btnTravelSeed">載入示範記憶</button>
+            <button class="btn ghost" type="button" id="btnTravelMem">查看記憶</button>
+            <button class="btn ghost" type="button" id="btnTravelClear">清除記憶</button>
+          </div>
+          <h3 style="margin-top:14px">記憶內容</h3>
+          <div id="travelMemList" class="travel-mem muted">尚未載入</div>
+        </div>
+        <div class="panel travel-chat-panel">
+          <h3>對話</h3>
+          <div class="chat travel-chat">
+            <div class="chat-log" id="travelLog"></div>
+            <div class="chat-input">
+              <input id="travelInput" placeholder="想去哪裡旅行？例如：京都三天，慢節奏" />
+              <button class="btn primary" type="button" id="btnTravelSend">送出</button>
+            </div>
+          </div>
+          <p class="muted" id="travelStatus"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="infra">
       <div class="section-head">
         <h2>基礎設施</h2>
         <p>Qwen · Ollama · FastAPI · Redis · PostgreSQL</p>
