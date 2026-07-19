@@ -38,10 +38,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 18720 --reload
 
 - 儀表板 KPI（帳戶／商機／電商客戶與營收）
 - 客戶帳戶、銷售機會管道、電商客戶、競品
-- **客服 AI · 填表 · SQL**（側欄）：CRM 問答 / Agent 填表 / 中文查庫  
-  - 填表：`GET /api/forms/template` · `POST /api/forms/turn` · `POST /api/forms/submit`  
-  - SQL：`GET /api/sql/schema` · `GET /api/sql/samples` · `POST /api/sql/ask`  
-    （skill → schema → 白名單 SELECT → 繁中答案；參考 agentic_sql_search）
+- **客服 AI · 記憶**（側欄）：CartMate 式跨會話記憶 + 填表 + 中文查庫  
+  - 記憶：`GET/POST/DELETE /api/cs/memory` · `POST /api/cs/seed` · `POST /api/cs/chat` · `GET /api/cs/greeting`（Redis，按 customer_id）  
+  - 填表：`/api/forms/*`  
+  - SQL：`/api/sql/*`（只讀白名單）
 - 基礎設施狀態（Qwen / FastAPI / Redis / Postgres）
 - Qwen 業務助理（帶 CRM 指標上下文）
 - Redis 快取 dashboard 30 秒

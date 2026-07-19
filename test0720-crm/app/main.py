@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from . import config
 from . import form_fill
 from . import sql_agent
+from . import support_memory as csmem
 from .db import fetch_all, fetch_one, json_safe
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -95,6 +96,16 @@ class FormSubmitIn(BaseModel):
 
 class SqlAskIn(BaseModel):
     question: str = Field(..., min_length=2, max_length=2000)
+
+
+class CsMemIn(BaseModel):
+    customer_id: str = Field(..., min_length=1, max_length=64)
+    text: str | None = Field(None, max_length=800)
+
+
+class CsChatIn(BaseModel):
+    customer_id: str = Field(..., min_length=1, max_length=64)
+    message: str = Field(..., min_length=1, max_length=4000)
 
 
 @app.get("/api/health")
@@ -422,6 +433,74 @@ def sql_ask(body: SqlAskIn) -> dict:
         return result
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"sql agent failed: {e}") from e
+
+
+# ----- CartMate-style support memory (Redis) -----
+
+
+@app.get("/api/cs/memory")
+def cs_memory_list(customer_id: str = "Alex", limit: int = 40) -> dict:
+    try:
+        mems = csmem.list_memories(customer_id, limit=limit)
+        return {
+            "ok": True,
+            "customer_id": csmem._norm_user(customer_id),
+            "results": mems,
+            "count": len(mems),
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/cs/memory")
+def cs_memory_add(body: CsMemIn) -> dict:
+    try:
+        if not (body.text or "").strip():
+            raise HTTPException(400, "text required")
+        item = csmem.add_memory(body.customer_id, body.text or "", kind="manual")
+        return {"ok": True, "item": item}
+    except HTTPException:
+        raise
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.delete("/api/cs/memory")
+def cs_memory_clear(customer_id: str = "Alex") -> dict:
+    try:
+        n = csmem.clear_memories(customer_id)
+        return {"ok": True, "cleared": n, "customer_id": csmem._norm_user(customer_id)}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/cs/seed")
+def cs_memory_seed(customer_id: str = "Alex") -> dict:
+    try:
+        mems = csmem.seed_demo(customer_id)
+        greet = csmem.greeting(customer_id)
+        return {"ok": True, "memories": mems, "greeting": greet}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.get("/api/cs/greeting")
+def cs_greeting(customer_id: str = "Alex") -> dict:
+    try:
+        return {"ok": True, **csmem.greeting(customer_id)}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/cs/chat")
+def cs_chat(body: CsChatIn) -> dict:
+    """Support chat with recall → answer → store facts (CartMate loop)."""
+    try:
+        return {"ok": True, **csmem.support_chat(body.customer_id, body.message)}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"cs chat failed: {e}") from e
 
 
 @app.post("/api/ai/chat")

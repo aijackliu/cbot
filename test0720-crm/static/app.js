@@ -7,7 +7,7 @@ const titles = {
   opps: ["銷售機會", "管道階段與金額（NTD）"],
   customers: ["電商客戶", "web_customers RFM / LTV"],
   competitors: ["競品情報", "competitors + signals"],
-  ai: ["客服 AI · 填表 · SQL", "問答 / 填表 / 中文查庫（Qwen + Postgres 只讀）"],
+  ai: ["客服 AI · 記憶", "CartMate 式記憶 + 填表 + 中文查庫"],
   infra: ["基礎設施", "Qwen · FastAPI · Redis · PostgreSQL"],
 };
 
@@ -309,26 +309,35 @@ function loadAI() {
 
   el.innerHTML = `
     <div class="card">
-      <h3>客服 AI · 填表 · 中文查庫</h3>
+      <h3>客服 AI · 記憶 · 填表 · 查庫</h3>
       <p class="muted">
-        三種模式：CRM 問答｜Agent 填表｜NL→SQL（只讀 Postgres，表白名單）。
-        SQL 模式參考 agentic_sql_search：skill → schema → SELECT → 繁中答案。
+        CartMate 式<strong>按客戶記憶</strong>（Redis）＋填表＋NL→SQL。
+        先填客戶名稱再對話；記憶側欄會即時更新。
       </p>
+      <div class="cs-user-bar">
+        <label class="muted">客戶 ID / 名稱
+          <input id="csCustomer" value="Alex" />
+        </label>
+        <button type="button" class="btn ghost" id="btnCsGreet">載入問候</button>
+        <button type="button" class="btn ghost" id="btnCsSeed">示範記憶</button>
+        <button type="button" class="btn ghost" id="btnCsClear">清除記憶</button>
+      </div>
       <div class="form-mode-bar">
-        <label class="muted"><input type="radio" name="aiMode" value="crm" checked /> CRM 問答</label>
+        <label class="muted"><input type="radio" name="aiMode" value="support" checked /> 客服記憶</label>
+        <label class="muted"><input type="radio" name="aiMode" value="crm" /> CRM 問答</label>
         <label class="muted"><input type="radio" name="aiMode" value="form" /> 填表</label>
         <label class="muted"><input type="radio" name="aiMode" value="sql" /> 中文查庫</label>
-        <span class="muted" id="formModeHint">選模式後輸入；右側顯示表單或 SQL 結果</span>
+        <span class="muted" id="formModeHint">客服記憶：跨會話記住訂單／偏好（Mem0 模式 → Redis）</span>
       </div>
       <div class="sql-samples muted" id="sqlSamples"></div>
     </div>
-    <div class="ai-split">
+    <div class="ai-split ai-split-3">
       <div class="chat">
         <div class="chat-log" id="chatLog">
-          <div class="bubble bot">你好。可問 CRM、用「填表」建申請，或「中文查庫」直接查 catch_crm（只讀）。</div>
+          <div class="bubble bot">輸入客戶名稱後點「載入問候」或直接對話。可切填表／查庫。</div>
         </div>
         <div class="chat-input">
-          <input id="chatInput" placeholder="例：管道金額最高的 5 個商機 / 填表：我們是 CATCH…" />
+          <input id="chatInput" placeholder="例：我的訂單 #NM-8821 還沒收… / 管道金額最高商機" />
           <button class="btn primary" id="chatSend">送出</button>
         </div>
       </div>
@@ -359,6 +368,14 @@ function loadAI() {
           <div class="sql-table-wrap" id="sqlTable"></div>
         </div>
       </div>
+      <div class="card mem-panel">
+        <div class="form-panel-head">
+          <h3>客服記憶</h3>
+          <span class="pill" id="memCount">0</span>
+        </div>
+        <p class="muted" style="margin:0 0 8px">按客戶隔離 · Redis · 類似 CartMate 側欄</p>
+        <ul class="mem-list" id="memList"><li class="muted">尚未載入</li></ul>
+      </div>
     </div>`;
   const log = $("#chatLog");
   const input = $("#chatInput");
@@ -368,24 +385,51 @@ function loadAI() {
   let formHistory = [];
   let template = null;
 
+  const customerId = () => ($("#csCustomer").value || "Alex").trim() || "Alex";
+
   const mode = () =>
-    ($("input[name=aiMode]:checked") || {}).value || "crm";
+    ($("input[name=aiMode]:checked") || {}).value || "support";
+
+  const refreshMemories = async () => {
+    try {
+      const d = await api(
+        `/api/cs/memory?customer_id=${encodeURIComponent(customerId())}`
+      );
+      const list = d.results || [];
+      $("#memCount").textContent = String(list.length);
+      if (!list.length) {
+        $("#memList").innerHTML = '<li class="muted">（尚無記憶）</li>';
+        return;
+      }
+      $("#memList").innerHTML = list
+        .map(
+          (m) =>
+            `<li><span class="mem-kind">${m.kind || "fact"}</span> ${m.memory || ""}</li>`
+        )
+        .join("");
+    } catch (e) {
+      $("#memList").innerHTML = `<li class="err">${e.message}</li>`;
+    }
+  };
 
   const syncRightPanel = () => {
     const m = mode();
-    const showForm = m !== "sql";
-    $("#panelForm").classList.toggle("hidden", !showForm);
-    $("#panelSql").classList.toggle("hidden", showForm);
+    const showSql = m === "sql";
+    $("#panelForm").classList.toggle("hidden", showSql);
+    $("#panelSql").classList.toggle("hidden", !showSql);
     const hint = $("#formModeHint");
-    if (m === "form") hint.textContent = "填表：說出公司／聯絡人／需求，右側即時更新";
-    else if (m === "sql") hint.textContent = "查庫：中文問題 → schema → SELECT → 結果表";
-    else hint.textContent = "問答：帶 KPI 上下文的業務建議（不直接跑 SQL）";
+    if (m === "form") hint.textContent = "填表：說出公司／聯絡人／需求";
+    else if (m === "sql") hint.textContent = "查庫：schema → SELECT → 結果";
+    else if (m === "support")
+      hint.textContent = "客服記憶：回憶過去 → 回答 → 寫入新事實";
+    else hint.textContent = "CRM 問答：KPI 建議（不跑 SQL、不寫記憶）";
   };
 
   $$("input[name=aiMode]").forEach((r) => {
     r.addEventListener("change", syncRightPanel);
   });
   syncRightPanel();
+  refreshMemories();
 
   // sample questions for SQL
   api("/api/sql/samples")
@@ -538,6 +582,33 @@ function loadAI() {
     }
   };
 
+  const goSupport = async (msg) => {
+    push("bot", "回憶中…");
+    const thinking = log.lastChild;
+    try {
+      const res = await api("/api/cs/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          customer_id: customerId(),
+          message: msg,
+        }),
+      });
+      thinking.textContent = res.reply || "（空）";
+      const n = (res.new_memories || []).length;
+      if (n) {
+        const m = document.createElement("div");
+        m.className = "muted";
+        m.style.fontSize = "11px";
+        m.textContent = `新記憶 +${n} · 命中舊記憶 ${(res.relevant_memories || []).length}`;
+        log.appendChild(m);
+      }
+      await refreshMemories();
+    } catch (e) {
+      thinking.textContent = "錯誤：" + e.message;
+      thinking.classList.add("err");
+    }
+  };
+
   const goForm = async (msg) => {
     push("bot", "填表中…");
     const thinking = log.lastChild;
@@ -598,6 +669,7 @@ function loadAI() {
       const m = mode();
       if (m === "form") await goForm(msg);
       else if (m === "sql") await goSql(msg);
+      else if (m === "support") await goSupport(msg);
       else await goCrm(msg);
     } finally {
       send.disabled = false;
@@ -609,6 +681,43 @@ function loadAI() {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") go();
   });
+
+  $("#btnCsGreet").onclick = async () => {
+    try {
+      const g = await api(
+        `/api/cs/greeting?customer_id=${encodeURIComponent(customerId())}`
+      );
+      push("bot", g.reply || "");
+      await refreshMemories();
+    } catch (e) {
+      push("bot", "問候失敗：" + e.message);
+    }
+  };
+  $("#btnCsSeed").onclick = async () => {
+    try {
+      const d = await api(
+        `/api/cs/seed?customer_id=${encodeURIComponent(customerId())}`,
+        { method: "POST", body: "{}" }
+      );
+      push("bot", (d.greeting && d.greeting.reply) || "已載入示範記憶");
+      await refreshMemories();
+    } catch (e) {
+      push("bot", "Seed 失敗：" + e.message);
+    }
+  };
+  $("#btnCsClear").onclick = async () => {
+    try {
+      await api(
+        `/api/cs/memory?customer_id=${encodeURIComponent(customerId())}`,
+        { method: "DELETE" }
+      );
+      push("bot", `已清除 ${customerId()} 的記憶`);
+      await refreshMemories();
+    } catch (e) {
+      push("bot", "清除失敗：" + e.message);
+    }
+  };
+  $("#csCustomer").addEventListener("change", () => refreshMemories());
 
   $("#btnFormClear").onclick = () => {
     formValues = {};

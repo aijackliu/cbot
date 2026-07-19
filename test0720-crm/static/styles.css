@@ -234,3 +234,36 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .sql-table-wrap { overflow: auto; max-height: 280px; margin-top: 8px; }
 .sql-result { font-size: 12px; }
 .sql-result th { position: sticky; top: 0; background: var(--panel); }
+
+.cs-user-bar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+  margin: 10px 0 4px;
+}
+.cs-user-bar label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.cs-user-bar input {
+  min-width: 140px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--text); padding: 8px 10px; font: inherit;
+}
+.ai-split-3 {
+  grid-template-columns: 1.05fr 0.85fr 0.7fr;
+}
+@media (max-width: 1200px) {
+  .ai-split-3 { grid-template-columns: 1fr 1fr; }
+  .mem-panel { grid-column: 1 / -1; }
+}
+@media (max-width: 980px) {
+  .ai-split-3 { grid-template-columns: 1fr; }
+}
+.mem-panel { margin: 0; max-height: min(68vh, 620px); overflow: auto; }
+.mem-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.mem-list li {
+  font-size: 12px; line-height: 1.45; padding: 8px 10px;
+  background: var(--panel2); border-radius: 10px; border: 1px solid var(--line);
+}
+.mem-kind {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  color: #9ec5ff; margin-right: 6px; text-transform: uppercase;
+}
