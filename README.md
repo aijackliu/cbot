@@ -26,8 +26,8 @@ Demo / prototype pages.
 ## 每日熱點摘要（test0722-daily-digest）
 
 - 路徑：`test0722-daily-digest/`
-- 說明：多平台熱搜（`F:\grok\2\hot-search`，含 LLM 繁中）+ Karpathy 92 RSS → Qwen → 繁中 Markdown  
-- 啟動：`.\start.ps1`（先熱搜再 digest）
+- 說明：熱搜 + Hacker News + Karpathy 92 RSS → Qwen 繁中 Markdown  
+- 啟動：`.\start.ps1`（先熱搜，再 HN+部落格合併）
 ## CATCH Growth 核心架構（test0721b）
 
 - 路徑：`test0721b/`

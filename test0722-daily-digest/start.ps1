@@ -1,19 +1,24 @@
-# 每日熱點：熱搜（grok/2）+ Karpathy 部落格摘要（Qwen 繁中）
+# 每日熱點：熱搜 + Hacker News + Karpathy 部落格
 #
 # 會依序：
 #   1. 更新熱搜（F:\grok\2\hot-search，含 LLM 轉繁中）
-#   2. 抓取 92 RSS + Qwen 排序 → output/digest-*.md
+#   2. HN + 92 RSS + Qwen → output/digest-*.md（含熱搜章節）
 #
 # 用法：
 #   .\start.ps1
-#   .\start.ps1 -NoHot          # 跳過熱搜更新（仍讀既有 latest.json）
-#   .\start.ps1 -FetchOnly      # 不呼叫 Qwen
-#   .\start.ps1 -MixHotRank     # 熱搜條目與部落格混排 Top N
+#   .\start.ps1 -NoHot
+#   .\start.ps1 -NoHn
+#   .\start.ps1 -FetchOnly
+#   .\start.ps1 -HnMode latest -HnTop 10
 
 param(
     [switch]$NoHot,
+    [switch]$NoHn,
     [switch]$FetchOnly,
     [switch]$MixHotRank,
+    [ValidateSet("front", "latest")]
+    [string]$HnMode = "front",
+    [int]$HnTop = 8,
     [int]$Hours = 24,
     [int]$Top = 5
 )
@@ -31,11 +36,11 @@ function Get-PythonExe {
 $python = Get-PythonExe
 $HotRoot = if ($env:HOT_SEARCH_ROOT) { $env:HOT_SEARCH_ROOT } else { "F:\grok\2\hot-search" }
 
-Write-Host "==> 每日熱點摘要（熱搜 + 科技部落格）" -ForegroundColor Cyan
-Write-Host "    hot-search root: $HotRoot" -ForegroundColor DarkGray
-Write-Host "    Qwen:           $($env:QWEN_URL)" -ForegroundColor DarkGray
+Write-Host "==> 每日熱點（熱搜 + HN + 部落格）" -ForegroundColor Cyan
+Write-Host "    hot-search: $HotRoot" -ForegroundColor DarkGray
+Write-Host "    HN mode:    $HnMode top=$HnTop" -ForegroundColor DarkGray
 
-# ── 1. 熱搜（與 grok/2 start.ps1 同款抓取 + 繁中）────────────────
+# ── 1. 熱搜 ─────────────────────────────────────────────────────
 if (-not $NoHot) {
     $hotScript = Join-Path $HotRoot "fetch_hot_search.py"
     if (Test-Path $hotScript) {
@@ -44,7 +49,7 @@ if (-not $NoHot) {
         try {
             & $python $hotScript --limit 30
             if ($LASTEXITCODE -ne 0) {
-                Write-Host "==> 熱搜更新失敗（exit $LASTEXITCODE），仍繼續 digest" -ForegroundColor Yellow
+                Write-Host "==> 熱搜更新失敗（exit $LASTEXITCODE），仍繼續" -ForegroundColor Yellow
             } else {
                 Write-Host "==> 熱搜已更新" -ForegroundColor Green
             }
@@ -52,22 +57,25 @@ if (-not $NoHot) {
             Pop-Location
         }
     } else {
-        Write-Host "==> 找不到 $hotScript，跳過熱搜更新" -ForegroundColor Yellow
+        Write-Host "==> 找不到熱搜腳本，跳過更新" -ForegroundColor Yellow
     }
 } else {
-    Write-Host "==> 跳過熱搜更新（-NoHot），使用既有 latest.json" -ForegroundColor DarkGray
+    Write-Host "==> 跳過熱搜更新（-NoHot）" -ForegroundColor DarkGray
 }
 
-# ── 2. 部落格 RSS + Qwen + 合併輸出 ─────────────────────────────
-Write-Host "==> [2/2] 部落格摘要 + 合併 Markdown…" -ForegroundColor Cyan
+# ── 2. HN + 博客 + 合併 ─────────────────────────────────────────
+Write-Host "==> [2/2] HN + 部落格 + 合併 Markdown…" -ForegroundColor Cyan
 $argsList = @(
     "run_digest.py",
     "--hours", "$Hours",
-    "--top", "$Top"
+    "--top", "$Top",
+    "--hn-mode", $HnMode,
+    "--hn-top", "$HnTop"
 )
 if ($FetchOnly) { $argsList += "--fetch-only" }
 if ($MixHotRank) { $argsList += "--mix-hot-rank" }
-# 熱搜已在上面 refresh（或 -NoHot 略過）；此處只讀 latest.json，不重複抓
+if ($NoHn) { $argsList += "--no-hn" }
+# -NoHot 只跳過重抓；digest 仍讀 latest.json 寫熱搜章
 
 & $python @argsList
 if ($LASTEXITCODE -ne 0) { throw "run_digest.py 失敗" }
@@ -76,12 +84,7 @@ $day = (Get-Date).ToString("yyyy-MM-dd")
 $out = Join-Path $Root "output\digest-$day.md"
 Write-Host ""
 Write-Host "完成。" -ForegroundColor Green
-if (Test-Path $out) {
-    Write-Host "摘要檔    $out" -ForegroundColor White
-}
+if (Test-Path $out) { Write-Host "摘要檔    $out" -ForegroundColor White }
 $latestHot = Join-Path $HotRoot "data\latest.json"
-if (Test-Path $latestHot) {
-    Write-Host "熱搜 JSON $latestHot"
-    Write-Host "熱搜頁    見 grok/2 :  .\start.ps1 後開 hot-search/hot-search.html"
-}
+if (Test-Path $latestHot) { Write-Host "熱搜 JSON $latestHot" }
 Write-Host ""
