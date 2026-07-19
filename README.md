@@ -23,10 +23,11 @@ Demo / prototype pages.
 - GitHub：https://github.com/aijackliu/cbot/tree/main/test0719c
 - 說明：行銷站核心（看板／RAG／文案／基建）+ gimi 配圖；**不含**診所與旅遊記憶 Tutorial
 
-## 科技部落格每日摘要（test0722-daily-digest）
+## 每日熱點摘要（test0722-daily-digest）
 
 - 路徑：`test0722-daily-digest/`
-- 說明：Karpathy 向 92 RSS → Qwen 排序 → 繁中 Markdown 每日 digest
+- 說明：多平台熱搜（`F:\grok\2\hot-search`，含 LLM 繁中）+ Karpathy 92 RSS → Qwen → 繁中 Markdown  
+- 啟動：`.\start.ps1`（先熱搜再 digest）
 ## CATCH Growth 核心架構（test0721b）
 
 - 路徑：`test0721b/`
