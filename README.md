@@ -15,6 +15,13 @@ Demo / prototype pages.
 - 說明：依航班與住宿的關西 6 日行程卡（無 USJ），靜態 HTML
 
 
+
+## CATCH Growth 核心架構（test0719c）
+
+- 路徑：`test0719c/`
+- 線上預覽：https://aijackliu.github.io/cbot/test0719c/
+- GitHub：https://github.com/aijackliu/cbot/tree/main/test0719c
+- 說明：行銷站核心（看板／RAG／文案／基建）+ gimi 配圖；**不含**診所與旅遊記憶 Tutorial
 ## CATCH Growth 核心架構（test0721b）
 
 - 路徑：`test0721b/`
