@@ -1,0 +1,8 @@
+﻿.env
+__pycache__/
+*.pyc
+data/expenses.db
+data/receipts/
+data/mm_rag/
+.venv/
+*.db

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import redis
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -21,6 +21,11 @@ from . import sql_agent
 from . import support_memory as csmem
 from . import query_router
 from . import agri_agent
+from . import receipt_expense
+from . import cs_audio
+from . import mm_rag
+from . import wiki_band_rag
+from . import kb_router
 from .db import fetch_all, fetch_one, json_safe
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -115,6 +120,11 @@ class CsRouteIn(BaseModel):
     message: str = Field(..., min_length=1, max_length=4000)
 
 
+class CsKbRouteIn(BaseModel):
+    customer_id: str = Field("Alex", min_length=1, max_length=64)
+    message: str = Field(..., min_length=1, max_length=4000)
+
+
 class AgriAskIn(BaseModel):
     question: str = Field(..., min_length=2, max_length=2000)
 
@@ -184,9 +194,13 @@ def infra_status() -> dict:
             "web_orders",
             "activities",
             "competitors",
+            "receipt_expenses",
         ):
-            c = fetch_one(f'SELECT COUNT(*)::int AS n FROM "{table}"')
-            counts[table] = c["n"] if c else 0
+            try:
+                c = fetch_one(f'SELECT COUNT(*)::int AS n FROM "{table}"')
+                counts[table] = c["n"] if c else 0
+            except Exception:  # noqa: BLE001
+                counts[table] = None
         services["postgresql"] = {
             "url": f"postgresql://{config.PG_HOST}:{config.PG_PORT}/{config.PG_DB}",
             "ok": True,
@@ -533,6 +547,173 @@ def cs_route(body: CsRouteIn) -> dict:
         raise HTTPException(502, f"route failed: {e}") from e
 
 
+@app.get("/api/cs/kb/databases")
+def cs_kb_databases() -> dict:
+    """List knowledge stores available to the KB router."""
+    return {"ok": True, "databases": kb_router.list_databases()}
+
+
+@app.post("/api/cs/kb-route")
+def cs_kb_route(body: CsKbRouteIn) -> dict:
+    """
+    Multi-KB routing: classify → support|mmrag|wikiband|sql|agri|crm|form
+    → answer; weak retrieval falls back to support FAQ.
+    Pattern from rag_agent_with_database_routing (no Orq/Qdrant).
+    """
+    try:
+        return kb_router.route_and_answer(body.customer_id, body.message)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"kb-route failed: {e}") from e
+
+
+@app.post("/api/cs/voice")
+async def cs_voice(
+    file: UploadFile = File(...),
+    mode: str = Form("route"),
+    customer_id: str = Form("Alex"),
+    form_values: str = Form(""),
+    form_history: str = Form(""),
+    session_id: str = Form(""),
+) -> dict:
+    """
+    CS multi-modal voice: mic audio → Gemini STT → same bus as text
+    (route | support | form | sql | crm). No GPU / local ASR.
+    """
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "empty audio")
+    if len(raw) > 12 * 1024 * 1024:
+        raise HTTPException(400, "audio too large (max 12MB)")
+    mime = file.content_type or "audio/webm"
+    try:
+        stt = cs_audio.transcribe_audio(raw, mime)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"voice STT failed: {e}") from e
+
+    transcript = (stt.get("transcript") or "").strip()
+    if not transcript or transcript.startswith("【聽不清】"):
+        return {
+            "ok": False,
+            "error": "無法辨識語音",
+            "transcript": transcript,
+            "stt": stt,
+        }
+
+    m = (mode or "route").strip().lower()
+    out: dict[str, Any] = {
+        "ok": True,
+        "input": "mic",
+        "mode": m,
+        "transcript": transcript,
+        "stt": stt,
+        "customer_id": customer_id,
+    }
+
+    try:
+        if m == "support":
+            out.update(csmem.support_chat(customer_id, transcript))
+        elif m in ("kb", "kbroute", "kb-route"):
+            kb = kb_router.route_and_answer(customer_id, transcript)
+            out.update(kb)
+            out["mode"] = "kb"
+        elif m == "form":
+            try:
+                values = json.loads(form_values) if form_values.strip() else {}
+            except json.JSONDecodeError:
+                values = {}
+            try:
+                history = json.loads(form_history) if form_history.strip() else []
+            except json.JSONDecodeError:
+                history = []
+            if not isinstance(values, dict):
+                values = {}
+            if not isinstance(history, list):
+                history = []
+            result = form_fill.form_turn(
+                transcript,
+                values=values,
+                history=history,
+            )
+            if session_id and result.get("values"):
+                try:
+                    form_fill.save_draft(session_id, result["values"])
+                except Exception:  # noqa: BLE001
+                    pass
+            out["form"] = result
+            out["reply"] = result.get("reply") or ""
+            if result.get("ask_next"):
+                out["reply"] = (out["reply"] + "\n" + result["ask_next"]).strip()
+        elif m == "sql":
+            out["sql"] = sql_agent.ask(transcript)
+            out["reply"] = (out["sql"] or {}).get("answer_zh") or (
+                out["sql"] or {}
+            ).get("error") or "完成"
+        elif m == "crm":
+            out.update(_cs_crm_chat(transcript))
+        else:
+            # default: lightweight route
+            routed = query_router.route_query(customer_id, transcript)
+            out.update(routed)
+            out["action"] = routed.get("action")
+            out["decision"] = routed.get("decision")
+            out["reply"] = routed.get("reply")
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"voice bus failed ({m}): {e}") from e
+
+    return out
+
+
+def _cs_crm_chat(message: str) -> dict:
+    """Minimal CRM KPI chat (same spirit as /api/ai/chat)."""
+    # Prefer existing endpoint logic by calling qwen with short context
+    try:
+        dash = fetch_one(
+            """
+            SELECT
+              (SELECT COUNT(*)::int FROM accounts) AS accounts,
+              (SELECT COUNT(*)::int FROM opportunities) AS opps,
+              (SELECT COALESCE(SUM(amount),0)::float FROM opportunities) AS pipeline
+            """
+        ) or {}
+    except Exception:  # noqa: BLE001
+        dash = {}
+    system = (
+        "你是 CATCH CRM 業務助理，繁體中文。"
+        f"目前 KPI：帳戶={dash.get('accounts')} 商機={dash.get('opps')} "
+        f"管道金額={dash.get('pipeline')}。"
+        "簡短實用回答。"
+    )
+    payload = {
+        "model": config.QWEN_MODEL,
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": message},
+        ],
+        "temperature": 0.3,
+        "max_tokens": 600,
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
+    req = urllib.request.Request(
+        config.QWEN_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=90) as resp:
+            raw = json.loads(resp.read().decode("utf-8"))
+        msg = (raw.get("choices") or [{}])[0].get("message") or {}
+        reply = (msg.get("content") or msg.get("reasoning_content") or "").strip()
+        reply = re.sub(r"<think>[\s\S]*?</think>", "", reply, flags=re.I).strip()
+        return {"reply": reply or "（空回應）"}
+    except Exception as e:  # noqa: BLE001
+        return {"reply": f"CRM 問答失敗：{e}"}
+
+
 # ----- Agriculture vertical (tool-calling bus sibling tab) -----
 
 
@@ -558,6 +739,103 @@ def agri_ask(body: AgriAskIn) -> dict:
         raise HTTPException(400, str(e)) from e
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"agri agent failed: {e}") from e
+
+
+# ----- Receipt OCR + expense ledger (Gemini vision + optional Qwen polish) -----
+
+
+class ExpenseSaveIn(BaseModel):
+    vendor: str | None = None
+    date: str | None = None
+    currency: str | None = "TWD"
+    subtotal: float | None = None
+    tax: float | None = None
+    total: float | None = None
+    category: str | None = "其他"
+    notes: str | None = None
+    line_items: list[dict] | None = None
+    summary_zh: str | None = None
+
+
+@app.post("/api/expenses/extract")
+async def expenses_extract(
+    file: UploadFile = File(...),
+    polish: bool = Form(True),
+) -> dict:
+    """Vision extract via Google AI Studio Gemini; optional Qwen category polish."""
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "empty file")
+    if len(raw) > 12 * 1024 * 1024:
+        raise HTTPException(400, "file too large (max 12MB)")
+    mime = file.content_type or "image/jpeg"
+    if mime not in ("image/jpeg", "image/png", "image/webp", "image/gif"):
+        mime = "image/jpeg"
+    try:
+        extracted = receipt_expense.extract_and_optionally_polish(
+            raw, mime_type=mime, polish=polish
+        )
+        return {
+            "ok": True,
+            "extracted": extracted,
+            "vision": "gemini",
+            "qwen_url": config.QWEN_URL,
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"extract failed: {e}") from e
+
+
+@app.post("/api/expenses")
+def expenses_save(body: ExpenseSaveIn) -> dict:
+    try:
+        data = body.model_dump()
+        if body.summary_zh and not data.get("notes"):
+            data["notes"] = body.summary_zh
+        rec = receipt_expense.save_expense(data, image_bytes=None)
+        return {"ok": True, "expense": rec}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/expenses/extract-and-save")
+async def expenses_extract_and_save(
+    file: UploadFile = File(...),
+    polish: bool = Form(True),
+) -> dict:
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "empty file")
+    mime = file.content_type or "image/jpeg"
+    try:
+        extracted = receipt_expense.extract_and_optionally_polish(
+            raw, mime_type=mime, polish=polish
+        )
+        rec = receipt_expense.save_expense(
+            extracted, image_bytes=raw, mime_type=mime
+        )
+        return {"ok": True, "extracted": extracted, "expense": rec}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+@app.get("/api/expenses")
+def expenses_list(limit: int = 50) -> dict:
+    try:
+        return {
+            "ok": True,
+            "items": receipt_expense.list_expenses(limit=limit),
+            "by_category": receipt_expense.summary_by_category(),
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.delete("/api/expenses/{expense_id}")
+def expenses_delete(expense_id: str) -> dict:
+    ok = receipt_expense.delete_expense(expense_id)
+    if not ok:
+        raise HTTPException(404, "not found")
+    return {"ok": True, "deleted": expense_id}
 
 
 @app.post("/api/ai/chat")
@@ -634,6 +912,180 @@ def ai_chat(body: ChatIn) -> dict:
     }
 
 
+# ----- Multimodal RAG (Hands-On multimodal_rag · lightweight) -----
+
+
+class MmRagTextIn(BaseModel):
+    text: str
+    label: str | None = "貼上文字"
+
+
+class MmRagUrlIn(BaseModel):
+    url: str
+
+
+class MmRagAskIn(BaseModel):
+    question: str
+    top_k: int | None = 5
+    hyde: bool | None = False
+    n_hyde: int | None = 3
+
+
+@app.get("/api/mmrag/stats")
+def mmrag_stats() -> dict:
+    try:
+        return mm_rag.stats()
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.delete("/api/mmrag")
+def mmrag_clear() -> dict:
+    try:
+        return mm_rag.clear_index()
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/mmrag/text")
+def mmrag_add_text(body: MmRagTextIn) -> dict:
+    try:
+        return mm_rag.add_text(body.text, label=body.label or "貼上文字")
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+@app.post("/api/mmrag/url")
+def mmrag_add_url(body: MmRagUrlIn) -> dict:
+    try:
+        return mm_rag.add_url(body.url)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+@app.post("/api/mmrag/media")
+async def mmrag_add_media(
+    file: UploadFile = File(...),
+    kind: str = Form("image"),
+    label: str = Form(""),
+) -> dict:
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "empty file")
+    mime = file.content_type or "application/octet-stream"
+    k = (kind or "image").strip().lower()
+    if k not in ("image", "audio"):
+        # auto-detect
+        if mime.startswith("audio") or mime in ("video/webm",):
+            k = "audio"
+        else:
+            k = "image"
+    try:
+        return mm_rag.add_media(
+            raw,
+            mime_type=mime,
+            kind=k,
+            label=label or file.filename or k,
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+@app.post("/api/mmrag/ask")
+def mmrag_ask(body: MmRagAskIn) -> dict:
+    """
+    RAG ask. Optional HyDE: hypothetical docs → embed average → retrieve.
+    """
+    try:
+        return mm_rag.query(
+            body.question,
+            top_k=body.top_k or 5,
+            hyde=bool(body.hyde),
+            n_hyde=body.n_hyde or 3,
+        )
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+# ----- Wiki 樂團 RAG (Hands-On rock_music_rag · BM25) -----
+
+
+class WikiBandIn(BaseModel):
+    name: str
+    lang: str | None = "en"
+
+
+class WikiBandAskIn(BaseModel):
+    question: str
+    top_k: int | None = 5
+
+
+class WikiBandRemoveIn(BaseModel):
+    title: str
+
+
+@app.get("/api/wikiband/stats")
+def wikiband_stats() -> dict:
+    try:
+        return wiki_band_rag.stats()
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.delete("/api/wikiband")
+def wikiband_clear() -> dict:
+    try:
+        return wiki_band_rag.clear()
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/wikiband/add")
+def wikiband_add(body: WikiBandIn) -> dict:
+    try:
+        return wiki_band_rag.add_band(body.name, lang=body.lang or "en")
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+@app.post("/api/wikiband/defaults")
+def wikiband_defaults(lang: str = "en") -> dict:
+    try:
+        return wiki_band_rag.load_defaults(lang=lang or "en")
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
+@app.post("/api/wikiband/remove")
+def wikiband_remove(body: WikiBandRemoveIn) -> dict:
+    try:
+        return wiki_band_rag.remove_band(body.title)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
+
+
+@app.post("/api/wikiband/ask")
+def wikiband_ask(body: WikiBandAskIn) -> dict:
+    try:
+        return wiki_band_rag.ask(body.question, top_k=body.top_k or 5)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, str(e)) from e
+
+
 @app.get("/api/remote/overview")
 def remote_overview() -> dict:
     """Show remote FastAPI openapi summary for demo integration panel."""
@@ -666,3 +1118,28 @@ def styles() -> FileResponse:
 @app.get("/app.js")
 def app_js() -> FileResponse:
     return FileResponse(STATIC_DIR / "app.js", media_type="application/javascript")
+
+
+@app.get("/crm-explain")
+@app.get("/crm-explain.html")
+def crm_explain_page() -> FileResponse:
+    """gimi Traditional Chinese architecture explain page."""
+    return FileResponse(STATIC_DIR / "crm-explain.html")
+
+
+@app.get("/crm-explain-styles.css")
+def crm_explain_styles() -> FileResponse:
+    return FileResponse(STATIC_DIR / "crm-explain-styles.css", media_type="text/css")
+
+
+@app.get("/crm-explain-extra.css")
+def crm_explain_extra() -> FileResponse:
+    return FileResponse(STATIC_DIR / "crm-explain-extra.css", media_type="text/css")
+
+
+app.mount(
+    "/assets/crm-explain",
+    StaticFiles(directory=str(STATIC_DIR / "assets" / "crm-explain")),
+    name="crm_explain_assets",
+)
+

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CATCH CRM · 架構說明（gimi 繁體配圖）</title>
+  <meta name="description" content="CATCH CRM 展示台架構：客服多模態、知識庫路由、多模態 RAG、Wiki 樂團、農業、收據。gimi quirky-sketch 繁體說明。" />
+  <link rel="stylesheet" href="/crm-explain-styles.css" />
+  <link rel="stylesheet" href="/crm-explain-extra.css" />
+</head>
+<body class="explain-page">
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#overview">CATCH <span>CRM</span></a>
+      <nav>
+        <a href="#overview">總覽</a>
+        <a href="#stack">基建</a>
+        <a href="#cs">客服</a>
+        <a href="#kb">知識庫路由</a>
+        <a href="#rag">RAG</a>
+        <a href="#map">地圖</a>
+        <a class="btn small primary" href="http://127.0.0.1:18720/">開展示台</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero explain-hero" id="overview">
+      <div class="hero-copy">
+        <p class="eyebrow">test0724 · CATCH CRM 架構說明</p>
+        <h1>客服總線 + 多庫 RAG<br />真實庫表的 AI 展示台</h1>
+        <p class="lead">
+          說明 <strong>test0720-crm</strong>（埠 <code>:18720</code>）：
+          Postgres 看板、客服<strong>文字／表單／麥克風</strong>、
+          <strong>知識庫路由</strong>、多模態 RAG（含 HyDE）、Wiki 樂團、農業、收據 OCR。
+          配圖風格參考
+          <a href="https://github.com/GiMi-Xiaomi/gimi-illustration-skill" target="_blank" rel="noopener">gimi-illustration-skill</a>
+          · quirky-sketch · <strong>繁體說明</strong>。
+        </p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#stack">基建 ↓</a>
+          <a class="btn ghost" href="#kb">知識庫路由 ↓</a>
+        </div>
+        <div class="trust">
+          <span class="chip">Postgres catch_crm</span>
+          <span class="chip">Redis</span>
+          <span class="chip">Qwen · Gemini</span>
+          <span class="chip">無 GPU 展示</span>
+        </div>
+      </div>
+      <div class="hero-card explain-hero-card">
+        <img src="/assets/crm-explain/01-stack-overview.jpg" alt="CRM LAN 基建總覽" width="960" height="540" />
+        <p class="caption">FastAPI 中樞 · Postgres · Redis · Qwen · Gemini</p>
+      </div>
+    </section>
+
+    <section class="section" id="stack">
+      <div class="section-head">
+        <h2>① LAN 基建總覽</h2>
+        <p>本機演示埠 <code>:18720</code> · 資料與模型在遠端 LAN（可改 .env）</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>瀏覽器只打本站 FastAPI；
+          <strong>Postgres</strong> 出 CRM 數字與收據帳本、
+          <strong>Redis</strong> 做記憶／RAG 索引、
+          <strong>Qwen</strong> 對話與路由編排、
+          <strong>Gemini</strong> 負責識圖與語音轉寫（無本機 GPU）。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="/assets/crm-explain/01-stack-overview.jpg" alt="LAN 五件套" loading="lazy" />
+          <figcaption>
+            <strong>五件套</strong>
+            FastAPI 中樞 · Postgres 真相 · Redis 快取／索引 · Qwen 生成 · Gemini 視聽
+          </figcaption>
+        </figure>
+      </div>
+      <div class="panel">
+        <table class="pattern-table compare-table">
+          <thead>
+            <tr><th>元件</th><th>預設位址</th><th>本站用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>FastAPI</td><td><code>127.0.0.1:18720</code></td><td>頁面 + 全部 API</td></tr>
+            <tr><td>PostgreSQL</td><td><code>100.88.220.82:5432 / catch_crm</code></td><td>帳戶、商機、電商、收據</td></tr>
+            <tr><td>Redis</td><td><code>:6379</code></td><td>客服記憶、填表草稿、mmrag／Wiki 索引</td></tr>
+            <tr><td>Qwen</td><td><code>:8080/v1/chat/completions</code></td><td>客服、SQL、農業、HyDE 假想文</td></tr>
+            <tr><td>Gemini</td><td>Google AI Studio</td><td>收據 OCR、語音 STT、多模態描述</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section soft" id="cs">
+      <div class="section-head">
+        <h2>② 客服多模態總線</h2>
+        <p>同一面板：文字 · 表單 · 麥克風（Gemini STT）</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>客戶可以用<strong>打字</strong>、填<strong>服務申請表</strong>、或按
+          <strong>🎤 錄音</strong>；語音先經 Gemini 轉寫，再進入目前選定的模式
+         （知識庫路由／部門路由／記憶／SQL…）。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="/assets/crm-explain/02-cs-multimodal.jpg" alt="客服多模態進線" loading="lazy" />
+          <figcaption>
+            <strong>三路進線 → 一條總線</strong>
+            Text · Form · Mic 匯入 CS Bus，後段再分流到各 agent
+          </figcaption>
+        </figure>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <h3>主路徑</h3>
+          <pre class="arch-pre">瀏覽器 #ai
+  → 文字 POST /api/cs/*
+  → 表單 /api/forms/*
+  → 🎤 /api/cs/voice
+       Gemini STT → 同一 mode</pre>
+        </div>
+        <div class="panel">
+          <h3>模式（可切）</h3>
+          <ul class="arch-list">
+            <li><strong>知識庫路由</strong> — 自動選庫（預設）</li>
+            <li><strong>部門路由</strong> — resolve / escalate</li>
+            <li>客服記憶 · CRM 問答 · 填表 · 中文查庫</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="kb">
+      <div class="section-head">
+        <h2>③ 知識庫路由</h2>
+        <p>精簡自 Hands-On database routing · 無 Orq／Qdrant</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>一則問題先<strong>分類到哪個庫</strong>
+          （客服 FAQ、多模態 RAG、Wiki 樂團、SQL、農業、CRM KPI、填表），
+          再檢索回答；若命中太弱，<strong>回退客服 FAQ</strong>，右側顯示路由理由與來源。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="/assets/crm-explain/03-kb-routing.jpg" alt="知識庫路由交換機" loading="lazy" />
+          <figcaption>
+            <strong>分類 → 專庫 →（可選）回退</strong>
+            support · mmrag · wikiband · sql · agri · crm · form
+          </figcaption>
+        </figure>
+      </div>
+      <div class="panel">
+        <table class="pattern-table compare-table">
+          <thead>
+            <tr><th>database</th><th>繁中</th><th>典型問句</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>support</code></td><td>客服 FAQ／升級</td><td>退貨、發票、401、投訴</td></tr>
+            <tr><td><code>mmrag</code></td><td>多模態知識庫</td><td>依文件／圖／音回答</td></tr>
+            <tr><td><code>wikiband</code></td><td>Wiki 樂團</td><td>主唱、專輯、Nirvana…</td></tr>
+            <tr><td><code>sql</code></td><td>CRM 查表</td><td>多少帳戶、管道 Top</td></tr>
+            <tr><td><code>agri</code></td><td>農業</td><td>番茄黃葉、插秧天氣</td></tr>
+            <tr><td><code>crm</code> / <code>form</code></td><td>KPI／填表</td><td>業績建議、約演示</td></tr>
+          </tbody>
+        </table>
+        <pre class="arch-pre" style="margin-top:14px">POST /api/cs/kb-route
+  { customer_id, message }
+→ routing + reply + sources + fallback_used</pre>
+      </div>
+    </section>
+
+    <section class="section soft" id="rag">
+      <div class="section-head">
+        <h2>④ 多模態 RAG · HyDE · 垂直分頁</h2>
+        <p>與總線並列：mmrag、農業、Wiki 樂團、收據</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>文件／URL／圖／音寫入 Redis 索引；
+          可開 <strong>HyDE</strong>（假想答案 → 向量平均 → 檢索）提升短問命中。
+          另有 Wikipedia+BM25 樂團庫、農業工具鏈、Gemini 收據入 Postgres。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="/assets/crm-explain/04-mmrag-hyde.jpg" alt="多模態與 HyDE" loading="lazy" />
+          <figcaption>
+            <strong>Multimodal 索引 × HyDE 檢索</strong>
+            左：圖文音進 Redis；右：假想段落平均成檢索向量
+          </figcaption>
+        </figure>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <h3>mmrag + HyDE</h3>
+          <pre class="arch-pre">索引 /api/mmrag/text|url|media
+提問 /api/mmrag/ask
+  hyde=true, n_hyde=3
+→ 假想文 → embed 平均 → top-k
+→ Gemini 引用回答</pre>
+        </div>
+        <div class="panel">
+          <h3>垂直分頁</h3>
+          <ul class="arch-list">
+            <li><strong>農業</strong> — 天氣／作物曆／RSS → Qwen</li>
+            <li><strong>Wiki 樂團</strong> — MediaWiki + BM25</li>
+            <li><strong>收據</strong> — Gemini OCR → <code>receipt_expenses</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="map">
+      <div class="section-head">
+        <h2>⑤ 側欄地圖 · 怎麼開</h2>
+        <p>展示台與本說明頁的對應</p>
+      </div>
+      <div class="panel">
+        <table class="pattern-table compare-table">
+          <thead>
+            <tr><th>側欄</th><th>你會看到</th><th>關鍵 API</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>儀表板～競品</td><td>Postgres CRM 表</td><td><code>/api/dashboard</code>…</td></tr>
+            <tr><td>客服 AI</td><td>文字／表單／mic／KB 路由</td><td><code>/api/cs/kb-route</code> · <code>/api/cs/voice</code></td></tr>
+            <tr><td>多模態 RAG</td><td>索引 + HyDE 開關</td><td><code>/api/mmrag/*</code></td></tr>
+            <tr><td>農業客戶</td><td>多工具助理</td><td><code>/api/agri/ask</code></td></tr>
+            <tr><td>Wiki 樂團</td><td>Wiki + BM25</td><td><code>/api/wikiband/*</code></td></tr>
+            <tr><td>收據費用</td><td>OCR 帳本</td><td><code>/api/expenses/*</code></td></tr>
+            <tr><td>基礎設施</td><td>連線健康</td><td><code>/api/infra/status</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel arch-one-box" style="margin-top:14px">
+        <p>
+          <strong>啟動展示台：</strong>
+        </p>
+        <pre class="arch-pre">cd F:\grok\3\cbot\test0720-crm
+.\start.ps1
+# http://127.0.0.1:18720/
+# 架構說明：http://127.0.0.1:18720/crm-explain
+# 或直接開本資料夾 index.html</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="lead-wrap">
+      <p>
+        CATCH CRM 架構說明 · gimi quirky-sketch 配圖 ·
+        參考 <a href="https://github.com/GiMi-Xiaomi/gimi-illustration-skill" target="_blank" rel="noopener">gimi-illustration-skill</a>
+        · Hands-On AI Engineering 精簡整合
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
