@@ -30,6 +30,14 @@ cd test0721-marketing
 - **知識庫**：PG 語料目錄 + 內部文章 + 可新增文章（寫 Redis，重建索引後進 RAG）
 - 啟動時自動 seed 假證言／方案／團隊／知識文章／補充詢盤
 
+### 核心架構說明頁（不含診所／旅遊記憶）
+
+專頁：**`/core-explain`**（`static/core-explain.html`）  
+gimi 繁體配圖：`static/assets/core/`  
+長文：`core-architecture.md`  
+涵蓋：LAN 基建 · 真實表看板 · AI 文案 · 知識庫 RAG  
+**不涵蓋**：`ai_travel_agent_memory`、`rag_failure_diagnostics_clinic`
+
 ### RAG API
 
 | 方法 | 路徑 | 說明 |

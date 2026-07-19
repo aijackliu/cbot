@@ -694,6 +694,13 @@ def explain_page() -> FileResponse:
     return FileResponse(STATIC_DIR / "explain.html")
 
 
+@app.get("/core-explain")
+@app.get("/core-explain.html")
+def core_explain_page() -> FileResponse:
+    """行銷站核心架構（看板／RAG／文案／基建）· 不含診所與旅遊記憶。"""
+    return FileResponse(STATIC_DIR / "core-explain.html")
+
+
 @app.get("/styles.css")
 def styles() -> FileResponse:
     return FileResponse(STATIC_DIR / "styles.css", media_type="text/css")

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CATCH Growth · 核心架構說明</title>
+  <meta name="description" content="test0721-marketing 行銷站核心架構：看板、知識庫 RAG、AI 文案、LAN 基建。gimi 繁體配圖。" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="explain.css" />
+</head>
+<body class="explain-page">
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#overview">CATCH <span>Growth</span></a>
+      <nav>
+        <a href="#overview">總覽</a>
+        <a href="#stack">基建</a>
+        <a href="#data">數據</a>
+        <a href="#ai">AI</a>
+        <a href="#map">地圖</a>
+        <a class="btn small primary" href="#overview">回主站</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero explain-hero" id="overview">
+      <div class="hero-copy">
+        <p class="eyebrow">test0721b · CATCH Growth 核心架構說明</p>
+        <h1>行銷成長展示站<br />真實庫表 + AI 能力</h1>
+        <p class="lead">
+          本頁說明 <strong>CATCH Growth</strong> 核心：落地頁、Postgres 看板、團隊／知識庫、
+          Qwen 文案、Ollama RAG。配圖
+          <a href="https://github.com/GiMi-Xiaomi/gimi-illustration-skill" target="_blank" rel="noopener">gimi-illustration</a>
+          · quirky-sketch · <strong>繁體</strong>。
+        </p>
+        <p class="muted" style="margin-top:8px;font-size:14px">
+          不含：ai_travel_agent_memory、rag_failure_diagnostics_clinic（另頁說明）。
+        </p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#stack">基建 ↓</a>
+          <a class="btn ghost" href="#ai">AI 雙路徑 ↓</a>
+        </div>
+        <div class="trust">
+          <span class="chip">Postgres catch_crm</span>
+          <span class="chip">Redis</span>
+          <span class="chip">Qwen · Ollama</span>
+        </div>
+      </div>
+      <div class="hero-card explain-hero-card">
+        <img src="assets/core/01-stack-overview.jpg" alt="行銷站 LAN 基建" width="960" height="540" />
+        <p class="caption">FastAPI 串起 Postgres · Redis · Qwen · Ollama</p>
+      </div>
+    </section>
+
+    <section class="section" id="stack">
+      <div class="section-head">
+        <h2>① LAN 基建總覽</h2>
+        <p>本機演示埠 <code>:18721</code> · 服務在遠端 LAN（可改 env）</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>瀏覽器只打本站 FastAPI；
+          <strong>Postgres</strong> 出數字、<strong>Redis</strong> 快取與索引、
+          <strong>Qwen</strong> 寫文案／生成、<strong>Ollama</strong> 做 embedding 與可選 chat。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="assets/core/01-stack-overview.jpg" alt="LAN 五件套" loading="lazy" />
+          <figcaption>
+            <strong>五件套</strong>
+            Postgres 真相 · Redis 快取／向量 · Qwen 生成 · Ollama 模型 · FastAPI 中樞
+          </figcaption>
+        </figure>
+      </div>
+      <div class="panel">
+        <table class="pattern-table compare-table">
+          <thead>
+            <tr><th>元件</th><th>預設位址</th><th>本站用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>FastAPI</td><td><code>127.0.0.1:18721</code></td><td>頁面 + API</td></tr>
+            <tr><td>PostgreSQL</td><td><code>:5432 / catch_crm</code></td><td>ad_daily、計畫、受眾、詢盤…</td></tr>
+            <tr><td>Redis</td><td><code>:6379</code></td><td>dashboard 快取、seed、RAG 向量</td></tr>
+            <tr><td>Qwen</td><td><code>:8080/v1</code></td><td>行銷文案生成</td></tr>
+            <tr><td>Ollama</td><td><code>:11434</code></td><td>tags、embedding、RAG 生成</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section soft" id="data">
+      <div class="section-head">
+        <h2>② 真實表驅動看板</h2>
+        <p>落地頁區塊：Hero KPI · 渠道 · 詢盤 · 方案 · 受眾 · 團隊</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>看板數字來自 <code>catch_crm</code> 表（如
+          <code>ad_daily</code>），不是純靜態假圖；展示用文案／證言可走 Redis seed。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="assets/core/02-metrics-board.jpg" alt="真實表驅動看板" loading="lazy" />
+          <figcaption>
+            <strong>庫表 → 看板 → 詢盤</strong>
+            讀取真實表聚合 KPI；表單寫回詢盤（演示）
+          </figcaption>
+        </figure>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <h3>主路徑</h3>
+          <pre class="arch-pre">瀏覽器 #metrics
+  → GET /api/marketing/overview
+  → Postgres（ad_daily / plans / orders…）
+  → Redis 快取（約 45 秒）
+  → 回傳 KPI + 渠道 + 詢盤</pre>
+          <h3>頁面區塊</h3>
+          <ul class="points">
+            <li><code>#metrics</code> 行銷數據看板</li>
+            <li><code>#team</code> 團隊名冊（seed）</li>
+            <li><code>#cases</code> 案例／證言</li>
+            <li><code>#audiences</code> 受眾包</li>
+            <li><code>#pricing</code> 方案</li>
+            <li><code>#lead</code> 預約表單 → <code>POST /api/leads</code></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>常見表（示意）</h3>
+          <ul class="points">
+            <li><code>ad_daily</code> — 廣告日報</li>
+            <li><code>marketing_plans</code> — 年度／季計畫</li>
+            <li><code>audience_packs</code> — 受眾包</li>
+            <li><code>form_submissions</code> — 表單詢盤</li>
+            <li><code>web_orders</code> — 訂單彙總（若有）</li>
+          </ul>
+          <p class="muted note">連線失敗時前端可降級顯示 seed／空狀態，不崩頁。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="ai">
+      <div class="section-head">
+        <h2>③ AI 雙路徑：文案 × 知識庫 RAG</h2>
+        <p>兩條能力分開，不要混成「一個大聊天框」</p>
+      </div>
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>
+          <strong>AI 文案</strong>＝直接請 Qwen 寫行銷短文；
+          <strong>RAG</strong>＝先用 Ollama embedding 檢索知識庫，再生成有依據的回答。
+        </p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="assets/core/03-ai-rag.jpg" alt="AI 文案與知識庫 RAG" loading="lazy" />
+          <figcaption>
+            <strong>左寫右問</strong>
+            文案路徑不強制檢索；RAG 路徑必須先命中語料再答
+          </figcaption>
+        </figure>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <h3>A. AI 文案</h3>
+          <pre class="arch-pre">#ai 表單主題／語氣
+  → POST /api/ai/copy
+  → Qwen chat/completions
+  → 回傳文案字串</pre>
+          <ul class="points">
+            <li>用途：Landing 短標、方案介紹、活動文案</li>
+            <li>模型：LAN Qwen（OpenAI 相容）</li>
+            <li>錨點：主站 <code>#ai</code></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>B. 知識庫 + RAG</h3>
+          <pre class="arch-pre">#kb 文章／PG 語料
+  → POST /api/rag/rebuild（索引寫 Redis）
+  → POST /api/rag/search | /api/rag/ask
+  → Ollama embed + 生成
+  → 回傳命中段落 + 答案</pre>
+          <ul class="points">
+            <li>語料：計畫、受眾、產品 KB、競品、FAQ、內部文章</li>
+            <li>embed：<code>qwen3-embedding:0.6b</code></li>
+            <li>錨點：主站 <code>#kb</code> · <code>#rag</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel soft-panel">
+        <h3>知識庫 API 速查</h3>
+        <table class="pattern-table">
+          <tbody>
+            <tr><td>GET</td><td><code>/api/knowledge</code></td><td>目錄</td></tr>
+            <tr><td>GET</td><td><code>/api/knowledge/{id}</code></td><td>全文</td></tr>
+            <tr><td>POST</td><td><code>/api/knowledge/articles</code></td><td>新增文章</td></tr>
+            <tr><td>POST</td><td><code>/api/rag/rebuild</code></td><td>重建索引</td></tr>
+            <tr><td>POST</td><td><code>/api/rag/search</code></td><td>只檢索</td></tr>
+            <tr><td>POST</td><td><code>/api/rag/ask</code></td><td>檢索 + 生成</td></tr>
+            <tr><td>GET</td><td><code>/api/ollama/tags</code></td><td>模型列表</td></tr>
+            <tr><td>GET</td><td><code>/api/team</code></td><td>團隊</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section soft" id="map">
+      <div class="section-head">
+        <h2>④ 系統地圖與邊界</h2>
+        <p>核心 vs 外掛 Tutorial 分開，避免混庫</p>
+      </div>
+      <div class="panel">
+        <pre class="arch-pre">瀏覽器 :18721
+  ├─ 落地頁區塊（Hero／方案／案例／詢盤）
+  ├─ #metrics  → /api/marketing/overview  → Postgres + Redis cache
+  ├─ #team     → /api/team                → Redis seed
+  ├─ #kb       → /api/knowledge*          → PG 語料 + Redis 文章
+  ├─ #ai       → /api/ai/copy             → Qwen
+  ├─ #rag      → /api/rag/*               → Ollama embed + 生成 + Redis 索引
+  ├─ #infra    → /api/infra/status        → 探測各服務
+  └─ #lead     → /api/leads               → 寫入詢盤（演示）
+
+【本頁不涵蓋】
+  · #clinic / 診斷診所（P01–P12）
+  · #travel / 旅遊記憶助理</pre>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <h3>本頁檔案</h3>
+          <ul class="points">
+            <li><code>static/core-explain.html</code></li>
+            <li><code>static/assets/core/</code> · 3 張 gimi 圖</li>
+            <li><code>core-architecture.md</code></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>對外講解 60 秒</h3>
+          <ol class="arch-steps">
+            <li>先指基建：五服務各管什麼</li>
+            <li>看板：數字從 <code>ad_daily</code> 來</li>
+            <li>AI：文案直出 vs RAG 先檢索</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer explain-footer">
+    <div class="lead-wrap">
+      <p>
+        test0721b · 核心架構說明（靜態）
+        · gimi-illustration · quirky-sketch · 繁體
+      </p>
+      <p class="muted">
+        <a href="#overview">主站</a>
+        ·
+        <a href="#stack">基建</a>
+        ·
+        <a href="#data">數據</a>
+        ·
+        <a href="#ai">AI</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
