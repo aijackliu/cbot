@@ -151,24 +151,100 @@
       padding: 10px 12px; background: #fff8e8; border-radius: 10px;
       border: 1px solid #f0e2c0;
     }
+    /* IP host · eastasia-model-23 */
+    .hero-ip {
+      margin: 0 0 20px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--card);
+      box-shadow: 0 12px 36px rgba(26,24,20,0.06);
+    }
+    .hero-ip img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #f0ebe3;
+    }
+    .hero-ip .cap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hero-ip .cap img.host-av {
+      width: 40px; height: 40px; border-radius: 50%;
+      object-fit: cover; border: 2px solid var(--line);
+    }
+    .hero-ip .cap strong { color: var(--ink); }
+    .mast-row {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      align-items: flex-start; justify-content: space-between;
+    }
+    .mast-host {
+      display: flex; gap: 12px; align-items: center;
+      max-width: 280px;
+    }
+    .mast-host img {
+      width: 72px; height: 72px; border-radius: 14px;
+      object-fit: cover; border: 1px solid var(--line);
+      background: var(--chip);
+    }
+    .mast-host .label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .mast-host .name {
+      font-family: var(--serif); font-weight: 700; font-size: 15px;
+      color: var(--ink);
+    }
+    .mast-host .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <figure class="hero-ip">
+      <img src="assets/hero-host.jpg" alt="情報主播 IP · 東亞模特職業裝" width="960" height="540" />
+      <figcaption class="cap">
+        <img class="host-av" src="assets/host-avatar.jpg" alt="" />
+        <span>
+          <strong>主播 IP · eastasia-model-23</strong><br />
+          職業裝 · 怪誕手繪配圖 · 繁中／台廠／論文情報導覽
+        </span>
+      </figcaption>
+    </figure>
+
     <header class="mast">
-      <div>
-        <h1>X Agent Intelligence</h1>
-        <p>
-          繁中／台廠／論文向 · 本機唯讀 feed（Grok X 工具；非官方 X MCP）。
-          標題與摘要為轉述；請點原文連結核實。
-        </p>
+      <div class="mast-row" style="width:100%">
+        <div>
+          <h1>X Agent Intelligence</h1>
+          <p>
+            繁中／台廠／論文向 · 本機唯讀 feed（Grok X 工具；非官方 X MCP）。
+            標題與摘要為轉述；請點原文連結核實。
+          </p>
+        </div>
+        <div class="mast-host">
+          <img src="assets/host-portrait.jpg" alt="主播肖像" />
+          <div>
+            <div class="label">Host IP</div>
+            <div class="name">東亞模特 · 23</div>
+            <div class="sub">$IP=eastasia-model-23</div>
+          </div>
+        </div>
       </div>
-      <div class="stats" id="stats"></div>
+      <div class="stats" id="stats" style="margin-top:12px"></div>
     </header>
 
     <p class="disclaimer">
       靈感來源：
       <a href="https://github.com/dair-ai/dair-academy-plugins/tree/main/plugins/x-agent-intelligence" target="_blank" rel="noopener">dair-ai / x-agent-intelligence</a>
+      · 配圖 IP：
+      <a href="../gimi-ip/references/ip/eastasia-model-23/ip.md">eastasia-model-23</a>
       · 更新：<span id="updated"></span> · 視窗近數日（台廠／學界帳號較稀疏時會拉長）
     </p>
 
@@ -181,6 +257,7 @@
       <button type="button" class="chip-btn" data-cat="Models">Models</button>
       <button type="button" class="chip-btn" data-cat="Tools">Tools</button>
       <button type="button" class="chip-btn" data-cat="Agent">Agent</button>
+      <button type="button" class="chip-btn" data-cat="VC／生態">VC／生態</button>
     </div>
 
     <div id="feed"></div>

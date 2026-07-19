@@ -14,6 +14,17 @@ GitHub：https://github.com/aijackliu/cbot/tree/main/test0719e
 test0719e/feed.html
 ```
 
+### 主播 IP 配圖
+
+頁面使用自訂 IP **`$IP=eastasia-model-23`**（東亞模特 · 職業裝 · 怪誕手繪）：
+
+| 檔案 | 用途 |
+|------|------|
+| `assets/hero-host.jpg` | 16:9 主視覺 |
+| `assets/host-portrait.jpg` | 側欄肖像 |
+| `assets/host-avatar.jpg` | 設定圖裁用頭像 |
+| 合約 | `../gimi-ip/references/ip/eastasia-model-23/ip.md` |
+
 若還看到舊 handle 清單：頁面底部 → **重設 starter**。
 
 ## 來源清單（starter）
