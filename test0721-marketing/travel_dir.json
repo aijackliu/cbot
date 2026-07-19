@@ -1,0 +1,50 @@
+[
+  {
+    "name": "README.md",
+    "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md",
+    "sha": "c96b8577e51720d7c999b1513dde9106ed2cd73d",
+    "size": 1249,
+    "url": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/contents/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md?ref=main",
+    "html_url": "https://github.com/Shubhamsaboo/awesome-llm-apps/blob/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md",
+    "git_url": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/git/blobs/c96b8577e51720d7c999b1513dde9106ed2cd73d",
+    "download_url": "https://raw.githubusercontent.com/Shubhamsaboo/awesome-llm-apps/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/contents/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md?ref=main",
+      "git": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/git/blobs/c96b8577e51720d7c999b1513dde9106ed2cd73d",
+      "html": "https://github.com/Shubhamsaboo/awesome-llm-apps/blob/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md"
+    }
+  },
+  {
+    "name": "requirements.txt",
+    "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/requirements.txt",
+    "sha": "c7be07b66d0d7db17da23856561a82cb925a8e1b",
+    "size": 32,
+    "url": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/contents/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/requirements.txt?ref=main",
+    "html_url": "https://github.com/Shubhamsaboo/awesome-llm-apps/blob/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/requirements.txt",
+    "git_url": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/git/blobs/c7be07b66d0d7db17da23856561a82cb925a8e1b",
+    "download_url": "https://raw.githubusercontent.com/Shubhamsaboo/awesome-llm-apps/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/requirements.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/contents/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/requirements.txt?ref=main",
+      "git": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/git/blobs/c7be07b66d0d7db17da23856561a82cb925a8e1b",
+      "html": "https://github.com/Shubhamsaboo/awesome-llm-apps/blob/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/requirements.txt"
+    }
+  },
+  {
+    "name": "travel_agent_memory.py",
+    "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/travel_agent_memory.py",
+    "sha": "e38887dc58535472749e86b05cc0768b9f39bc5d",
+    "size": 3710,
+    "url": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/contents/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/travel_agent_memory.py?ref=main",
+    "html_url": "https://github.com/Shubhamsaboo/awesome-llm-apps/blob/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/travel_agent_memory.py",
+    "git_url": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/git/blobs/e38887dc58535472749e86b05cc0768b9f39bc5d",
+    "download_url": "https://raw.githubusercontent.com/Shubhamsaboo/awesome-llm-apps/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/travel_agent_memory.py",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/contents/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/travel_agent_memory.py?ref=main",
+      "git": "https://api.github.com/repos/Shubhamsaboo/awesome-llm-apps/git/blobs/e38887dc58535472749e86b05cc0768b9f39bc5d",
+      "html": "https://github.com/Shubhamsaboo/awesome-llm-apps/blob/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/travel_agent_memory.py"
+    }
+  }
+]

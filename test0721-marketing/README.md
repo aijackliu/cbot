@@ -54,10 +54,23 @@ cd test0721-marketing
 測試頁：站內導覽 **診斷診所**（`#clinic`）  
 報告輸出：`clinic/reports/rag_failure_report.json`
 
+### 架構說明頁（雙 Tutorial）
+
+專頁：**`/explain`**（`static/explain.html`）  
+涵蓋 **rag_failure_diagnostics_clinic** + **ai_travel_agent_memory**  
+gimi 繁體配圖 + 架構／API／演示腳本。
+
+| 模組 | 演示錨點 | 上游副本 | 配圖 |
+|------|----------|----------|------|
+| 診斷診所 | `#clinic` | `clinic/` | `static/assets/clinic/` |
+| 旅遊記憶 | `#travel` | `travel_agent_memory/` | `static/assets/travel-memory/` |
+
+長文：`clinic-architecture.md` · `travel-memory-architecture.md`
+
 ### AI Travel Agent with Memory
 
 上游：`travel_agent_memory/`（from awesome-llm-apps）  
-測試頁：站內 **旅遊記憶**（`#travel`）+ **記憶架構**（`#travel-arch`）  
+測試頁：站內 **旅遊記憶**（`#travel`）+ **記憶架構**（`#travel-arch`）+ **`/explain`**  
 本站實作：Redis 記憶 + Qwen（原版為 Streamlit + Mem0 + Qdrant）  
 架構說明：`travel-memory-architecture.md`  
 gimi 配圖：`static/assets/travel-memory/`（quirky-sketch · 繁體）

@@ -687,9 +687,21 @@ def index() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
 
 
+@app.get("/explain")
+@app.get("/explain.html")
+def explain_page() -> FileResponse:
+    """雙 tutorial（診所 + 旅遊記憶）架構說明頁 · gimi 繁體配圖。"""
+    return FileResponse(STATIC_DIR / "explain.html")
+
+
 @app.get("/styles.css")
 def styles() -> FileResponse:
     return FileResponse(STATIC_DIR / "styles.css", media_type="text/css")
+
+
+@app.get("/explain.css")
+def explain_css() -> FileResponse:
+    return FileResponse(STATIC_DIR / "explain.css", media_type="text/css")
 
 
 @app.get("/app.js")
