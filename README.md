@@ -22,6 +22,11 @@ Demo / prototype pages.
 - 線上預覽：https://aijackliu.github.io/cbot/test0719c/
 - GitHub：https://github.com/aijackliu/cbot/tree/main/test0719c
 - 說明：行銷站核心（看板／RAG／文案／基建）+ gimi 配圖；**不含**診所與旅遊記憶 Tutorial
+
+## 科技部落格每日摘要（test0722-daily-digest）
+
+- 路徑：`test0722-daily-digest/`
+- 說明：Karpathy 向 92 RSS → Qwen 排序 → 繁中 Markdown 每日 digest
 ## CATCH Growth 核心架構（test0721b）
 
 - 路徑：`test0721b/`
