@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>X Agent Intelligence Feed · Local</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --ink: #1a1814;
+      --muted: #6b6560;
+      --line: #e5dfd6;
+      --card: #fffdf9;
+      --accent: #0f766e;
+      --chip: #efe9e0;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti TC", "Noto Serif TC", Georgia, serif;
+      --sans: "Segoe UI", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+      border-top: 3px solid #1a1814;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 28px 18px 64px; }
+    header.mast {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;
+      align-items: flex-end; margin-bottom: 18px;
+      border-bottom: 1px solid var(--line); padding-bottom: 18px;
+    }
+    .mast h1 {
+      font-family: var(--serif); font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.1rem);
+      margin: 0 0 6px; letter-spacing: -0.02em;
+    }
+    .mast p { margin: 0; color: var(--muted); font-size: 14px; max-width: 40rem; }
+    .stats {
+      display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--muted);
+    }
+    .stats span {
+      background: var(--chip); border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(247, 244, 239, 0.92); backdrop-filter: blur(8px);
+      padding: 10px 0 12px; margin-bottom: 8px;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    .toolbar input[type="search"] {
+      flex: 1; min-width: 160px;
+      border: 1px solid var(--line); border-radius: 10px;
+      padding: 8px 12px; font: inherit; background: #fff;
+    }
+    .chip-btn {
+      border: 1px solid var(--line); background: transparent;
+      border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 12px;
+      cursor: pointer; color: var(--muted);
+    }
+    .chip-btn.active, .chip-btn:hover {
+      background: #1a1814; color: #fff; border-color: #1a1814;
+    }
+    .day {
+      display: grid; grid-template-columns: 88px 1fr; gap: 16px;
+      margin: 22px 0 8px;
+    }
+    @media (max-width: 700px) {
+      .day { grid-template-columns: 1fr; }
+    }
+    .day-rail {
+      font-family: var(--serif); font-size: 13px; color: var(--muted);
+      padding-top: 8px; position: sticky; top: 64px; align-self: start;
+    }
+    .day-rail strong { display: block; color: var(--ink); font-size: 15px; }
+    .story {
+      display: grid; grid-template-columns: 1fr 140px; gap: 16px;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 16px 16px 14px; margin-bottom: 12px;
+    }
+    .story.lead {
+      grid-template-columns: 1fr 200px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(26,24,20,0.06);
+    }
+    .story.lead .title { font-size: 1.35rem; }
+    @media (max-width: 700px) {
+      .story, .story.lead { grid-template-columns: 1fr; }
+      .thumb { order: -1; width: 100%; height: 160px; }
+    }
+    .kicker {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+    }
+    .title {
+      font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
+      margin: 0 0 8px; line-height: 1.3;
+    }
+    .title a { color: inherit; text-decoration: none; }
+    .title a:hover { text-decoration: underline; }
+    .why {
+      font-size: 14px; color: #3d3832; margin: 0 0 10px;
+    }
+    .why b { color: var(--muted); font-weight: 600; font-size: 12px; }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      font-size: 12px; color: var(--muted);
+    }
+    .meta img.av {
+      width: 22px; height: 22px; border-radius: 50%; object-fit: cover;
+      background: var(--chip);
+    }
+    .meta a { color: var(--accent); }
+    .thumb {
+      width: 140px; height: 100px; border-radius: 10px; overflow: hidden;
+      background: var(--chip); border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 11px;
+    }
+    .story.lead .thumb { width: 200px; height: 140px; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .empty {
+      padding: 40px; text-align: center; color: var(--muted);
+      border: 1px dashed var(--line); border-radius: 12px;
+    }
+    .settings {
+      margin-top: 28px; border-top: 1px solid var(--line); padding-top: 16px;
+    }
+    .settings details {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 12px 14px;
+    }
+    .settings summary { cursor: pointer; font-weight: 700; }
+    .settings textarea {
+      width: 100%; min-height: 90px; margin-top: 10px;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 10px; font: inherit; font-size: 13px;
+    }
+    .settings .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .settings button {
+      border: 1px solid var(--line); background: #1a1814; color: #fff;
+      border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 13px; cursor: pointer;
+    }
+    .settings button.ghost { background: transparent; color: var(--ink); }
+    footer.note {
+      margin-top: 24px; font-size: 12px; color: var(--muted);
+    }
+    .disclaimer {
+      font-size: 12px; color: var(--muted); margin: 0 0 14px;
+      padding: 10px 12px; background: #fff8e8; border-radius: 10px;
+      border: 1px solid #f0e2c0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="mast">
+      <div>
+        <h1>X Agent Intelligence</h1>
+        <p>
+          繁中／台廠／論文向 · 本機唯讀 feed（Grok X 工具；非官方 X MCP）。
+          標題與摘要為轉述；請點原文連結核實。
+        </p>
+      </div>
+      <div class="stats" id="stats"></div>
+    </header>
+
+    <p class="disclaimer">
+      靈感來源：
+      <a href="https://github.com/dair-ai/dair-academy-plugins/tree/main/plugins/x-agent-intelligence" target="_blank" rel="noopener">dair-ai / x-agent-intelligence</a>
+      · 更新：<span id="updated"></span> · 視窗近數日（台廠／學界帳號較稀疏時會拉長）
+    </p>
+
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="搜尋標題、摘要、帳號…" />
+      <button type="button" class="chip-btn active" data-cat="all">全部</button>
+      <button type="button" class="chip-btn" data-cat="繁中實務">繁中實務</button>
+      <button type="button" class="chip-btn" data-cat="台廠硬體">台廠硬體</button>
+      <button type="button" class="chip-btn" data-cat="論文">論文</button>
+      <button type="button" class="chip-btn" data-cat="Models">Models</button>
+      <button type="button" class="chip-btn" data-cat="Tools">Tools</button>
+      <button type="button" class="chip-btn" data-cat="Agent">Agent</button>
+    </div>
+
+    <div id="feed"></div>
+
+    <section class="settings">
+      <details>
+        <summary>來源帳號設定（本機 localStorage）</summary>
+        <p style="font-size:13px;color:var(--muted);margin:8px 0 0">
+          每行一個 handle（不含 @）。下次請代理人重跑時可帶上這份清單。
+        </p>
+        <textarea id="handles"></textarea>
+        <div class="row">
+          <button type="button" id="saveHandles">儲存</button>
+          <button type="button" class="ghost" id="resetHandles">重設 starter</button>
+          <button type="button" class="ghost" id="copyHandles">複製</button>
+        </div>
+        <p id="handleMsg" style="font-size:12px;color:var(--muted);margin:8px 0 0"></p>
+      </details>
+    </section>
+
+    <footer class="note">
+      不包含 API key / token。不自動排程；可用 cron／Grok 排程重跑提示詞刷新本檔。
+      官方 X MCP 設定見 <a href="https://docs.x.com/tools/mcp" target="_blank" rel="noopener">docs.x.com/tools/mcp</a>。
+    </footer>
+  </div>
+
+  <script>
+            const STARTER_HANDLES = [
+      // 繁中高訊號
+      "dotey", "vista8", "op7418", "oran_ge", "lxfater", "omarsar0",
+      // 台灣學界／產業
+      "HungyiLee2", "MediaTek", "ASUS", "SakanaAILabs", "hardmaru",
+      // Appier / Gogolook（Whoscall）
+      "GoAppier", "AdCreativeai", "Whoscall_Japan",
+      // VC／加速器
+      "AppWorks", "chingtsengtw", "cherubicvc",
+      // 論文與模型動態
+      "_akhaliq", "arankomatsuzaki", "huggingface", "OpenRouter", "simonw"
+    ];
+
+    // Stories · 繁中／台廠／論文向 · 2026-07-19 refresh
+    const STORIES = [
+      {
+        id: "2078733650770715130",
+        date: "2026-07-19",
+        created_at: "2026-07-19T06:48:18Z",
+        category: "繁中實務",
+        handle: "dotey",
+        author_name: "宝玉",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/561086911561736192/6_g58vEs.jpeg",
+        tweet_url: "https://x.com/dotey/status/2078733650770715130",
+        title: "BaoCut 接入 OpenMOSS 轉寫：長音訊一次輸出說話人＋時間戳",
+        summary: "相對 Whisper 的中文／混排痛點，MOSS-Transcribe-Diarize-0.9B 可直接 diarize；速度慢於 Qwen3-ASR 0.6B、標點與熱詞仍弱，適合字幕管線迭代。",
+        media_url: "https://pbs.twimg.com/media/HNkkofBXsAAMoo5.jpg",
+        media_type: "photo",
+        likes: 62
+      },
+      {
+        id: "2078685312105189767",
+        date: "2026-07-19",
+        created_at: "2026-07-19T03:36:13Z",
+        category: "Tools",
+        handle: "vista8",
+        author_name: "向阳乔木",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy.jpg",
+        tweet_url: "https://x.com/vista8/status/2078685312105189767",
+        title: "開源 qiaomu-cut-skill：AI 自動剪輯短影音（Listenhub＋Pexels）",
+        summary: "一行 npx 安裝 skill，串素材與剪輯；對短影音／教育內容起號路徑清楚，屬繁中 builder 工具向。",
+        media_url: null,
+        media_type: null,
+        likes: 105
+      },
+      {
+        id: "2078474596970586387",
+        date: "2026-07-18",
+        created_at: "2026-07-18T13:38:54Z",
+        category: "Models",
+        handle: "op7418",
+        author_name: "歸藏",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw.jpg",
+        tweet_url: "https://x.com/op7418/status/2078474596970586387",
+        title: "Anthropic 再一波大規模封號；老帳號亦中招",
+        summary: "繁中使用者端觀測：Claude 帳號風控升溫，影響長期訂閱與代理工作流穩定性。",
+        media_url: null,
+        media_type: null,
+        likes: 331
+      },
+      {
+        id: "2078469760472518801",
+        date: "2026-07-18",
+        created_at: "2026-07-18T13:19:41Z",
+        category: "Models",
+        handle: "op7418",
+        author_name: "歸藏",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw.jpg",
+        tweet_url: "https://x.com/op7418/status/2078469760472518801",
+        title: "Fable 5 方案解讀：週限額活動結束後實質限額縮水約一半",
+        summary: "Max／Team 雖長期內建 Fable 5，但活動結束＋50% 額度設定使總可用量明顯下降；訂閱規劃需重算。",
+        media_url: "https://pbs.twimg.com/media/HNg0yAzbMAA0CVi.jpg",
+        media_type: "photo",
+        likes: 78
+      },
+      {
+        id: "2078769333640347660",
+        date: "2026-07-19",
+        created_at: "2026-07-19T09:10:05Z",
+        category: "Models",
+        handle: "vista8",
+        author_name: "向阳乔木",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy.jpg",
+        tweet_url: "https://x.com/vista8/status/2078769333640347660",
+        title: "社群熱議：DeepSeek v4 正式版與 Fable 5 之外的強模型敘事",
+        summary: "繁中圈對下一週開源／閉源釋出節奏高度關注；適合追蹤模型對照與評測窗口。",
+        media_url: "https://pbs.twimg.com/media/HNlFsE5aQAAIlnb.jpg",
+        media_type: "photo",
+        likes: 59
+      },
+      {
+        id: "2078510449247780956",
+        date: "2026-07-18",
+        created_at: "2026-07-18T16:01:22Z",
+        category: "繁中實務",
+        handle: "lxfater",
+        author_name: "铁锤人",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/2005527237874089984/LyyR6wom.jpg",
+        tweet_url: "https://x.com/lxfater/status/2078510449247780956",
+        title: "Vibe coding 最後一關：敢不敢接支付",
+        summary: "把「產品接金流」當獨立門檻，反映 AI 創業從 demo 到變現的常見卡點。",
+        media_url: "https://pbs.twimg.com/media/HNhaOBuacAAaREd.jpg",
+        media_type: "photo",
+        likes: 29
+      },
+      {
+        id: "2078415786100822249",
+        date: "2026-07-18",
+        created_at: "2026-07-18T09:45:13Z",
+        category: "Tools",
+        handle: "oran_ge",
+        author_name: "Orange AI",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1760074488073629696/ceSsuVCY.png",
+        tweet_url: "https://x.com/oran_ge/status/2078415786100822249",
+        title: "Codex 做 PPT：生圖易逾時，成本低但吞吐不穩",
+        summary: "繁中 agent 工作流踩坑：簡報自動生成仍受生圖配額／逾時限制，需備援管線。",
+        media_url: null,
+        media_type: null,
+        likes: 111
+      },
+      {
+        id: "2078179727529877506",
+        date: "2026-07-17",
+        created_at: "2026-07-17T18:07:12Z",
+        category: "論文",
+        handle: "_akhaliq",
+        author_name: "AK",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1451191636810092553/kpM5Fe12.jpg",
+        tweet_url: "https://x.com/_akhaliq/status/2078179727529877506",
+        title: "VideoChat3：開源 Video MLLM，偏通用視訊理解",
+        summary: "論文／專案向：全開源視訊多模態，適合跟進視訊 agent 與評測基線。",
+        media_url: "https://pbs.twimg.com/media/HNctX3zWIAAqSZG.jpg",
+        media_type: "photo",
+        likes: 33
+      },
+      {
+        id: "2077420923410358343",
+        date: "2026-07-15",
+        created_at: "2026-07-15T15:51:59Z",
+        category: "論文",
+        handle: "_akhaliq",
+        author_name: "AK",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1451191636810092553/kpM5Fe12.jpg",
+        tweet_url: "https://x.com/_akhaliq/status/2077420923410358343",
+        title: "Read It Back：預訓練 MLLM 可當 Text-to-Image 的 zero-shot reward model",
+        summary: "把多模態語言模型當 reward／重讀機制，連結生成品質評估與對齊研究。",
+        media_url: "https://pbs.twimg.com/media/HNR7POiXoAEm4K6.jpg",
+        media_type: "photo",
+        likes: 62
+      },
+      {
+        id: "2078156625479921847",
+        date: "2026-07-17",
+        created_at: "2026-07-17T16:35:24Z",
+        category: "論文",
+        handle: "hardmaru",
+        author_name: "hardmaru",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1678402467078234113/XN5Oy2UP.jpg",
+        tweet_url: "https://x.com/hardmaru/status/2078156625479921847",
+        title: "Sakana：Diffusing Blame — 遵守 Dale 原則的無 weight-transport 學習",
+        summary: "生物合理約束下的 credit assignment；影像與 RL 任務皆可，arXiv 2606.31700，ALIFE 2026。",
+        media_url: null,
+        media_type: null,
+        likes: 1218
+      },
+      {
+        id: "2078510383212667321",
+        date: "2026-07-18",
+        created_at: "2026-07-18T16:01:06Z",
+        category: "台廠硬體",
+        handle: "ASUS",
+        author_name: "ASUS",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1569505191879122945/KKVUZDBS.jpg",
+        tweet_url: "https://x.com/ASUS/status/2078510383212667321",
+        title: "華碩：Pad＋GlideX 跨裝置擴充工作區與檔案／控制共享",
+        summary: "台廠生產力周邊／多螢工作流，適合 AI 筆電周邊與行動辦公場景。",
+        media_url: "https://pbs.twimg.com/media/HNhZ7icagAATAw_.jpg",
+        media_type: "photo",
+        likes: 30
+      },
+      {
+        id: "2062412938812834195",
+        date: "2026-07-04",
+        created_at: "2026-07-04T05:55:37Z",
+        category: "台廠硬體",
+        handle: "MediaTek",
+        author_name: "MediaTek",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1917669932721950720/ZYS5aqXv.png",
+        tweet_url: "https://x.com/MediaTek/status/2062412938812834195",
+        title: "聯發科 COMPUTEX：與 NVIDIA 共設計 GB10 的 DGX Spark 展示",
+        summary: "台廠在邊緣／桌面 AI 算力鏈的定位；低延遲與功耗效率為賣點（展會窗口）。",
+        media_url: "https://pbs.twimg.com/media/HJ8plMcaEAA2AzO.jpg",
+        media_type: "photo",
+        likes: 93
+      },
+      {
+        id: "2064057999904350372",
+        date: "2026-06-08",
+        created_at: "2026-06-08T18:52:30Z",
+        category: "論文",
+        handle: "HungyiLee2",
+        author_name: "Hung-yi Lee",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1239783844628148227/kmWcjHin.jpg",
+        tweet_url: "https://x.com/HungyiLee2/status/2064057999904350372",
+        title: "台大李宏毅轉發：IEEE SPS Webinar — 說話人表示學習中的不確定性",
+        summary: "台語音學／表示學習向：Beyond Point Estimates；台時晚間場，適合追蹤 speaker embedding 研究。",
+        media_url: null,
+        media_type: null,
+        likes: 4
+      },
+      {
+        id: "2078585861315432645",
+        date: "2026-07-18",
+        created_at: "2026-07-18T21:01:02Z",
+        category: "Agent",
+        handle: "omarsar0",
+        author_name: "elvis",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/939313677647282181/vZjFWtAn.jpg",
+        tweet_url: "https://x.com/omarsar0/status/2078585861315432645",
+        title: "ProofAgent-Harness：量測 context engineering 作 agent 可靠度領先指標",
+        summary: "論文＋開源 harness；七準則對應幻覺／操縱／工具使用，可當 agent 品管 checklist。",
+        media_url: "https://pbs.twimg.com/media/HNie0yJa4AAk2I2.jpg",
+        media_type: "photo",
+        likes: 179
+      }
+    
+      ,
+      {
+        id: "2070080512434082018",
+        date: "2026-06-25",
+        created_at: "2026-06-25T09:43:49Z",
+        category: "VC／生態",
+        handle: "cherubicvc",
+        author_name: "Cherubic Ventures",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/2009197893685792770/EIc_floX.jpg",
+        tweet_url: "https://x.com/cherubicvc/status/2070080512434082018",
+        title: "Cherubic：AI 時代判斷力來自「忙外包給 AI、思考留給自己」",
+        summary: "台系 VC 觀點文：強調判斷力訓練與基本功；適合追投組敘事與 founder 心法。",
+        media_url: null,
+        media_type: null,
+        likes: 1
+      },
+      {
+        id: "2062356579811528982",
+        date: "2026-06-04",
+        created_at: "2026-06-04T02:11:40Z",
+        category: "VC／生態",
+        handle: "AppWorks",
+        author_name: "AppWorks",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1469167007119511552/UWYRdeOL.jpg",
+        tweet_url: "https://x.com/AppWorks/status/2062356579811528982",
+        title: "AppWorks 加碼 SignalPlus B1：交易 infra → agentic 交易層",
+        summary: "台系加速器／基金對 fintech×AI 的下注：把交易員工作流編碼進 agent，跨資產擴張。",
+        media_url: null,
+        media_type: null,
+        likes: 5
+      },
+      {
+        id: "2064986364110914014",
+        date: "2026-06-11",
+        created_at: "2026-06-11T08:21:29Z",
+        category: "VC／生態",
+        handle: "AppWorks",
+        author_name: "AppWorks",
+        verified: false,
+        profile_image_url: "https://pbs.twimg.com/profile_images/1469167007119511552/UWYRdeOL.jpg",
+        tweet_url: "https://x.com/AppWorks/status/2064986364110914014",
+        title: "AppWorks：Which Paths are you building now?",
+        summary: "與投資人 Ching Tseng 文章連動，偏 AI／web3 創業者路線盤點。",
+        media_url: null,
+        media_type: null,
+        likes: 2
+      }
+];
+
+    const LS_KEY = "x-agent-intel-handles-zh-v3";
+    let cat = "all";
+
+    function loadHandles() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr) && arr.length) return arr;
+        }
+      } catch (_) {}
+      return STARTER_HANDLES.slice();
+    }
+
+    function saveHandles(list) {
+      localStorage.setItem(LS_KEY, JSON.stringify(list));
+    }
+
+    function groupByDate(items) {
+      const map = {};
+      items.forEach((s) => {
+        (map[s.date] = map[s.date] || []).push(s);
+      });
+      return Object.keys(map)
+        .sort()
+        .reverse()
+        .map((d) => ({ date: d, items: map[d].sort((a, b) => (b.likes || 0) - (a.likes || 0)) }));
+    }
+
+    function filtered() {
+      const q = ($("#q").value || "").trim().toLowerCase();
+      return STORIES.filter((s) => {
+        if (cat !== "all" && s.category !== cat) return false;
+        if (!q) return true;
+        const blob = [s.title, s.summary, s.handle, s.author_name, s.category].join(" ").toLowerCase();
+        return blob.includes(q);
+      });
+    }
+
+    function $(sel) { return document.querySelector(sel); }
+
+    function render() {
+      const items = filtered();
+      $("#stats").innerHTML =
+        `<span>${items.length} stories</span>` +
+        `<span>${new Set(items.map((s) => s.handle)).size} sources</span>` +
+        `<span>${loadHandles().length} handles saved</span>`;
+      $("#updated").textContent = new Date().toLocaleString("zh-Hant", { hour12: false });
+
+      const feed = $("#feed");
+      if (!items.length) {
+        feed.innerHTML = `<div class="empty">沒有符合的故事。試試其他分類或清空搜尋。</div>`;
+        return;
+      }
+      const groups = groupByDate(items);
+      let first = true;
+      feed.innerHTML = groups
+        .map((g) => {
+          const stories = g.items
+            .map((s) => {
+              const lead = first;
+              first = false;
+              const thumb = s.media_url
+                ? `<div class="thumb"><img src="${s.media_url}" alt="" loading="lazy" /></div>`
+                : `<div class="thumb">No preview</div>`;
+              return `
+              <article class="story${lead ? " lead" : ""}">
+                <div>
+                  <div class="kicker">${s.category}</div>
+                  <h2 class="title"><a href="${s.tweet_url}" target="_blank" rel="noopener">${s.title}</a></h2>
+                  <p class="why"><b>Why it matters · </b>${s.summary}</p>
+                  <div class="meta">
+                    <img class="av" src="${s.profile_image_url || ""}" alt="" onerror="this.style.display='none'" />
+                    <span>@${s.handle}</span>
+                    <span>${(s.created_at || "").replace("T", " ").replace("Z", " UTC")}</span>
+                    <a href="${s.tweet_url}" target="_blank" rel="noopener">原文 ↗</a>
+                  </div>
+                </div>
+                ${thumb}
+              </article>`;
+            })
+            .join("");
+          return `
+            <div class="day">
+              <div class="day-rail"><strong>${g.date}</strong>${g.items.length} items</div>
+              <div>${stories}</div>
+            </div>`;
+        })
+        .join("");
+    }
+
+    // chips
+    document.querySelectorAll(".chip-btn").forEach((b) => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll(".chip-btn").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        cat = b.getAttribute("data-cat") || "all";
+        render();
+      });
+    });
+    $("#q").addEventListener("input", () => render());
+
+    // handles UI
+    $("#handles").value = loadHandles().join("\n");
+    $("#saveHandles").onclick = () => {
+      const list = $("#handles").value
+        .split(/\n|,/)
+        .map((s) => s.trim().replace(/^@/, ""))
+        .filter(Boolean);
+      saveHandles(list);
+      $("#handleMsg").textContent = `已儲存 ${list.length} 個 handle（僅本瀏覽器）`;
+      render();
+    };
+    $("#resetHandles").onclick = () => {
+      saveHandles(STARTER_HANDLES.slice());
+      $("#handles").value = STARTER_HANDLES.join("\n");
+      $("#handleMsg").textContent = "已重設為 starter 清單";
+      render();
+    };
+    $("#copyHandles").onclick = async () => {
+      try {
+        await navigator.clipboard.writeText($("#handles").value);
+        $("#handleMsg").textContent = "已複製";
+      } catch {
+        $("#handleMsg").textContent = "複製失敗，請手動選取";
+      }
+    };
+
+    render();
+  </script>
+</body>
+</html>
