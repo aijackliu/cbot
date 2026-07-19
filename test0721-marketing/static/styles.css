@@ -297,3 +297,57 @@ th { color: var(--muted); font-size: 11px; letter-spacing: 0.04em; }
 .travel-mem li { margin: 6px 0; }
 .travel-chat { height: min(52vh, 480px); margin-top: 8px; }
 .travel-chat .chat-log { background: #fff; }
+
+/* Travel architecture + gimi illustrations */
+.arch-intro { margin-bottom: 16px; }
+.arch-one { font-size: 1.05rem; line-height: 1.65; margin: 0 0 10px; }
+.arch-bullets { margin: 0; padding-left: 1.2rem; line-height: 1.7; color: var(--muted, #5c564c); }
+.gimi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+@media (max-width: 1000px) {
+  .gimi-grid { grid-template-columns: 1fr; }
+}
+.gimi-card {
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--line, #e6e0d4);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(40, 32, 20, 0.06);
+}
+.gimi-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #faf8f4;
+}
+.gimi-card figcaption {
+  padding: 12px 14px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #3d3830;
+}
+.gimi-card figcaption strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+.arch-flow { margin-top: 8px; }
+.arch-flow h3 { margin: 12px 0 8px; font-size: 15px; }
+.arch-pre {
+  background: #1e1b16;
+  color: #f0ebe3;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  overflow: auto;
+  margin: 0 0 8px;
+}
+.arch-steps { margin: 0; padding-left: 1.25rem; line-height: 1.7; }

@@ -57,8 +57,10 @@ cd test0721-marketing
 ### AI Travel Agent with Memory
 
 上游：`travel_agent_memory/`（from awesome-llm-apps）  
-測試頁：站內 **旅遊記憶**（`#travel`）  
-本站實作：Redis 記憶 + Qwen（原版為 Streamlit + Mem0 + Qdrant）
+測試頁：站內 **旅遊記憶**（`#travel`）+ **記憶架構**（`#travel-arch`）  
+本站實作：Redis 記憶 + Qwen（原版為 Streamlit + Mem0 + Qdrant）  
+架構說明：`travel-memory-architecture.md`  
+gimi 配圖：`static/assets/travel-memory/`（quirky-sketch · 繁體）
 
 | 方法 | 路徑 |
 |------|------|

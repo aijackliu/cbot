@@ -22,6 +22,7 @@
         <a href="#rag">RAG</a>
         <a href="#clinic">診斷診所</a>
         <a href="#travel">旅遊記憶</a>
+        <a href="#travel-arch">記憶架構</a>
         <a href="#infra">基建</a>
         <a class="btn small" href="#lead">預約演示</a>
       </nav>
@@ -255,6 +256,65 @@
           </div>
           <p class="muted" id="travelStatus"></p>
         </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="travel-arch">
+      <div class="section-head">
+        <h2>旅遊記憶 · 架構與說明</h2>
+        <p>
+          gimi 怪誕手繪（繁體標註）·
+          <a href="https://github.com/GiMi-Xiaomi/gimi-illustration-skill" target="_blank" rel="noopener">gimi-illustration-skill</a>
+          · quirky-sketch · 完整文檔
+          <code>travel-memory-architecture.md</code>
+        </p>
+      </div>
+      <div class="arch-intro panel">
+        <p class="arch-one">
+          <strong>一句話：</strong>記住這位旅客的偏好，再回答行程——先檢索記憶，再呼叫 Qwen，最後寫回。
+        </p>
+        <ul class="arch-bullets">
+          <li>模式對齊上游 ai_travel_agent_memory，底座改為 <strong>Redis + Qwen</strong></li>
+          <li>記憶按 <code>user_id</code> 隔離，示範帳 <code>demo_traveler</code></li>
+          <li>與 CRM／RAG 向量庫分開，不混存</li>
+        </ul>
+      </div>
+      <div class="gimi-grid">
+        <figure class="gimi-card">
+          <img src="/assets/travel-memory/01-memory-loop.jpg" alt="記憶對話四步閉環：提問、檢索記憶、Qwen 回覆、寫回記憶" loading="lazy" />
+          <figcaption>
+            <strong>① 記憶對話閉環</strong>
+            提問 → 檢索 Redis 偏好 → Qwen 行程建議 → 寫回記憶
+          </figcaption>
+        </figure>
+        <figure class="gimi-card">
+          <img src="/assets/travel-memory/02-stack-adapt.jpg" alt="棧遷移：原版 Mem0 Qdrant GPT 與本站 Redis Qwen，模式相同" loading="lazy" />
+          <figcaption>
+            <strong>② 棧遷移：模式相同</strong>
+            原版 Mem0／Qdrant／GPT → 本站 Redis／Qwen
+          </figcaption>
+        </figure>
+        <figure class="gimi-card">
+          <img src="/assets/travel-memory/03-user-isolation.jpg" alt="偏好按 user 隔離：行李牌式偏好，互不串線" loading="lazy" />
+          <figcaption>
+            <strong>③ 偏好按 user 隔離</strong>
+            慢旅行／咖啡／火車像行李牌，掛在 user_id 行李箱上
+          </figcaption>
+        </figure>
+      </div>
+      <div class="arch-flow panel">
+        <h3>主路徑（文字版）</h3>
+        <pre class="arch-pre">User 提問
+  → search_memories(user_id)
+  → Qwen(旅行助理 + 相關記憶)
+  → add_memory(user + assistant)
+  → 回傳 reply + relevant_memories</pre>
+        <h3>演示 60 秒</h3>
+        <ol class="arch-steps">
+          <li>上方 <a href="#travel">#travel</a> 載入示範記憶</li>
+          <li>問「京都三天，慢節奏」→ 狀態列顯示用到的記憶條數</li>
+          <li>換另一個 user 名 → 記憶箱應為空（隔離）</li>
+        </ol>
       </div>
     </section>
 
