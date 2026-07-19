@@ -13,6 +13,8 @@
       <a class="logo" href="#top">CATCH <span>Growth</span></a>
       <nav>
         <a href="#metrics">數據</a>
+        <a href="#team">團隊</a>
+        <a href="#kb">知識庫</a>
         <a href="#cases">案例</a>
         <a href="#audiences">受眾</a>
         <a href="#pricing">方案</a>
@@ -57,6 +59,45 @@
         <div class="panel">
           <h3>最新詢盤</h3>
           <div id="leadsTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="team">
+      <div class="section-head">
+        <h2>團隊</h2>
+        <p id="teamMission">CATCH Growth 跨職能小隊</p>
+      </div>
+      <div class="dept-pills" id="teamDepts"></div>
+      <div class="cards team-cards" id="teamMembers"></div>
+    </section>
+
+    <section class="section" id="kb">
+      <div class="section-head">
+        <h2>知識庫</h2>
+        <p>PostgreSQL 語料 + 內部文章 · 供 RAG 檢索 · <span id="kbStats" class="muted"></span></p>
+      </div>
+      <div class="kb-layout">
+        <div class="panel">
+          <h3>分類來源</h3>
+          <div id="kbSources"></div>
+          <h3 style="margin-top:16px">內部文章</h3>
+          <div id="kbArticles"></div>
+          <h3 style="margin-top:16px">新增文章（假資料）</h3>
+          <form id="kbForm" class="kb-form">
+            <input name="title" placeholder="標題" required />
+            <input name="category" placeholder="分類" value="自訂" />
+            <textarea name="body" rows="3" placeholder="正文（會進入知識庫，重建索引後可被 RAG 檢索）" required></textarea>
+            <button class="btn primary" type="submit">寫入知識庫</button>
+            <p class="form-msg" id="kbMsg" style="color:var(--green)"></p>
+          </form>
+        </div>
+        <div class="panel">
+          <h3>文件目錄 <button class="btn small ghost" type="button" id="btnKbRefresh">重新整理</button></h3>
+          <div id="kbList" class="kb-list"></div>
+          <div class="kb-detail" id="kbDetail">
+            <p class="muted">點左側或目錄中的文件查看全文預覽</p>
+          </div>
         </div>
       </div>
     </section>

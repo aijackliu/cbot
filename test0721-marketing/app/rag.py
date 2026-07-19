@@ -215,7 +215,74 @@ def build_documents() -> list[dict[str, str]]:
     for fid, title, text in faqs:
         docs.append({"id": fid, "source": "faq", "title": title, "text": text})
 
+    # extra KB articles from Redis seed
+    try:
+        from .seed import KB_EXTRA_KEY
+
+        r = _redis()
+        raw = r.get(KB_EXTRA_KEY)
+        if raw:
+            for art in json.loads(raw):
+                docs.append(
+                    {
+                        "id": art.get("id") or f"kb-{art.get('title')}",
+                        "source": "knowledge_base",
+                        "title": art.get("title") or "",
+                        "text": (
+                            f"{art.get('category') or ''} {art.get('title') or ''}。"
+                            f"{art.get('summary') or ''} {art.get('body') or ''} "
+                            f"負責人 {art.get('owner') or ''} 標籤 {art.get('tags') or ''}。"
+                        ),
+                    }
+                )
+    except Exception:  # noqa: BLE001
+        pass
+
     return docs
+
+
+def list_knowledge_base() -> dict[str, Any]:
+    """Catalog for UI: PG docs + Redis KB extras, grouped by source."""
+    docs = build_documents()
+    # strip long text for list view
+    items = []
+    for d in docs:
+        items.append(
+            {
+                "id": d["id"],
+                "source": d["source"],
+                "title": d["title"],
+                "preview": (d["text"] or "")[:160],
+                "chars": len(d.get("text") or ""),
+            }
+        )
+    by_source: dict[str, int] = {}
+    for it in items:
+        by_source[it["source"]] = by_source.get(it["source"], 0) + 1
+
+    extras = []
+    try:
+        from .seed import KB_EXTRA_KEY
+
+        raw = _redis().get(KB_EXTRA_KEY)
+        if raw:
+            extras = json.loads(raw)
+    except Exception:  # noqa: BLE001
+        extras = []
+
+    return {
+        "total": len(items),
+        "by_source": by_source,
+        "items": items,
+        "articles": extras,
+    }
+
+
+def get_knowledge_doc(doc_id: str) -> dict | None:
+    for d in build_documents():
+        if d["id"] == doc_id:
+            return d
+    return None
 
 
 def rebuild_index() -> dict[str, Any]:

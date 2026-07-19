@@ -16,8 +16,15 @@ from pydantic import BaseModel, Field
 
 from . import config
 from .db import execute, fetch_all, fetch_one, json_safe
-from .rag import answer_with_rag, list_ollama_models, rebuild_index, search as rag_search
-from .seed import SEED_KEY, run_seed
+from .rag import (
+    answer_with_rag,
+    get_knowledge_doc,
+    list_knowledge_base,
+    list_ollama_models,
+    rebuild_index,
+    search as rag_search,
+)
+from .seed import SEED_KEY, TEAM, run_seed
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
@@ -227,6 +234,89 @@ def rag_ask(body: RagQuery) -> dict:
         return {"ok": True, "question": body.question, **result}
     except Exception as e:  # noqa: BLE001
         raise HTTPException(500, f"RAG ask failed: {e}") from e
+
+
+@app.get("/api/team")
+def api_team() -> dict:
+    """Demo team roster (Redis seed + fallback constant)."""
+    members = TEAM
+    try:
+        r = _redis()
+        raw = r.get(SEED_KEY)
+        if raw:
+            data = json.loads(raw)
+            if data.get("team"):
+                members = data["team"]
+    except Exception:  # noqa: BLE001
+        pass
+    depts: dict[str, int] = {}
+    for m in members:
+        d = m.get("dept") or "其他"
+        depts[d] = depts.get(d, 0) + 1
+    return {
+        "ok": True,
+        "count": len(members),
+        "departments": depts,
+        "members": members,
+        "org": {
+            "name": "CATCH Growth",
+            "mission": "讓中小餐飲與零售品牌用得起可追蹤的成長系統",
+            "hq": "台北 · 遠端協作",
+        },
+    }
+
+
+@app.get("/api/knowledge")
+def api_knowledge() -> dict:
+    try:
+        data = list_knowledge_base()
+        return {"ok": True, **data}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"knowledge list failed: {e}") from e
+
+
+@app.get("/api/knowledge/{doc_id}")
+def api_knowledge_doc(doc_id: str) -> dict:
+    doc = get_knowledge_doc(doc_id)
+    if not doc:
+        raise HTTPException(404, "document not found")
+    return {"ok": True, "doc": doc}
+
+
+class KbArticleIn(BaseModel):
+    title: str = Field(..., min_length=2, max_length=120)
+    category: str = Field("自訂", max_length=40)
+    summary: str = Field("", max_length=300)
+    body: str = Field(..., min_length=4, max_length=4000)
+    owner: str = Field("展示用戶", max_length=40)
+
+
+@app.post("/api/knowledge/articles")
+def api_knowledge_add(body: KbArticleIn) -> dict:
+    """Append a demo KB article to Redis and return it (call rebuild for RAG)."""
+    import uuid
+
+    from .seed import KB_EXTRA_KEY
+
+    art = {
+        "id": f"kb-user-{uuid.uuid4().hex[:8]}",
+        "category": body.category,
+        "title": body.title,
+        "summary": body.summary or body.body[:80],
+        "body": body.body,
+        "owner": body.owner,
+        "tags": ["user", "demo"],
+    }
+    try:
+        r = _redis()
+        raw = r.get(KB_EXTRA_KEY)
+        items = json.loads(raw) if raw else []
+        items.insert(0, art)
+        r.set(KB_EXTRA_KEY, json.dumps(items, ensure_ascii=False))
+        r.delete("mkt:demo:overview")
+        return {"ok": True, "article": art, "hint": "請執行 /api/rag/rebuild 以納入向量索引"}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
 
 
 @app.get("/api/marketing/overview")

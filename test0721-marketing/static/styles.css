@@ -221,3 +221,47 @@ th { color: var(--muted); font-size: 11px; letter-spacing: 0.04em; }
   padding: 24px 0 40px; color: var(--muted); font-size: 13px;
   display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
 }
+
+/* Team */
+.dept-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.dept-pills span {
+  background: var(--sand); color: var(--muted); font-size: 12px; font-weight: 700;
+  padding: 6px 12px; border-radius: 999px;
+}
+.team-cards .card { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: start; }
+.avatar {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: grid; place-items: center; font-weight: 800; font-size: 18px; color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--green2));
+}
+.skill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.skill-row i {
+  font-style: normal; font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 999px; background: #e7f6ef; color: var(--green);
+}
+
+/* Knowledge base */
+.kb-layout { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 14px; }
+@media (max-width: 900px) { .kb-layout { grid-template-columns: 1fr; } }
+.kb-form { display: grid; gap: 8px; margin-top: 8px; }
+.kb-form input, .kb-form textarea {
+  width: 100%; border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 12px; font: inherit; background: #fff;
+}
+.kb-list { max-height: 280px; overflow: auto; margin-bottom: 12px; }
+.kb-item {
+  padding: 10px 8px; border-bottom: 1px solid var(--line); cursor: pointer;
+}
+.kb-item:hover { background: #f8f6f1; }
+.kb-item strong { display: block; font-size: 14px; }
+.kb-detail {
+  background: #f8f6f1; border-radius: 14px; padding: 14px; min-height: 140px;
+  white-space: pre-wrap; font-size: 14px; line-height: 1.65;
+}
+.source-bar {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+}
+.source-bar span {
+  font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 10px;
+  background: #e7f6ef; color: var(--green);
+}

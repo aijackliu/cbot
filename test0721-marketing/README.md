@@ -26,7 +26,9 @@ cd test0721-marketing
 - Redis：文案種子、dashboard 快取
 - Qwen：行銷文案生成
 - Ollama：`/api/tags` 列表 + **RAG**（`qwen3-embedding:0.6b` 檢索，`qwen3:latest` 回答）
-- 啟動時自動 seed 假證言／方案／補充詢盤
+- **團隊**：假資料名冊（Redis seed）
+- **知識庫**：PG 語料目錄 + 內部文章 + 可新增文章（寫 Redis，重建索引後進 RAG）
+- 啟動時自動 seed 假證言／方案／團隊／知識文章／補充詢盤
 
 ### RAG API
 
@@ -36,5 +38,9 @@ cd test0721-marketing
 | POST | `/api/rag/rebuild` | 重建索引（寫 Redis） |
 | POST | `/api/rag/search` | 只檢索 |
 | POST | `/api/rag/ask` | 檢索 + 生成 |
+| GET | `/api/team` | 團隊名冊 |
+| GET | `/api/knowledge` | 知識庫目錄 |
+| GET | `/api/knowledge/{id}` | 文件全文 |
+| POST | `/api/knowledge/articles` | 新增內部文章 |
 
-語料來源：`marketing_plans`、`audience_packs`、`kb_products`、`competitors`、`ad_daily` 摘要、FAQ。
+語料來源：`marketing_plans`、`audience_packs`、`kb_products`、`competitors`、`ad_daily` 摘要、FAQ、知識庫文章。

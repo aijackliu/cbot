@@ -75,6 +75,111 @@ async function loadOllamaTags() {
   }
 }
 
+async function loadTeam() {
+  try {
+    const d = await api("/api/team");
+    const org = d.org || {};
+    $("#teamMission").textContent =
+      (org.mission || "") + (org.hq ? ` · ${org.hq}` : "");
+    $("#teamDepts").innerHTML = Object.entries(d.departments || {})
+      .map(([k, v]) => `<span>${k} ${v}</span>`)
+      .join("");
+    $("#teamMembers").innerHTML = (d.members || [])
+      .map(
+        (m) => `<article class="card">
+        <div class="avatar">${m.avatar || (m.name || "?").slice(0, 1)}</div>
+        <div>
+          <strong>${m.name || ""}</strong>
+          <div class="muted">${m.role || ""} · ${m.dept || ""}</div>
+          <div class="muted">${m.focus || ""}</div>
+          <div class="skill-row">${(m.skills || [])
+            .map((s) => `<i>${s}</i>`)
+            .join("")}</div>
+        </div>
+      </article>`
+      )
+      .join("");
+  } catch (e) {
+    $("#teamMembers").innerHTML = `<div class="muted">團隊載入失敗：${e.message}</div>`;
+  }
+}
+
+async function loadKnowledge() {
+  try {
+    const d = await api("/api/knowledge");
+    $("#kbStats").textContent = `共 ${d.total || 0} 份文件`;
+    $("#kbSources").innerHTML =
+      `<div class="source-bar">${Object.entries(d.by_source || {})
+        .map(([k, v]) => `<span>${k}: ${v}</span>`)
+        .join("")}</div>`;
+
+    $("#kbArticles").innerHTML = (d.articles || [])
+      .map(
+        (a) => `<div class="kb-item" data-id="${a.id}">
+        <strong>${a.title || ""}</strong>
+        <div class="muted">${a.category || ""} · ${a.owner || ""}</div>
+        <div class="muted">${a.summary || ""}</div>
+      </div>`
+      )
+      .join("") || `<div class="muted">尚無內部文章</div>`;
+
+    $("#kbList").innerHTML = (d.items || [])
+      .map(
+        (it) => `<div class="kb-item" data-id="${it.id}">
+        <strong>${it.title || it.id}</strong>
+        <div class="muted">${it.source} · ${it.chars || 0} 字</div>
+        <div class="muted">${it.preview || ""}</div>
+      </div>`
+      )
+      .join("");
+
+    const openDoc = async (id) => {
+      const box = $("#kbDetail");
+      box.textContent = "載入中…";
+      try {
+        const res = await api("/api/knowledge/" + encodeURIComponent(id));
+        const doc = res.doc || {};
+        box.innerHTML = `<strong>${doc.title || id}</strong>
+          <div class="muted" style="margin:6px 0">${doc.source || ""} · ${doc.id || ""}</div>
+          <div>${(doc.text || "").replace(/</g, "&lt;")}</div>`;
+      } catch (e) {
+        box.textContent = e.message;
+      }
+    };
+
+    document.querySelectorAll("#kbList .kb-item, #kbArticles .kb-item").forEach((el) => {
+      el.onclick = () => openDoc(el.dataset.id);
+    });
+  } catch (e) {
+    $("#kbList").innerHTML = `<div class="muted">知識庫載入失敗：${e.message}</div>`;
+  }
+}
+
+function bindKbForm() {
+  $("#btnKbRefresh").onclick = () => loadKnowledge();
+  $("#kbForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const msg = $("#kbMsg");
+    msg.textContent = "寫入中…";
+    try {
+      const res = await api("/api/knowledge/articles", {
+        method: "POST",
+        body: JSON.stringify({
+          title: fd.get("title"),
+          category: fd.get("category") || "自訂",
+          body: fd.get("body"),
+        }),
+      });
+      msg.textContent = (res.hint || "已寫入") + " · id=" + (res.article?.id || "");
+      e.target.reset();
+      await loadKnowledge();
+    } catch (err) {
+      msg.textContent = "失敗：" + err.message;
+    }
+  };
+}
+
 function bindRag() {
   $("#btnRagRebuild").onclick = async () => {
     const btn = $("#btnRagRebuild");
@@ -300,9 +405,12 @@ async function boot() {
   bindAI();
   bindLead();
   bindRag();
+  bindKbForm();
   await Promise.all([
     loadInfra(),
     loadOllamaTags(),
+    loadTeam(),
+    loadKnowledge(),
     loadOverview().catch((e) => {
       $("#kpis").innerHTML = `<div class="kpi"><label>錯誤</label><b style="font-size:14px">${e.message}</b></div>`;
     }),

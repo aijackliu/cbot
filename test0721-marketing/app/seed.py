@@ -12,6 +12,112 @@ from . import config
 from .db import execute, fetch_one
 
 SEED_KEY = "mkt:demo:seed_v1"
+KB_EXTRA_KEY = "mkt:demo:kb_extra_v1"
+
+TEAM = [
+    {
+        "id": "tm-ceo",
+        "name": "何心怡",
+        "role": "執行長 / 共同創辦人",
+        "dept": "經營",
+        "focus": "品牌策略、融資與合作夥伴",
+        "email": "xinyi@catch.demo",
+        "avatar": "心",
+        "skills": ["策略", "品牌", "B2B"],
+    },
+    {
+        "id": "tm-cmo",
+        "name": "周子齊",
+        "role": "行銷長",
+        "dept": "成長",
+        "focus": "全渠道成長、預算與 ROAS",
+        "email": "ziqi@catch.demo",
+        "avatar": "齊",
+        "skills": ["Meta 廣告", "會員", "歸因"],
+    },
+    {
+        "id": "tm-crm",
+        "name": "高婉庭",
+        "role": "CRM 產品負責人",
+        "dept": "產品",
+        "focus": "catch_crm、詢盤漏斗、私域",
+        "email": "wanting@catch.demo",
+        "avatar": "婉",
+        "skills": ["CRM", "自動化", "企微"],
+    },
+    {
+        "id": "tm-ai",
+        "name": "林書澤",
+        "role": "AI / 知識庫工程師",
+        "dept": "技術",
+        "focus": "RAG、Ollama embedding、Qwen 文案",
+        "email": "shuze@catch.demo",
+        "avatar": "澤",
+        "skills": ["RAG", "FastAPI", "向量檢索"],
+    },
+    {
+        "id": "tm-cs",
+        "name": "葉采妮",
+        "role": "客戶成功",
+        "dept": "服務",
+        "focus": "上線輔導、案例沉澱、NPS",
+        "email": "caini@catch.demo",
+        "avatar": "采",
+        "skills": ["CS", "培訓", "案例"],
+    },
+    {
+        "id": "tm-design",
+        "name": "許沐辰",
+        "role": "品牌設計師",
+        "dept": "創意",
+        "focus": "落地頁、素材、視覺系統",
+        "email": "muchen@catch.demo",
+        "avatar": "沐",
+        "skills": ["UI", "素材", "Landing"],
+    },
+]
+
+KB_EXTRA = [
+    {
+        "id": "kb-playbook-growth",
+        "category": "營運手冊",
+        "title": "CATCH Growth 90 天上線手冊",
+        "summary": "從帳戶開通、受眾包匯入到第一波廣告測試的標準作業。",
+        "body": (
+            "第 1–2 週：串接廣告帳戶與 CRM 詢盤；建立 3 個核心受眾包。"
+            "第 3–6 週：跑素材 A/B，每週砍底部 20% 素材。"
+            "第 7–12 週：會員復購活動 + EDM 自動化，目標 ROAS ≥ 4。"
+        ),
+        "owner": "周子齊",
+        "tags": ["SOP", "成長", "90天"],
+    },
+    {
+        "id": "kb-rag-howto",
+        "category": "AI 知識",
+        "title": "內部 RAG 使用規範",
+        "summary": "僅可依知識庫檢索內容回答客戶；無命中時要明說不確定。",
+        "body": (
+            "embedding 使用 Ollama qwen3-embedding:0.6b；生成使用 qwen3:latest（think=false）。"
+            "語料來自 marketing_plans、audience_packs、kb_products、competitors 與本知識庫。"
+            "禁止把第三方傳聞寫成官方結論。"
+        ),
+        "owner": "林書澤",
+        "tags": ["RAG", "Ollama", "合規"],
+    },
+    {
+        "id": "kb-brand-voice",
+        "category": "品牌",
+        "title": "品牌語氣指南",
+        "summary": "專業但親和，少黑話，多場景。",
+        "body": (
+            "避免：吊打、革命性、保證暴利。"
+            "鼓勵：具體場景、前後對比、可複製步驟、能力邊界。"
+            "主視覺：暖沙底 + 成長綠；CTA 用動詞。"
+        ),
+        "owner": "許沐辰",
+        "tags": ["品牌", "文案", "語氣"],
+    },
+]
 
 TESTIMONIALS = [
     {
@@ -111,9 +217,11 @@ def seed_redis() -> dict:
         "testimonials": TESTIMONIALS,
         "cases": CASES,
         "pricing": PRICING,
+        "team": TEAM,
         "seeded_at": datetime.now(timezone.utc).isoformat(),
     }
     r.set(SEED_KEY, json.dumps(payload, ensure_ascii=False))
+    r.set(KB_EXTRA_KEY, json.dumps(KB_EXTRA, ensure_ascii=False))
     r.set("mkt:demo:heartbeat", datetime.now(timezone.utc).isoformat())
     return payload
 
