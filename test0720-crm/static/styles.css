@@ -217,3 +217,20 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   font-weight: 400;
 }
 .form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.hidden { display: none !important; }
+.chip-btn {
+  display: inline-block; margin: 4px 4px 0 0; padding: 4px 10px;
+  border-radius: 999px; border: 1px solid var(--line);
+  background: var(--panel2); color: var(--muted); font: inherit; font-size: 12px;
+  cursor: pointer;
+}
+.chip-btn:hover { color: var(--text); border-color: var(--accent); }
+.sql-box {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; font-size: 12px; overflow: auto; max-height: 140px;
+  white-space: pre-wrap; color: #b8d4ff; margin: 8px 0;
+}
+.sql-table-wrap { overflow: auto; max-height: 280px; margin-top: 8px; }
+.sql-result { font-size: 12px; }
+.sql-result th { position: sticky; top: 0; background: var(--panel); }

@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from . import config
 from . import form_fill
+from . import sql_agent
 from .db import fetch_all, fetch_one, json_safe
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -90,6 +91,10 @@ class FormTurnIn(BaseModel):
 class FormSubmitIn(BaseModel):
     values: dict[str, str]
     session_id: str | None = None
+
+
+class SqlAskIn(BaseModel):
+    question: str = Field(..., min_length=2, max_length=2000)
 
 
 @app.get("/api/health")
@@ -378,6 +383,45 @@ def form_submissions(limit: int = 20) -> dict:
         return {"ok": True, "items": form_fill.list_submissions(limit=limit)}
     except Exception as e:  # noqa: BLE001
         raise HTTPException(500, str(e)) from e
+
+
+# ----- NL → SQL (read-only) -----
+
+
+@app.get("/api/sql/schema")
+def sql_schema() -> dict:
+    try:
+        return {"ok": True, **sql_agent.get_schema()}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"schema failed: {e}") from e
+
+
+@app.get("/api/sql/samples")
+def sql_samples() -> dict:
+    return {
+        "ok": True,
+        "items": [
+            "目前有多少客戶帳戶？",
+            "管道金額最高的 5 個商機是哪些？",
+            "各銷售階段的商機數量與金額？",
+            "電商客戶營收 Top 5？",
+            "最近 10 筆活動是什麼？",
+            "競品威脅等級分布？",
+        ],
+    }
+
+
+@app.post("/api/sql/ask")
+def sql_ask(body: SqlAskIn) -> dict:
+    """
+    Agentic NL2SQL: skill + schema + SELECT-only execute + zh answer.
+    Pattern from Hands-On agentic_sql_search; Qwen + catch_crm.
+    """
+    try:
+        result = sql_agent.ask(body.question)
+        return result
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"sql agent failed: {e}") from e
 
 
 @app.post("/api/ai/chat")

@@ -7,7 +7,7 @@ const titles = {
   opps: ["銷售機會", "管道階段與金額（NTD）"],
   customers: ["電商客戶", "web_customers RFM / LTV"],
   competitors: ["競品情報", "competitors + signals"],
-  ai: ["客服 AI · 填表", "對話助理 + Agent 式服務申請表（Qwen）"],
+  ai: ["客服 AI · 填表 · SQL", "問答 / 填表 / 中文查庫（Qwen + Postgres 只讀）"],
   infra: ["基礎設施", "Qwen · FastAPI · Redis · PostgreSQL"],
 };
 
@@ -309,44 +309,57 @@ function loadAI() {
 
   el.innerHTML = `
     <div class="card">
-      <h3>客服 AI · 可用填表</h3>
+      <h3>客服 AI · 填表 · 中文查庫</h3>
       <p class="muted">
-        左側：CRM 對話助理（帶 KPI 上下文）。右側：<strong>服務申請表</strong>——用對話補齊欄位（Agent 式填表，LAN Qwen），
-        必填齊全後可提交（演示寫入 Redis）。模式參考 agentic-form-filler，不依賴 Landing AI。
+        三種模式：CRM 問答｜Agent 填表｜NL→SQL（只讀 Postgres，表白名單）。
+        SQL 模式參考 agentic_sql_search：skill → schema → SELECT → 繁中答案。
       </p>
       <div class="form-mode-bar">
         <label class="muted"><input type="radio" name="aiMode" value="crm" checked /> CRM 問答</label>
-        <label class="muted"><input type="radio" name="aiMode" value="form" /> 填表模式</label>
-        <span class="muted" id="formModeHint">填表模式：說出公司／聯絡人／需求，右側會即時更新</span>
+        <label class="muted"><input type="radio" name="aiMode" value="form" /> 填表</label>
+        <label class="muted"><input type="radio" name="aiMode" value="sql" /> 中文查庫</label>
+        <span class="muted" id="formModeHint">選模式後輸入；右側顯示表單或 SQL 結果</span>
       </div>
+      <div class="sql-samples muted" id="sqlSamples"></div>
     </div>
     <div class="ai-split">
       <div class="chat">
         <div class="chat-log" id="chatLog">
-          <div class="bubble bot">你好，我是 CATCH 客服 AI。可問 CRM 數據，或切到「填表模式」用對話填服務申請表。</div>
+          <div class="bubble bot">你好。可問 CRM、用「填表」建申請，或「中文查庫」直接查 catch_crm（只讀）。</div>
         </div>
         <div class="chat-input">
-          <input id="chatInput" placeholder="例：我想了解管道金額 / 我們是 CATCH，聯絡人王小明，要做行銷自動化" />
+          <input id="chatInput" placeholder="例：管道金額最高的 5 個商機 / 填表：我們是 CATCH…" />
           <button class="btn primary" id="chatSend">送出</button>
         </div>
       </div>
-      <div class="card form-panel">
-        <div class="form-panel-head">
-          <h3 id="formTitle">服務申請表</h3>
-          <span class="pill" id="formStatus">未完成</span>
+      <div class="card form-panel" id="rightPanel">
+        <div id="panelForm">
+          <div class="form-panel-head">
+            <h3 id="formTitle">服務申請表</h3>
+            <span class="pill" id="formStatus">未完成</span>
+          </div>
+          <p class="muted" id="formDesc" style="margin-top:0"></p>
+          <form id="serviceForm" class="service-form"></form>
+          <div class="form-actions">
+            <button type="button" class="btn ghost" id="btnFormClear">清空</button>
+            <button type="button" class="btn ghost" id="btnFormFromChat">從上則對話抽取</button>
+            <button type="button" class="btn primary" id="btnFormSubmit" disabled>提交申請</button>
+          </div>
+          <p class="muted" id="formMsg"></p>
+          <div class="muted" id="formMissing"></div>
         </div>
-        <p class="muted" id="formDesc" style="margin-top:0"></p>
-        <form id="serviceForm" class="service-form"></form>
-        <div class="form-actions">
-          <button type="button" class="btn ghost" id="btnFormClear">清空</button>
-          <button type="button" class="btn ghost" id="btnFormFromChat">從上則對話抽取</button>
-          <button type="button" class="btn primary" id="btnFormSubmit" disabled>提交申請</button>
+        <div id="panelSql" class="hidden">
+          <div class="form-panel-head">
+            <h3>SQL 推理與結果</h3>
+            <span class="pill" id="sqlStatus">待命</span>
+          </div>
+          <p class="muted" id="sqlRationale"></p>
+          <pre class="sql-box" id="sqlCode">—</pre>
+          <div class="muted" id="sqlSteps"></div>
+          <div class="sql-table-wrap" id="sqlTable"></div>
         </div>
-        <p class="muted" id="formMsg"></p>
-        <div class="muted" id="formMissing"></div>
       </div>
     </div>`;
-
   const log = $("#chatLog");
   const input = $("#chatInput");
   const send = $("#chatSend");
@@ -358,12 +371,79 @@ function loadAI() {
   const mode = () =>
     ($("input[name=aiMode]:checked") || {}).value || "crm";
 
+  const syncRightPanel = () => {
+    const m = mode();
+    const showForm = m !== "sql";
+    $("#panelForm").classList.toggle("hidden", !showForm);
+    $("#panelSql").classList.toggle("hidden", showForm);
+    const hint = $("#formModeHint");
+    if (m === "form") hint.textContent = "填表：說出公司／聯絡人／需求，右側即時更新";
+    else if (m === "sql") hint.textContent = "查庫：中文問題 → schema → SELECT → 結果表";
+    else hint.textContent = "問答：帶 KPI 上下文的業務建議（不直接跑 SQL）";
+  };
+
+  $$("input[name=aiMode]").forEach((r) => {
+    r.addEventListener("change", syncRightPanel);
+  });
+  syncRightPanel();
+
+  // sample questions for SQL
+  api("/api/sql/samples")
+    .then((d) => {
+      const box = $("#sqlSamples");
+      box.innerHTML = (d.items || [])
+        .map(
+          (q) =>
+            `<button type="button" class="chip-btn" data-q="${q.replace(/"/g, "&quot;")}">${q}</button>`
+        )
+        .join(" ");
+      box.querySelectorAll("[data-q]").forEach((b) => {
+        b.onclick = () => {
+          const sqlRadio = document.querySelector('input[name=aiMode][value=sql]');
+          if (sqlRadio) {
+            sqlRadio.checked = true;
+            syncRightPanel();
+          }
+          input.value = b.getAttribute("data-q");
+          input.focus();
+        };
+      });
+    })
+    .catch(() => {});
+
   const push = (role, text) => {
     const d = document.createElement("div");
     d.className = `bubble ${role === "user" ? "user" : "bot"}`;
     d.textContent = text;
     log.appendChild(d);
     log.scrollTop = log.scrollHeight;
+  };
+
+  const renderSqlResult = (res) => {
+    const st = $("#sqlStatus");
+    st.textContent = res.ok ? `OK · ${res.row_count ?? 0} 列` : "失敗";
+    st.className = "pill " + (res.ok ? "ok" : "warn");
+    $("#sqlRationale").textContent = res.rationale_zh || "";
+    $("#sqlCode").textContent = res.sql || res.error || "—";
+    const steps = (res.steps || [])
+      .map((s) => `${s.ok ? "✓" : "✗"} ${s.step}${s.detail ? ": " + s.detail : ""}${s.error ? " — " + s.error : ""}`)
+      .join(" · ");
+    $("#sqlSteps").textContent = steps;
+    const cols = res.columns || [];
+    const rows = res.rows || [];
+    if (!cols.length) {
+      $("#sqlTable").innerHTML = "<p class='muted'>無結果列</p>";
+      return;
+    }
+    const head = cols.map((c) => `<th>${c}</th>`).join("");
+    const body = rows
+      .slice(0, 50)
+      .map(
+        (r) =>
+          `<tr>${cols.map((c) => `<td>${r[c] == null ? "—" : r[c]}</td>`).join("")}</tr>`
+      )
+      .join("");
+    $("#sqlTable").innerHTML = `<table class="sql-result"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
   };
 
   const renderForm = () => {
@@ -481,6 +561,32 @@ function loadAI() {
     }
   };
 
+  const goSql = async (msg) => {
+    push("bot", "查 schema → 寫 SQL → 執行中…");
+    const thinking = log.lastChild;
+    $("#sqlStatus").textContent = "查詢中";
+    $("#sqlStatus").className = "pill warn";
+    try {
+      const res = await api("/api/sql/ask", {
+        method: "POST",
+        body: JSON.stringify({ question: msg }),
+      });
+      renderSqlResult(res);
+      thinking.textContent = res.answer_zh || res.error || "完成";
+      if (res.sql) {
+        const m = document.createElement("div");
+        m.className = "muted";
+        m.style.fontSize = "11px";
+        m.textContent = "SQL: " + res.sql.replace(/\s+/g, " ").slice(0, 160);
+        log.appendChild(m);
+      }
+    } catch (e) {
+      thinking.textContent = "錯誤：" + e.message;
+      thinking.classList.add("err");
+      $("#sqlStatus").textContent = "失敗";
+    }
+  };
+
   const go = async () => {
     const msg = input.value.trim();
     if (!msg) return;
@@ -489,7 +595,9 @@ function loadAI() {
     push("user", msg);
     send.disabled = true;
     try {
-      if (mode() === "form") await goForm(msg);
+      const m = mode();
+      if (m === "form") await goForm(msg);
+      else if (m === "sql") await goSql(msg);
       else await goCrm(msg);
     } finally {
       send.disabled = false;
