@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CATCH Growth · 行銷成長展示站</title>
+  <meta name="description" content="整合 Qwen、PostgreSQL catch_crm、Redis 與遠端 FastAPI 的行銷網站展示。" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#top">CATCH <span>Growth</span></a>
+      <nav>
+        <a href="#metrics">數據</a>
+        <a href="#cases">案例</a>
+        <a href="#audiences">受眾</a>
+        <a href="#pricing">方案</a>
+        <a href="#ai">AI 文案</a>
+        <a href="#infra">基建</a>
+        <a class="btn small" href="#lead">預約演示</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow" id="planTheme">行銷展示站 · 真實庫表 + 假資料</p>
+        <h1 id="heroTitle">把行銷預算變成<br />可追蹤的成長</h1>
+        <p class="lead" id="heroSub">廣告、受眾、CRM 詢盤與 AI 文案同一畫面演示。數據來自 PostgreSQL catch_crm，文案由 Qwen 生成。</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#lead">免費拿成長診斷</a>
+          <a class="btn ghost" href="#metrics">看真實展示數據</a>
+        </div>
+        <div class="trust" id="infraMini">連線檢查中…</div>
+      </div>
+      <div class="hero-card">
+        <div class="card-title">本季成長快照</div>
+        <div class="mini-kpis" id="heroKpis"></div>
+        <div class="spark" id="platformBars"></div>
+      </div>
+    </section>
+
+    <section class="section" id="metrics">
+      <div class="section-head">
+        <h2>行銷數據看板</h2>
+        <p>讀取 ad_daily / marketing_plans / web_orders · Redis 快取 45 秒</p>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>渠道表現</h3>
+          <div id="platformTable"></div>
+        </div>
+        <div class="panel">
+          <h3>最新詢盤</h3>
+          <div id="leadsTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="cases">
+      <div class="section-head">
+        <h2>客戶成果故事</h2>
+        <p>展示用案例卡（Redis 假資料）+ 真實年度計畫主題</p>
+      </div>
+      <div class="cards" id="cases"></div>
+      <div class="cards quotes" id="testimonials"></div>
+    </section>
+
+    <section class="section" id="audiences">
+      <div class="section-head">
+        <h2>受眾包與產品</h2>
+        <p>audience_packs · product_catalog</p>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>受眾包</h3>
+          <div id="audiences"></div>
+        </div>
+        <div class="panel">
+          <h3>產品目錄</h3>
+          <div id="products"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="pricing">
+      <div class="section-head">
+        <h2>方案</h2>
+        <p>展示定價（假資料，非正式報價）</p>
+      </div>
+      <div class="pricing" id="pricing"></div>
+    </section>
+
+    <section class="section" id="ai">
+      <div class="section-head">
+        <h2>Qwen 行銷文案助理</h2>
+        <p>POST → 100.88.220.82:8080/v1/chat/completions</p>
+      </div>
+      <div class="ai-box">
+        <div class="ai-form">
+          <label>主題</label>
+          <input id="copyTopic" value="素食會員首月體驗，強調無壓力取消" />
+          <label>頻道</label>
+          <select id="copyChannel">
+            <option>官網首屏</option>
+            <option>Meta 廣告</option>
+            <option>EDM 主旨</option>
+            <option>短影音腳本</option>
+          </select>
+          <label>語氣</label>
+          <input id="copyTone" value="專業但親和" />
+          <button class="btn primary" id="btnCopy">生成文案</button>
+        </div>
+        <pre class="ai-out" id="copyOut">點擊生成後，Qwen 會依看板數據產出可上稿文案…</pre>
+      </div>
+    </section>
+
+    <section class="section soft" id="infra">
+      <div class="section-head">
+        <h2>基礎設施</h2>
+        <p>Qwen · FastAPI · Redis · PostgreSQL</p>
+      </div>
+      <div class="infra" id="infraCards"></div>
+    </section>
+
+    <section class="section lead-sec" id="lead">
+      <div class="lead-wrap">
+        <div>
+          <h2>預約 30 分鐘成長演示</h2>
+          <p>表單寫入 catch_crm.form_submissions（展示環境）</p>
+        </div>
+        <form id="leadForm" class="lead-form">
+          <input name="name" placeholder="您的名字" required />
+          <input name="email" type="email" placeholder="Email" required />
+          <input name="company" placeholder="公司／品牌" />
+          <input name="interest" placeholder="最想解決的問題" />
+          <textarea name="message" rows="3" placeholder="補充說明（選填）"></textarea>
+          <button class="btn primary" type="submit">送出詢盤</button>
+          <p class="form-msg" id="leadMsg"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>CATCH Growth Demo · 資料庫 catch_crm · 非正式對外報價</div>
+    <div class="mono">Qwen :8080 · API :9000 · Redis :6379 · PG :5432</div>
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>
