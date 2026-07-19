@@ -12,6 +12,7 @@ import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import config
@@ -694,3 +695,11 @@ def styles() -> FileResponse:
 @app.get("/app.js")
 def app_js() -> FileResponse:
     return FileResponse(STATIC_DIR / "app.js", media_type="application/javascript")
+
+
+# gimi 配圖與其他靜態資源（須在 API 路由之後掛載）
+app.mount(
+    "/assets",
+    StaticFiles(directory=str(STATIC_DIR / "assets")),
+    name="assets",
+)
