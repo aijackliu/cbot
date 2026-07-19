@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CATCH Growth · 雙 Tutorial 架構說明</title>
+  <meta name="description" content="ai_travel_agent_memory 與 rag_failure_diagnostics_clinic 繁中架構說明，含 gimi 怪誕手繪配圖。" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="explain.css" />
+</head>
+<body class="explain-page">
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#overview">CATCH <span>Growth</span></a>
+      <nav>
+        <a href="#overview">總覽</a>
+        <a href="#clinic">診斷診所</a>
+        <a href="#travel">旅遊記憶</a>
+        <a href="#compare">對照</a>
+        <a href="#api">API</a>
+        <a class="btn small primary" href="https://github.com/aijackliu/cbot/tree/main/test0721-marketing" target="_blank" rel="noopener">演示源碼</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero explain-hero" id="overview">
+      <div class="hero-copy">
+        <p class="eyebrow">test0719b · 雙 Tutorial 架構說明（靜態）</p>
+        <h1>兩個上游 Tutorial<br />同一演示站 · 各管各的</h1>
+        <p class="lead">
+          整合
+          <strong>rag_failure_diagnostics_clinic</strong>
+          與
+          <strong>ai_travel_agent_memory</strong>
+          （awesome-llm-apps）。
+          配圖採
+          <a href="https://github.com/GiMi-Xiaomi/gimi-illustration-skill" target="_blank" rel="noopener">gimi-illustration-skill</a>
+          · quirky-sketch · <strong>繁體標註</strong>。
+        </p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#clinic">診所架構 ↓</a>
+          <a class="btn ghost" href="#travel">旅遊記憶 ↓</a>
+        </div>
+        <div class="trust">
+          <span class="chip">gimi · quirky-sketch</span>
+          <span class="chip">Redis · Qwen</span>
+          <span class="chip">不混庫</span>
+        </div>
+      </div>
+      <div class="hero-card explain-hero-card">
+        <img
+          src="assets/clinic/03-two-modules.jpg"
+          alt="同站兩模組：診斷診所與旅遊記憶各管各的"
+          width="960"
+          height="540"
+        />
+        <p class="caption">同站兩模組 · 各管各的</p>
+      </div>
+    </section>
+
+    <!-- ========== CLINIC ========== -->
+    <section class="section" id="clinic">
+      <div class="section-head">
+        <h2>① RAG 失敗診斷診所</h2>
+        <p>
+          上游
+          <a href="https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_failure_diagnostics_clinic" target="_blank" rel="noopener">rag_failure_diagnostics_clinic</a>
+          · 可運行演示見 repo <code>test0721-marketing</code> <a href="#clinic">#clinic</a>
+          · 源碼
+          <code>clinic/</code> + <code>app/clinic.py</code>
+        </p>
+      </div>
+
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>
+          貼上真實故障描述 → 對照 <strong>P01–P12</strong> 可複用模式 → 輸出
+          <strong>主因 + 最小結構修復</strong>
+          （不是「換更大模型」或「再塞一點 context」）。
+        </p>
+      </div>
+
+      <div class="gimi-grid gimi-grid-2">
+        <figure class="gimi-card">
+          <img src="assets/clinic/01-clinic-flow.jpg" alt="診所診斷三步" loading="lazy" />
+          <figcaption>
+            <strong>診斷三步</strong>
+            貼上故障 → 對照模式藥櫃 → 結構修復報告
+          </figcaption>
+        </figure>
+        <figure class="gimi-card">
+          <img src="assets/clinic/02-pattern-cabinet.jpg" alt="十二種失敗模式" loading="lazy" />
+          <figcaption>
+            <strong>十二種失敗模式</strong>
+            P01–P12 像藥櫃抽屜——可複用分診，不是一次性 prompt 玄學
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <h3>主路徑</h3>
+          <pre class="arch-pre">使用者貼故障描述
+  → 載入 P01–P12 模式庫（system prompt）
+  → Qwen 選唯一 primary pattern
+  → 可選 secondary + 證據摘錄
+  → 最小結構修復建議
+  → 可寫 clinic/reports/*.json</pre>
+          <h3>本站適配</h3>
+          <ul class="points">
+            <li>CLI 仍在 <code>clinic/rag_failure_diagnostics_clinic.py</code></li>
+            <li>Web：<code>POST /api/clinic/diagnose</code> · 繁中輸出</li>
+            <li>LLM：LAN Qwen（OpenAI 相容），非 OpenAI 雲端</li>
+            <li>內建範例：P01 檢索幻覺、P10 啟動順序、P11 設定漂移、CATCH RAG 案例</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>P01–P12 速查</h3>
+          <div class="pattern-table-wrap">
+            <table class="pattern-table">
+              <thead>
+                <tr><th>ID</th><th>模式</th><th>典型症狀</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>P01</td><td>檢索幻覺／接地漂移</td><td>答案與檢索文件矛盾</td></tr>
+                <tr><td>P02</td><td>分塊邊界錯誤</td><td>事實被切碎或截斷</td></tr>
+                <tr><td>P03</td><td>嵌入語義錯位</td><td>向量近、語意遠</td></tr>
+                <tr><td>P04</td><td>索引過期／偏斜</td><td>源已更新索引仍舊</td></tr>
+                <tr><td>P05</td><td>查詢改寫／路由錯</td><td>打到錯誤工具或庫</td></tr>
+                <tr><td>P06</td><td>長鏈推理漂移</td><td>多步後忘約束</td></tr>
+                <tr><td>P07</td><td>工具誤用</td><td>參數錯、無接地</td></tr>
+                <tr><td>P08</td><td>會話記憶缺失</td><td>跨輪丟關鍵事實</td></tr>
+                <tr><td>P09</td><td>評測盲區</td><td>測過、線上翻車</td></tr>
+                <tr><td>P10</td><td>啟動依賴未就緒</td><td>部署初期 5xx</td></tr>
+                <tr><td>P11</td><td>設定／密鑰漂移</td><td>本機可、正式掛</td></tr>
+                <tr><td>P12</td><td>多租戶互相踩</td><td>狀態被覆蓋</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel soft-panel">
+        <h3>演示 60 秒</h3>
+        <ol class="arch-steps">
+          <li>本頁下方看架構；可運行 UI 在 <code>test0721-marketing</code> 的 #clinic</li>
+          <li>選「檢索幻覺 (P01)」範例 → 執行診斷</li>
+          <li>讀 primary pattern、結構修復建議；可對照本站 RAG 故障再跑 CATCH 範例</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ========== TRAVEL ========== -->
+    <section class="section soft" id="travel">
+      <div class="section-head">
+        <h2>② AI 旅遊助理（記憶）</h2>
+        <p>
+          上游
+          <a href="https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory" target="_blank" rel="noopener">ai_travel_agent_memory</a>
+          · 站內
+          <a href="#travel">#travel</a>
+          · 源碼
+          <code>travel_agent_memory/</code> + <code>app/travel_memory.py</code>
+        </p>
+      </div>
+
+      <div class="panel arch-one-box">
+        <p>
+          <strong>一句話：</strong>
+          <strong>記住這位旅客的偏好，再回答行程</strong>
+          ——先檢索記憶，再呼叫 Qwen，最後把對話寫回（不是裸聊）。
+        </p>
+      </div>
+
+      <div class="gimi-grid">
+        <figure class="gimi-card">
+          <img src="assets/travel-memory/01-memory-loop.jpg" alt="記憶對話閉環" loading="lazy" />
+          <figcaption>
+            <strong>① 記憶對話閉環</strong>
+            提問 → 檢索 Redis → Qwen 回覆 → 寫回記憶
+          </figcaption>
+        </figure>
+        <figure class="gimi-card">
+          <img src="assets/travel-memory/02-stack-adapt.jpg" alt="棧遷移模式相同" loading="lazy" />
+          <figcaption>
+            <strong>② 棧遷移：模式相同</strong>
+            Mem0／Qdrant／GPT → Redis／Qwen
+          </figcaption>
+        </figure>
+        <figure class="gimi-card">
+          <img src="assets/travel-memory/03-user-isolation.jpg" alt="偏好按 user 隔離" loading="lazy" />
+          <figcaption>
+            <strong>③ 偏好按 user 隔離</strong>
+            慢旅行／咖啡／火車像行李牌，掛在 user_id 上
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <h3>主路徑</h3>
+          <pre class="arch-pre">User 提問
+  → search_memories(user_id, query)
+  → Qwen(旅行助理 + 相關記憶)
+  → add_memory(user + assistant)
+  → 回傳 reply + relevant_memories</pre>
+          <h3>本站適配</h3>
+          <ul class="points">
+            <li>原版：Streamlit + Mem0 + Qdrant + GPT-4o</li>
+            <li>本站：Web + <strong>Redis list</strong> + 關鍵詞檢索 + <strong>Qwen</strong></li>
+            <li>示範帳 <code>demo_traveler</code>：慢旅行、自然／咖啡、火車、堅果過敏</li>
+            <li>鍵：<code>mkt:travel:mem:{user}</code> · chat log 另存</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>為什麼改寫棧</h3>
+          <table class="pattern-table">
+            <thead>
+              <tr><th></th><th>原版</th><th>本站</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>UI</td><td>Streamlit</td><td>#travel 區塊</td></tr>
+              <tr><td>記憶</td><td>Mem0</td><td>Redis list</td></tr>
+              <tr><td>向量</td><td>Qdrant</td><td>演示省略（模式仍「先憶後答」）</td></tr>
+              <tr><td>LLM</td><td>GPT-4o</td><td>Qwen :8080</td></tr>
+              <tr><td>隔離</td><td>user_id</td><td>相同</td></tr>
+            </tbody>
+          </table>
+          <p class="muted note">
+            不變的契約：記憶是產品能力，不是模型本身。升格生產可換回向量 Mem0／embedding。
+          </p>
+        </div>
+      </div>
+
+      <div class="panel soft-panel">
+        <h3>演示 60 秒</h3>
+        <ol class="arch-steps">
+          <li>可運行 UI：<code>test0721-marketing</code> 的 #travel，載入示範記憶</li>
+          <li>問「京都三天，慢節奏」→ 狀態列顯示用到的記憶條數</li>
+          <li>換另一個 user 名 → 記憶箱應為空（隔離）</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ========== COMPARE ========== -->
+    <section class="section" id="compare">
+      <div class="section-head">
+        <h2>③ 對照：為什麼放在同一站</h2>
+        <p>同一套 LAN 基建（Qwen · Redis · FastAPI），演示兩種「可賣的 AI 模式」。</p>
+      </div>
+      <div class="gimi-grid gimi-grid-1">
+        <figure class="gimi-card wide">
+          <img src="assets/clinic/03-two-modules.jpg" alt="兩模組邊界" loading="lazy" />
+          <figcaption>
+            <strong>邊界鐵律</strong>
+            診所治「為什麼 RAG 答錯」；旅遊助理管「記住偏好再規劃」——儲存、prompt、API 全部分離
+          </figcaption>
+        </figure>
+      </div>
+      <div class="panel">
+        <table class="pattern-table compare-table">
+          <thead>
+            <tr>
+              <th>維度</th>
+              <th>診斷診所</th>
+              <th>旅遊記憶</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>產品判斷</td>
+              <td>模式分診 + 結構修復</td>
+              <td>長期偏好記憶</td>
+            </tr>
+            <tr>
+              <td>輸入</td>
+              <td>故障敘事（incident）</td>
+              <td>旅行意圖 + user_id</td>
+            </tr>
+            <tr>
+              <td>狀態</td>
+              <td>可選 JSON 報告</td>
+              <td>Redis 記憶 list／對話</td>
+            </tr>
+            <tr>
+              <td>與站內 RAG</td>
+              <td>可診斷 RAG 故障</td>
+              <td>不共用向量 KB</td>
+            </tr>
+            <tr>
+              <td>商機鉤子</td>
+              <td>事故複盤、SRE 工具化</td>
+              <td>垂直助理（旅遊／保險／客服）</td>
+            </tr>
+            <tr>
+              <td>演示錨點</td>
+              <td><code>test0721-marketing#clinic</code></td>`n              <td><code>test0721-marketing#travel</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel soft-panel">
+        <h3>系統邊界（文字圖）</h3>
+        <pre class="arch-pre">瀏覽器
+  ├─ #clinic  → POST /api/clinic/*  → Qwen（分診 P01–P12）→ reports/
+  ├─ #travel  → POST /api/travel/*  → Redis 記憶 + Qwen 行程
+  ├─ #rag     → /api/rag/*          → Ollama embed + KB（獨立）
+  └─ CRM 指標 → Postgres catch_crm  （與上述兩 tutorial 無關）
+
+基建：FastAPI :18721 · Redis :6379 · Qwen :8080 · Ollama · Postgres :5432</pre>
+      </div>
+    </section>
+
+    <!-- ========== API ========== -->
+    <section class="section soft" id="api">
+      <div class="section-head">
+        <h2>④ API 與檔案地圖</h2>
+        <p>演示時可直接對 localhost 呼叫。</p>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <h3>診所</h3>
+          <table class="pattern-table">
+            <tbody>
+              <tr><td>GET</td><td><code>/api/clinic/patterns</code></td></tr>
+              <tr><td>GET</td><td><code>/api/clinic/examples</code></td></tr>
+              <tr><td>POST</td><td><code>/api/clinic/diagnose</code></td></tr>
+            </tbody>
+          </table>
+          <p class="muted note">上游副本：<code>clinic/</code> · 適配層：<code>app/clinic.py</code></p>
+        </div>
+        <div class="panel">
+          <h3>旅遊記憶</h3>
+          <table class="pattern-table">
+            <tbody>
+              <tr><td>POST</td><td><code>/api/travel/seed</code></td></tr>
+              <tr><td>GET/DELETE</td><td><code>/api/travel/memory</code></td></tr>
+              <tr><td>POST</td><td><code>/api/travel/chat</code></td></tr>
+              <tr><td>GET</td><td><code>/api/travel/history</code></td></tr>
+            </tbody>
+          </table>
+          <p class="muted note">上游副本：<code>travel_agent_memory/</code> · 適配層：<code>app/travel_memory.py</code></p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>文件</h3>
+        <ul class="points">
+          <li><code>travel-memory-architecture.md</code> · 旅遊記憶長文</li>
+          <li><code>clinic-architecture.md</code> · 診所短文</li>
+          <li>配圖策略：
+            <code>assets/clinic/shot-config.md</code> ·
+            <code>assets/travel-memory/shot-config.md</code>
+          </li>
+          <li>可運行版：repo <code>test0721-marketing</code>（FastAPI :18721）</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer explain-footer">
+    <div class="lead-wrap">
+      <p>
+        test0719b · 說明網頁（靜態）
+        · 配圖 gimi-illustration · quirky-sketch · 繁體
+        · IP 見 skill 倉 <code>IP-NOTICE.md</code>
+      </p>
+      <p class="muted">
+        <a href="https://github.com/aijackliu/cbot/tree/main/test0721-marketing" target="_blank" rel="noopener">可運行演示 test0721-marketing</a>
+        ·
+        <a href="#clinic">診所</a>
+        ·
+        <a href="#travel">旅遊記憶</a>
+        ·
+        <a href="https://github.com/aijackliu/cbot" target="_blank" rel="noopener">GitHub cbot</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

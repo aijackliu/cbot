@@ -14,6 +14,14 @@ Demo / prototype pages.
 - 線上預覽：https://aijackliu.github.io/cbot/test0711/
 - 說明：依航班與住宿的關西 6 日行程卡（無 USJ），靜態 HTML
 
+## 雙 Tutorial 架構說明（test0719b）
+
+- 路徑：`test0719b/`
+- 線上預覽：https://aijackliu.github.io/cbot/test0719b/
+- GitHub：https://github.com/aijackliu/cbot/tree/main/test0719b
+- 說明：`rag_failure_diagnostics_clinic` + `ai_travel_agent_memory` 繁中架構說明 + gimi 配圖（靜態）
+- 可運行演示源碼：`test0721-marketing/`
+
 ## 記憶三層架構（test0714）
 
 - 路徑：`test0714/`
