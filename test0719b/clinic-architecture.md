@@ -1,7 +1,8 @@
 # RAG 失敗診斷診所 · 架構與說明
 
 > 上游：[rag_failure_diagnostics_clinic](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_failure_diagnostics_clinic)  
-> 本站：`test0719b 說明頁 · 可運行 `test0721-marketing` · `#clinic`  
+> 本站：`test0719b` 說明頁 · `#clinic`  
+
 > 配圖：gimi-illustration · quirky-sketch · 繁體 · `assets/clinic/`
 
 ## 一句話

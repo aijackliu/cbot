@@ -18,7 +18,6 @@
         <a href="#travel">旅遊記憶</a>
         <a href="#compare">對照</a>
         <a href="#api">API</a>
-        <a class="btn small primary" href="https://github.com/aijackliu/cbot/tree/main/test0721-marketing" target="_blank" rel="noopener">演示源碼</a>
       </nav>
     </div>
   </header>
@@ -66,9 +65,7 @@
         <p>
           上游
           <a href="https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_failure_diagnostics_clinic" target="_blank" rel="noopener">rag_failure_diagnostics_clinic</a>
-          · 可運行演示見 repo <code>test0721-marketing</code> <a href="#clinic">#clinic</a>
-          · 源碼
-          <code>clinic/</code> + <code>app/clinic.py</code>
+          · 模式庫 P01–P12 · Qwen 分診
         </p>
       </div>
 
@@ -142,11 +139,11 @@
       </div>
 
       <div class="panel soft-panel">
-        <h3>演示 60 秒</h3>
+        <h3>對外講解要點</h3>
         <ol class="arch-steps">
-          <li>本頁下方看架構；可運行 UI 在 <code>test0721-marketing</code> 的 #clinic</li>
-          <li>選「檢索幻覺 (P01)」範例 → 執行診斷</li>
-          <li>讀 primary pattern、結構修復建議；可對照本站 RAG 故障再跑 CATCH 範例</li>
+          <li>故障描述要寫清：檢索內容、模型答案、與預期差異</li>
+          <li>對照 P01–P12，選<strong>唯一主模式</strong>，避免「再換大模型」空話</li>
+          <li>輸出應含：主因 + 最小<strong>結構</strong>修復（索引／分塊／路由／接地…）</li>
         </ol>
       </div>
     </section>
@@ -158,10 +155,7 @@
         <p>
           上游
           <a href="https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory" target="_blank" rel="noopener">ai_travel_agent_memory</a>
-          · 站內
-          <a href="#travel">#travel</a>
-          · 源碼
-          <code>travel_agent_memory/</code> + <code>app/travel_memory.py</code>
+          · 記憶按 user 隔離 · Redis + Qwen 適配
         </p>
       </div>
 
@@ -234,11 +228,11 @@
       </div>
 
       <div class="panel soft-panel">
-        <h3>演示 60 秒</h3>
+        <h3>對外講解要點</h3>
         <ol class="arch-steps">
-          <li>可運行 UI：<code>test0721-marketing</code> 的 #travel，載入示範記憶</li>
-          <li>問「京都三天，慢節奏」→ 狀態列顯示用到的記憶條數</li>
-          <li>換另一個 user 名 → 記憶箱應為空（隔離）</li>
+          <li>先寫入偏好（慢旅行／咖啡／火車…），再問行程</li>
+          <li>回覆應引用記憶，而非空白聊天</li>
+          <li>換另一個 user_id → 記憶互不串線</li>
         </ol>
       </div>
     </section>
@@ -294,8 +288,9 @@
               <td>垂直助理（旅遊／保險／客服）</td>
             </tr>
             <tr>
-              <td>演示錨點</td>
-              <td><code>test0721-marketing#clinic</code></td>`n              <td><code>test0721-marketing#travel</code></td>
+              <td>本頁錨點</td>
+              <td><a href="#clinic">#clinic</a></td>
+              <td><a href="#travel">#travel</a></td>
             </tr>
           </tbody>
         </table>
@@ -316,44 +311,38 @@
     <!-- ========== API ========== -->
     <section class="section soft" id="api">
       <div class="section-head">
-        <h2>④ API 與檔案地圖</h2>
-        <p>演示時可直接對 localhost 呼叫。</p>
+        <h2>④ 檔案地圖</h2>
+        <p>本目錄為靜態說明頁，無後端 API。</p>
       </div>
       <div class="two-col">
         <div class="panel">
-          <h3>診所</h3>
-          <table class="pattern-table">
-            <tbody>
-              <tr><td>GET</td><td><code>/api/clinic/patterns</code></td></tr>
-              <tr><td>GET</td><td><code>/api/clinic/examples</code></td></tr>
-              <tr><td>POST</td><td><code>/api/clinic/diagnose</code></td></tr>
-            </tbody>
-          </table>
-          <p class="muted note">上游副本：<code>clinic/</code> · 適配層：<code>app/clinic.py</code></p>
+          <h3>診所相關</h3>
+          <ul class="points">
+            <li>架構：本頁 <a href="#clinic">#clinic</a></li>
+            <li>短文：<code>clinic-architecture.md</code></li>
+            <li>配圖：<code>assets/clinic/</code></li>
+            <li>上游：awesome-llm-apps · rag_failure_diagnostics_clinic</li>
+          </ul>
         </div>
         <div class="panel">
-          <h3>旅遊記憶</h3>
-          <table class="pattern-table">
-            <tbody>
-              <tr><td>POST</td><td><code>/api/travel/seed</code></td></tr>
-              <tr><td>GET/DELETE</td><td><code>/api/travel/memory</code></td></tr>
-              <tr><td>POST</td><td><code>/api/travel/chat</code></td></tr>
-              <tr><td>GET</td><td><code>/api/travel/history</code></td></tr>
-            </tbody>
-          </table>
-          <p class="muted note">上游副本：<code>travel_agent_memory/</code> · 適配層：<code>app/travel_memory.py</code></p>
+          <h3>旅遊記憶相關</h3>
+          <ul class="points">
+            <li>架構：本頁 <a href="#travel">#travel</a></li>
+            <li>長文：<code>travel-memory-architecture.md</code></li>
+            <li>配圖：<code>assets/travel-memory/</code></li>
+            <li>上游：awesome-llm-apps · ai_travel_agent_memory</li>
+          </ul>
         </div>
       </div>
       <div class="panel">
-        <h3>文件</h3>
+        <h3>本目錄檔案</h3>
         <ul class="points">
-          <li><code>travel-memory-architecture.md</code> · 旅遊記憶長文</li>
-          <li><code>clinic-architecture.md</code> · 診所短文</li>
+          <li><code>index.html</code> · 說明網頁</li>
+          <li><code>styles.css</code> · <code>explain.css</code></li>
           <li>配圖策略：
             <code>assets/clinic/shot-config.md</code> ·
             <code>assets/travel-memory/shot-config.md</code>
           </li>
-          <li>可運行版：repo <code>test0721-marketing</code>（FastAPI :18721）</li>
         </ul>
       </div>
     </section>
@@ -367,13 +356,13 @@
         · IP 見 skill 倉 <code>IP-NOTICE.md</code>
       </p>
       <p class="muted">
-        <a href="https://github.com/aijackliu/cbot/tree/main/test0721-marketing" target="_blank" rel="noopener">可運行演示 test0721-marketing</a>
+        <a href="#overview">總覽</a>
         ·
         <a href="#clinic">診所</a>
         ·
         <a href="#travel">旅遊記憶</a>
         ·
-        <a href="https://github.com/aijackliu/cbot" target="_blank" rel="noopener">GitHub cbot</a>
+        <a href="https://github.com/aijackliu/cbot/tree/main/test0719b" target="_blank" rel="noopener">GitHub test0719b</a>
       </p>
     </div>
   </footer>

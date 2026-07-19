@@ -19,8 +19,7 @@ Demo / prototype pages.
 - 路徑：`test0719b/`
 - 線上預覽：https://aijackliu.github.io/cbot/test0719b/
 - GitHub：https://github.com/aijackliu/cbot/tree/main/test0719b
-- 說明：`rag_failure_diagnostics_clinic` + `ai_travel_agent_memory` 繁中架構說明 + gimi 配圖（靜態）
-- 可運行演示源碼：`test0721-marketing/`
+- 說明：`rag_failure_diagnostics_clinic` + `ai_travel_agent_memory` 繁中架構說明 + gimi 配圖（純靜態）
 
 ## 記憶三層架構（test0714）
 

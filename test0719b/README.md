@@ -7,19 +7,14 @@
 | RAG 失敗診斷診所 | [rag_failure_diagnostics_clinic](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_failure_diagnostics_clinic) |
 | AI 旅遊助理（記憶） | [ai_travel_agent_memory](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory) |
 
-## 線上預覽
+## 連結
 
-- GitHub 目錄：https://github.com/aijackliu/cbot/tree/main/test0719b  
-- Pages（若已開）：https://aijackliu.github.io/cbot/test0719b/
+- GitHub：https://github.com/aijackliu/cbot/tree/main/test0719b  
+- Pages：https://aijackliu.github.io/cbot/test0719b/
 
 ## 本機開啟
 
-直接開 `index.html`，或：
-
-```bash
-# 在 cbot 根目錄
-npx --yes serve test0719b -p 41719
-```
+直接開 `index.html` 即可（純靜態，無後端）。
 
 ## 檔案
 
@@ -31,11 +26,6 @@ npx --yes serve test0719b -p 41719
 | `assets/travel-memory/` | 旅遊記憶 3 張 gimi 圖 |
 | `clinic-architecture.md` | 診所架構短文 |
 | `travel-memory-architecture.md` | 旅遊記憶架構長文 |
-
-## 可運行演示
-
-互動 API／UI 在 **`../test0721-marketing/`**（FastAPI · Redis · Qwen）。  
-本目錄為**純靜態**對外講解頁，不需後端。
 
 ## 配圖
 

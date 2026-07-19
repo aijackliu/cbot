@@ -1,7 +1,8 @@
 # AI 旅遊助理（記憶）· 架構與說明
 
 > 上游：[ai_travel_agent_memory](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory)  
-> 本站：`test0719b 說明頁 + 可運行 `test0721-marketing` · `#travel`  
+> 本站：`test0719b` 說明頁 · `#travel`  
+
 > 配圖：[gimi-illustration-skill](https://github.com/GiMi-Xiaomi/gimi-illustration-skill) · quirky-sketch · IP **gimi** · 繁體標註  
 > 圖檔：`assets/travel-memory/` · 策略單：`gimi-illustration-skill/outputs/20260719-travel-agent-memory/shot-config.md`
 
