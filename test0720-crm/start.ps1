@@ -51,10 +51,10 @@ if (-not $SkipInstall) {
 try {
     $owners = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
         Select-Object -ExpandProperty OwningProcess -Unique
-    foreach ($pid in $owners) {
-        if ($pid -and $pid -ne 0) {
-            Write-Host "Port $Port in use by PID $pid — stopping it..." -ForegroundColor Yellow
-            Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+    foreach ($procId in $owners) {
+        if ($procId -and $procId -ne 0) {
+            Write-Host "Port $Port in use by PID $procId — stopping it..." -ForegroundColor Yellow
+            Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
             Start-Sleep -Milliseconds 400
         }
     }

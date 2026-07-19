@@ -11,6 +11,21 @@
 
 ## 啟動
 
+**PowerShell（推薦）**
+
+```powershell
+cd test0720-crm
+.\start.ps1
+```
+
+可選參數：
+
+```powershell
+.\start.ps1 -Port 18720 -SkipInstall -NoBrowser
+```
+
+**手動**
+
 ```bash
 cd test0720-crm
 pip install -r requirements.txt
