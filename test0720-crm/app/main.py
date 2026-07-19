@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import config
+from . import form_fill
 from .db import fetch_all, fetch_one, json_safe
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -77,6 +78,18 @@ def _extract_qwen_text(message: dict) -> str:
 class ChatIn(BaseModel):
     message: str = Field(..., min_length=1, max_length=4000)
     context: str | None = None
+
+
+class FormTurnIn(BaseModel):
+    message: str = Field(..., min_length=1, max_length=4000)
+    values: dict[str, str] | None = None
+    history: list[dict] | None = None
+    session_id: str | None = None
+
+
+class FormSubmitIn(BaseModel):
+    values: dict[str, str]
+    session_id: str | None = None
 
 
 @app.get("/api/health")
@@ -313,6 +326,58 @@ def competitors() -> dict:
         """
     )
     return {"items": [json_safe(x) for x in rows]}
+
+
+# ----- Agentic form fill (客服填表) -----
+
+
+@app.get("/api/forms/template")
+def form_template() -> dict:
+    return {"ok": True, "template": form_fill.FORM_TEMPLATE}
+
+
+@app.post("/api/forms/turn")
+def form_turn(body: FormTurnIn) -> dict:
+    """Multi-turn: user message → extract fields + agent reply + missing list."""
+    try:
+        result = form_fill.form_turn(
+            body.message,
+            values=body.values,
+            history=body.history,
+        )
+        if body.session_id:
+            try:
+                form_fill.save_draft(body.session_id, result["values"])
+            except Exception:  # noqa: BLE001
+                pass
+        return {"ok": True, "session_id": body.session_id, **result}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"form turn failed: {e}") from e
+
+
+@app.post("/api/forms/apply")
+def form_apply(body: FormSubmitIn) -> dict:
+    """Manual field edits from UI."""
+    return {"ok": True, **form_fill.apply_manual(body.values)}
+
+
+@app.post("/api/forms/submit")
+def form_submit(body: FormSubmitIn) -> dict:
+    try:
+        rec = form_fill.submit_form(body.values, session_id=body.session_id)
+        return {"ok": True, "submission": rec}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"submit failed: {e}") from e
+
+
+@app.get("/api/forms/submissions")
+def form_submissions(limit: int = 20) -> dict:
+    try:
+        return {"ok": True, "items": form_fill.list_submissions(limit=limit)}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, str(e)) from e
 
 
 @app.post("/api/ai/chat")

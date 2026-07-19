@@ -7,7 +7,7 @@ const titles = {
   opps: ["銷售機會", "管道階段與金額（NTD）"],
   customers: ["電商客戶", "web_customers RFM / LTV"],
   competitors: ["競品情報", "competitors + signals"],
-  ai: ["Qwen 助理", "http://100.88.220.82:8080/v1/chat/completions"],
+  ai: ["客服 AI · 填表", "對話助理 + Agent 式服務申請表（Qwen）"],
   infra: ["基礎設施", "Qwen · FastAPI · Redis · PostgreSQL"],
 };
 
@@ -302,39 +302,148 @@ async function loadCompetitors() {
 
 function loadAI() {
   const el = $("#view-ai");
+  const sessionId =
+    sessionStorage.getItem("crmFormSession") ||
+    Math.random().toString(16).slice(2, 10);
+  sessionStorage.setItem("crmFormSession", sessionId);
+
   el.innerHTML = `
     <div class="card">
-      <h3>整合說明</h3>
-      <p class="muted">對話會帶上目前 catch_crm 的 KPI 上下文，轉發至 Qwen3 OpenAI 相容端點。推理模型若 content 為空，後端會從 reasoning 抽出中文答案。</p>
-    </div>
-    <div class="chat">
-      <div class="chat-log" id="chatLog">
-        <div class="bubble bot">你好，我是 CATCH CRM 的 Qwen 助理。可以問我：本週該優先跟進哪些商機？電商營收看起來如何？</div>
+      <h3>客服 AI · 可用填表</h3>
+      <p class="muted">
+        左側：CRM 對話助理（帶 KPI 上下文）。右側：<strong>服務申請表</strong>——用對話補齊欄位（Agent 式填表，LAN Qwen），
+        必填齊全後可提交（演示寫入 Redis）。模式參考 agentic-form-filler，不依賴 Landing AI。
+      </p>
+      <div class="form-mode-bar">
+        <label class="muted"><input type="radio" name="aiMode" value="crm" checked /> CRM 問答</label>
+        <label class="muted"><input type="radio" name="aiMode" value="form" /> 填表模式</label>
+        <span class="muted" id="formModeHint">填表模式：說出公司／聯絡人／需求，右側會即時更新</span>
       </div>
-      <div class="chat-input">
-        <input id="chatInput" placeholder="輸入問題，例如：根據管道金額給我本週銷售重點" />
-        <button class="btn primary" id="chatSend">送出</button>
+    </div>
+    <div class="ai-split">
+      <div class="chat">
+        <div class="chat-log" id="chatLog">
+          <div class="bubble bot">你好，我是 CATCH 客服 AI。可問 CRM 數據，或切到「填表模式」用對話填服務申請表。</div>
+        </div>
+        <div class="chat-input">
+          <input id="chatInput" placeholder="例：我想了解管道金額 / 我們是 CATCH，聯絡人王小明，要做行銷自動化" />
+          <button class="btn primary" id="chatSend">送出</button>
+        </div>
+      </div>
+      <div class="card form-panel">
+        <div class="form-panel-head">
+          <h3 id="formTitle">服務申請表</h3>
+          <span class="pill" id="formStatus">未完成</span>
+        </div>
+        <p class="muted" id="formDesc" style="margin-top:0"></p>
+        <form id="serviceForm" class="service-form"></form>
+        <div class="form-actions">
+          <button type="button" class="btn ghost" id="btnFormClear">清空</button>
+          <button type="button" class="btn ghost" id="btnFormFromChat">從上則對話抽取</button>
+          <button type="button" class="btn primary" id="btnFormSubmit" disabled>提交申請</button>
+        </div>
+        <p class="muted" id="formMsg"></p>
+        <div class="muted" id="formMissing"></div>
       </div>
     </div>`;
 
   const log = $("#chatLog");
   const input = $("#chatInput");
   const send = $("#chatSend");
+  let lastUserMsg = "";
+  let formValues = {};
+  let formHistory = [];
+  let template = null;
+
+  const mode = () =>
+    ($("input[name=aiMode]:checked") || {}).value || "crm";
 
   const push = (role, text) => {
     const d = document.createElement("div");
-    d.className = `bubble ${role}`;
+    d.className = `bubble ${role === "user" ? "user" : "bot"}`;
     d.textContent = text;
     log.appendChild(d);
     log.scrollTop = log.scrollHeight;
   };
 
-  const go = async () => {
-    const msg = input.value.trim();
-    if (!msg) return;
-    input.value = "";
-    push("user", msg);
-    send.disabled = true;
+  const renderForm = () => {
+    if (!template) return;
+    $("#formTitle").textContent = template.title || "服務申請表";
+    $("#formDesc").textContent = template.description || "";
+    const form = $("#serviceForm");
+    form.innerHTML = (template.fields || [])
+      .map((f) => {
+        const req = f.required ? '<span class="req">*</span>' : "";
+        const val = formValues[f.key] || "";
+        if (f.multiline) {
+          return `<label>${f.label}${req}<textarea data-key="${f.key}" rows="3" placeholder="${f.placeholder || ""}">${val}</textarea></label>`;
+        }
+        return `<label>${f.label}${req}<input data-key="${f.key}" value="${val.replace(/"/g, "&quot;")}" placeholder="${f.placeholder || ""}" /></label>`;
+      })
+      .join("");
+    form.querySelectorAll("[data-key]").forEach((el) => {
+      el.addEventListener("change", () => {
+        formValues[el.getAttribute("data-key")] = el.value;
+        updateMissingUI();
+      });
+      el.addEventListener("input", () => {
+        formValues[el.getAttribute("data-key")] = el.value;
+      });
+    });
+    updateMissingUI();
+  };
+
+  const readFormDom = () => {
+    $$("#serviceForm [data-key]").forEach((el) => {
+      formValues[el.getAttribute("data-key")] = el.value;
+    });
+    return formValues;
+  };
+
+  const updateMissingUI = (missing) => {
+    const fields = (template && template.fields) || [];
+    if (!missing) {
+      missing = fields
+        .filter((f) => f.required && !(formValues[f.key] || "").trim())
+        .map((f) => ({ key: f.key, label: f.label }));
+    }
+    const complete = missing.length === 0;
+    const st = $("#formStatus");
+    st.textContent = complete ? "可提交" : `缺 ${missing.length} 項`;
+    st.className = "pill " + (complete ? "ok" : "warn");
+    $("#btnFormSubmit").disabled = !complete;
+    $("#formMissing").textContent = complete
+      ? "必填已齊，請確認後提交。"
+      : "仍缺：" + missing.map((m) => m.label).join("、");
+  };
+
+  const applyFormResult = (res) => {
+    formValues = { ...formValues, ...(res.values || {}) };
+    renderForm();
+    updateMissingUI(res.missing);
+    let reply = res.reply || "";
+    if (res.ask_next) reply += (reply ? "\n" : "") + res.ask_next;
+    if (res.patched_keys && res.patched_keys.length) {
+      reply += `\n（已填入：${res.patched_keys.join("、")}）`;
+    }
+    return reply || "已更新表單。";
+  };
+
+  // load template
+  api("/api/forms/template")
+    .then((d) => {
+      template = d.template;
+      formValues = {};
+      (template.fields || []).forEach((f) => {
+        formValues[f.key] = "";
+      });
+      renderForm();
+    })
+    .catch((e) => {
+      $("#formMsg").textContent = "載入表單失敗：" + e.message;
+    });
+
+  const goCrm = async (msg) => {
     push("bot", "思考中…");
     const thinking = log.lastChild;
     try {
@@ -343,16 +452,45 @@ function loadAI() {
         body: JSON.stringify({ message: msg }),
       });
       thinking.textContent = res.reply || "（空回應）";
-      if (res.model) {
-        const m = document.createElement("div");
-        m.className = "muted";
-        m.style.fontSize = "11px";
-        m.textContent = `model: ${res.model}`;
-        log.appendChild(m);
-      }
     } catch (e) {
       thinking.textContent = "錯誤：" + e.message;
       thinking.classList.add("err");
+    }
+  };
+
+  const goForm = async (msg) => {
+    push("bot", "填表中…");
+    const thinking = log.lastChild;
+    try {
+      const res = await api("/api/forms/turn", {
+        method: "POST",
+        body: JSON.stringify({
+          message: msg,
+          values: readFormDom(),
+          history: formHistory.slice(-8),
+          session_id: sessionId,
+        }),
+      });
+      formHistory.push({ role: "user", content: msg });
+      const reply = applyFormResult(res);
+      formHistory.push({ role: "assistant", content: reply });
+      thinking.textContent = reply;
+    } catch (e) {
+      thinking.textContent = "錯誤：" + e.message;
+      thinking.classList.add("err");
+    }
+  };
+
+  const go = async () => {
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = "";
+    lastUserMsg = msg;
+    push("user", msg);
+    send.disabled = true;
+    try {
+      if (mode() === "form") await goForm(msg);
+      else await goCrm(msg);
     } finally {
       send.disabled = false;
       log.scrollTop = log.scrollHeight;
@@ -363,6 +501,63 @@ function loadAI() {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") go();
   });
+
+  $("#btnFormClear").onclick = () => {
+    formValues = {};
+    (template.fields || []).forEach((f) => {
+      formValues[f.key] = "";
+    });
+    formHistory = [];
+    renderForm();
+    $("#formMsg").textContent = "已清空";
+  };
+
+  $("#btnFormFromChat").onclick = async () => {
+    const msg = lastUserMsg || input.value.trim();
+    if (!msg) {
+      $("#formMsg").textContent = "請先在對話送出一則訊息";
+      return;
+    }
+    $("#formMsg").textContent = "抽取中…";
+    try {
+      const res = await api("/api/forms/turn", {
+        method: "POST",
+        body: JSON.stringify({
+          message: msg,
+          values: readFormDom(),
+          session_id: sessionId,
+        }),
+      });
+      applyFormResult(res);
+      $("#formMsg").textContent = "已從對話更新欄位";
+      push("bot", res.reply || "已從對話抽取到表單。");
+    } catch (e) {
+      $("#formMsg").textContent = e.message;
+    }
+  };
+
+  $("#btnFormSubmit").onclick = async () => {
+    $("#formMsg").textContent = "提交中…";
+    try {
+      const res = await api("/api/forms/submit", {
+        method: "POST",
+        body: JSON.stringify({
+          values: readFormDom(),
+          session_id: sessionId,
+        }),
+      });
+      $("#formMsg").textContent =
+        "已提交 #" + ((res.submission && res.submission.id) || "");
+      push(
+        "bot",
+        "申請已提交（演示存 Redis）。單號 " +
+          ((res.submission && res.submission.id) || "")
+      );
+      updateMissingUI([]);
+    } catch (e) {
+      $("#formMsg").textContent = e.message;
+    }
+  };
 }
 
 const loaders = {
