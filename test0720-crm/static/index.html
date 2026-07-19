@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CATCH CRM · 展示台</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div>
+          <strong>CATCH CRM</strong>
+          <span>AI 展示台</span>
+        </div>
+      </div>
+      <nav id="nav">
+        <button data-view="dashboard" class="active">儀表板</button>
+        <button data-view="accounts">客戶帳戶</button>
+        <button data-view="opps">銷售機會</button>
+        <button data-view="customers">電商客戶</button>
+        <button data-view="competitors">競品情報</button>
+        <button data-view="ai">Qwen 助理</button>
+        <button data-view="infra">基礎設施</button>
+      </nav>
+      <div class="side-foot">
+        <div id="liveDot" class="dot"></div>
+        <span id="liveText">連線檢查中…</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div>
+          <h1 id="pageTitle">儀表板</h1>
+          <p id="pageSub">讀取 PostgreSQL catch_crm · Qwen · Redis · 遠端 FastAPI</p>
+        </div>
+        <button class="btn ghost" id="btnRefresh">重新整理</button>
+      </header>
+
+      <section id="view-dashboard" class="view active"></section>
+      <section id="view-accounts" class="view"></section>
+      <section id="view-opps" class="view"></section>
+      <section id="view-customers" class="view"></section>
+      <section id="view-competitors" class="view"></section>
+      <section id="view-ai" class="view"></section>
+      <section id="view-infra" class="view"></section>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
