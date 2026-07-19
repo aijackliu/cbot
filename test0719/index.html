@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>商機精選｜企業 AI 落地（含私域運營）</title>
+  <meta name="description" content="OpenFDE、Watchless、Explainer，以及老袁 AI 私域運營工具：架構、繁體配圖與商機說明。" />
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --ink: #1a1a1a;
+      --muted: #5c5c5c;
+      --card: #ffffff;
+      --line: #e6e0d6;
+      --accent: #2f6fed;
+      --accent-soft: #e8f0ff;
+      --warm: #c45c26;
+      --tag: #f0ebe3;
+      --shadow: 0 12px 40px rgba(26, 26, 26, 0.08);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 500px at 10% -10%, #fff7e8 0%, transparent 55%),
+        radial-gradient(700px 400px at 100% 0%, #eaf1ff 0%, transparent 50%),
+        var(--bg);
+      line-height: 1.65;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+    .hero { padding: 28px 0 12px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px; background: var(--tag);
+      color: var(--muted); font-size: 13px;
+    }
+    h1 {
+      margin: 16px 0 12px; font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.2; letter-spacing: -0.02em;
+    }
+    .lead { max-width: 760px; margin: 0; color: var(--muted); font-size: 17px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .chip {
+      font-size: 13px; padding: 6px 12px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    }
+    .chip strong { color: var(--ink); font-weight: 600; }
+    .nav {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px;
+    }
+    .nav a {
+      font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 10px;
+      background: var(--card); border: 1px solid var(--line); color: var(--ink);
+      text-decoration: none;
+    }
+    .nav a:hover { border-color: var(--accent); color: var(--accent); }
+    .grid { display: grid; gap: 28px; margin-top: 36px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .card.featured { border-color: #f0c9a8; box-shadow: 0 14px 44px rgba(196, 92, 38, 0.12); }
+    .card-head { display: grid; grid-template-columns: 1fr; }
+    @media (min-width: 860px) {
+      .card-head { grid-template-columns: 1.05fr 0.95fr; }
+      .card-head.reverse .visual { order: 2; }
+      .card-head.reverse .body { order: 1; }
+    }
+    .visual {
+      background: #faf8f5; border-bottom: 1px solid var(--line);
+      min-height: 240px; display: flex; align-items: center; justify-content: center; padding: 18px;
+    }
+    @media (min-width: 860px) {
+      .visual { border-bottom: none; border-right: 1px solid var(--line); }
+      .card-head.reverse .visual { border-right: none; border-left: 1px solid var(--line); }
+    }
+    .visual img {
+      width: 100%; height: auto; max-height: 320px; object-fit: contain; border-radius: 12px;
+    }
+    .body { padding: 28px 28px 24px; }
+    .rank {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700; color: var(--warm); letter-spacing: 0.04em;
+    }
+    .rank span {
+      display: inline-grid; place-items: center; width: 28px; height: 28px;
+      border-radius: 8px; background: #fff1e8; color: var(--warm);
+    }
+    .body h2 { margin: 10px 0 8px; font-size: 26px; line-height: 1.25; }
+    .one-liner { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
+    .score { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+    .score div { background: var(--bg); border-radius: 12px; padding: 12px; text-align: center; }
+    .score b { display: block; font-size: 18px; margin-bottom: 2px; }
+    .score small { color: var(--muted); font-size: 12px; }
+    .section-title {
+      margin: 18px 0 8px; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase;
+    }
+    ul.points { margin: 0; padding-left: 18px; }
+    ul.points li { margin: 6px 0; }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--card); color: var(--ink); font-size: 14px; font-weight: 600;
+      text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); text-decoration: none; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.ghost { background: var(--accent-soft); border-color: transparent; color: #1e4fc4; }
+    .btn.warn { background: #fff1e8; border-color: #f0c9a8; color: #8a3d12; }
+
+    /* Architecture block */
+    .arch {
+      margin-top: 40px;
+      padding: 8px 0 0;
+    }
+    .arch > h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .arch > .lead-sm {
+      margin: 0 0 24px;
+      color: var(--muted);
+      max-width: 720px;
+    }
+    .arch-grid {
+      display: grid;
+      gap: 20px;
+    }
+    @media (min-width: 860px) {
+      .arch-grid { grid-template-columns: 1fr; }
+    }
+    .arch-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .arch-card img {
+      width: 100%;
+      display: block;
+      background: #faf8f5;
+      border-bottom: 1px solid var(--line);
+    }
+    .arch-card .txt { padding: 20px 24px 24px; }
+    .arch-card h3 { margin: 0 0 8px; font-size: 20px; }
+    .arch-card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .flow {
+      margin: 16px 0 0;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: var(--bg);
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #333;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .warn-box {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: #fff8f0;
+      border: 1px solid #f0d0b0;
+      color: #5c3a22;
+      font-size: 14px;
+    }
+    .warn-box strong { color: #8a3d12; }
+
+    .playbook {
+      margin-top: 36px; padding: 28px; border-radius: var(--radius);
+      background: linear-gradient(145deg, #1f2430 0%, #2b3344 100%);
+      color: #f4f1ea; box-shadow: var(--shadow);
+    }
+    .playbook h2 { margin: 0 0 10px; font-size: 22px; }
+    .playbook p { margin: 0 0 16px; color: #c9c3b8; }
+    .playbook ol { margin: 0; padding-left: 20px; color: #eee9e0; }
+    .playbook li { margin: 8px 0; }
+    .footer {
+      margin-top: 28px; color: var(--muted); font-size: 13px; text-align: center;
+    }
+    .footer code {
+      font-size: 12px; background: #efe9df; padding: 2px 6px; border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">WaytoAGI · 未來矽世界 · 商機精選 + 私域架構</div>
+      <h1>商機資料夾：企業落地 × 私域閉環</h1>
+      <p class="lead">
+        在 OpenFDE／Watchless／Explainer 三條線之外，新增直播高商機案例：
+        <strong>老袁 AI 私域運營</strong>——個微／企微維護訊息、識別購買意向、轉交銷售。
+        下方含 <strong>gimi 繁體手繪配圖</strong>與可對外講解的架構說明。
+      </p>
+      <div class="meta">
+        <div class="chip"><strong>新增</strong> 老袁私域運營（高商機）</div>
+        <div class="chip"><strong>配圖</strong> gimi-illustration · quirky-sketch</div>
+        <div class="chip"><strong>注意</strong> 合規優先 · 人機協同</div>
+      </div>
+      <nav class="nav" aria-label="頁內導覽">
+        <a href="#private">老袁私域</a>
+        <a href="#arch">私域架構圖</a>
+        <a href="#openfde">OpenFDE</a>
+        <a href="#watchless">Watchless</a>
+        <a href="#explainer">Explainer</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <!-- NEW: 老袁私域 -->
+      <article class="card featured" id="private">
+        <div class="card-head">
+          <div class="visual">
+            <img src="assets/04-closed-loop.png" alt="私域運營閉環：維護訊息、識別意向、轉交銷售" width="960" height="540" />
+          </div>
+          <div class="body">
+            <div class="rank"><span>★</span> 高商機 · 新增</div>
+            <h2>老袁 · AI 私域運營工具</h2>
+            <p class="one-liner">
+              自動維護<strong>個人微信</strong>與<strong>企業微信</strong>上的客戶訊息，
+              <strong>識別購買意向</strong>並<strong>轉交給銷售</strong>。
+              聽後筆記稱業務閉環已運作流暢——偏<strong>toB／代運營客單</strong>，不是玩具 demo。
+            </p>
+            <div class="score">
+              <div><b>★★★★★</b><small>商機</small></div>
+              <div><b>SaaS／代運營</b><small>變現</small></div>
+              <div><b>P0</b><small>有銷售資源時</small></div>
+            </div>
+            <div class="section-title">為什麼能賺錢</div>
+            <ul class="points">
+              <li>銷售最痛：跟進漏人、意向不清、交接斷層——願為「多成交／少人時」付錢。</li>
+              <li>閉環清楚：訊息 → 意向 → 銷售工單，可按席位或代運營月費報價。</li>
+              <li>與 OpenFDE 互補：FDE 做現場流程；私域做<strong>成交前漏斗</strong>。</li>
+            </ul>
+            <div class="section-title">企業化落地（建議）</div>
+            <ul class="points">
+              <li>優先<strong>企微／CRM 側</strong>：側邊欄、會後摘要寫字段、意向僅輔助。</li>
+              <li>成交與敏感動作<strong>必須人工確認</strong>；全鏈路日誌給內控。</li>
+              <li>避開個微全自動加好友／群發灰產——平台與合規可一刀歸零。</li>
+            </ul>
+            <div class="section-title">資料狀態</div>
+            <ul class="points">
+              <li>來源：WaytoAGI 未來矽世界聽後筆記（作者：老袁）。</li>
+              <li>公開官網／GitHub：筆記未附穩定連結 → 以<strong>架構與打法</strong>複用為主。</li>
+            </ul>
+            <div class="links">
+              <a class="btn primary" href="#arch">看架構三圖 ↓</a>
+              <a class="btn warn" href="#compliance">合規紅線</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1 OpenFDE -->
+      <article class="card" id="openfde">
+        <div class="card-head reverse">
+          <div class="visual">
+            <img src="assets/01.png" alt="工具是武器，FDE 是生意" width="960" height="540" />
+          </div>
+          <div class="body">
+            <div class="rank"><span>1</span> 方法論主營</div>
+            <h2>OpenFDE · 企業 AI 前線部署</h2>
+            <p class="one-liner">駐場把模型做成生產系統：診斷 → Pilot → 固化 → 年維。</p>
+            <div class="score">
+              <div><b>★★★★★</b><small>商機</small></div>
+              <div><b>項目制</b><small>變現</small></div>
+              <div><b>P0</b><small>優先級</small></div>
+            </div>
+            <div class="links">
+              <a class="btn primary" href="https://open-fde.com" target="_blank" rel="noopener">OpenFDE →</a>
+              <a class="btn" href="https://x.com/PPDeWuli" target="_blank" rel="noopener">@PPDeWuli</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2 Watchless -->
+      <article class="card" id="watchless">
+        <div class="card-head">
+          <div class="visual">
+            <img src="assets/02.png" alt="標準交付四階段" width="960" height="540" />
+          </div>
+          <div class="body">
+            <div class="rank"><span>2</span> 交付武器</div>
+            <h2>Watchless · 長片 → 關鍵幀圖文</h2>
+            <p class="one-liner">調研／培訓知識包可嵌進 Pilot 報價；注意版權與授權素材。</p>
+            <div class="score">
+              <div><b>★★★★</b><small>商機</small></div>
+              <div><b>服務加價</b><small>變現</small></div>
+              <div><b>P0</b><small>優先級</small></div>
+            </div>
+            <div class="links">
+              <a class="btn primary" href="https://github.com/chenzixin1/watchless" target="_blank" rel="noopener">GitHub →</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3 Explainer -->
+      <article class="card" id="explainer">
+        <div class="card-head reverse">
+          <div class="visual">
+            <img src="assets/03.png" alt="九十天作戰路徑" width="960" height="540" />
+          </div>
+          <div class="body">
+            <div class="rank"><span>3</span> 內容變現</div>
+            <h2>Explainer · 講解片流水線</h2>
+            <p class="one-liner">培訓／內宣／產品說明；代製或訂閱。垂直模板才好賣。</p>
+            <div class="score">
+              <div><b>★★★★</b><small>商機</small></div>
+              <div><b>訂閱／代製</b><small>變現</small></div>
+              <div><b>P1</b><small>優先級</small></div>
+            </div>
+            <div class="links">
+              <a class="btn primary" href="https://github.com/SpeedPainterOrg/explainer-video" target="_blank" rel="noopener">Explainer →</a>
+              <a class="btn ghost" href="https://speedpainter.org" target="_blank" rel="noopener">SpeedPainter</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <!-- Architecture section for 老袁 -->
+    <section class="arch" id="arch">
+      <h2>老袁私域 · 架構與說明</h2>
+      <p class="lead-sm">
+        三張 gimi 怪誕手繪（繁體標註）：閉環總覽 → 雙通道入口 → 人機協同邊界。
+        對外簡報可直接截圖使用。
+      </p>
+
+      <div class="arch-grid">
+        <article class="arch-card">
+          <img src="assets/04-closed-loop.png" alt="私域運營閉環" />
+          <div class="txt">
+            <h3>① 業務閉環（核心）</h3>
+            <p>
+              <strong>維護訊息</strong>：彙整個微／企微對話與客戶檔，減少漏跟。<br />
+              <strong>識別意向</strong>：對對話打分／分級（熱度、關鍵意圖）。<br />
+              <strong>轉交銷售</strong>：生成可跟進的工單／摘要，進入人工成交。
+            </p>
+            <div class="flow">客戶發言
+  → ① 維護訊息（歸檔／標籤／待辦）
+  → ② 識別意向（分數／分級／理由）
+  → ③ 轉交銷售（工單＋摘要）
+  → 成交／失單回寫 → 再餵回訊息層</div>
+          </div>
+        </article>
+
+        <article class="arch-card">
+          <img src="assets/05-dual-wechat.png" alt="雙通道客戶入口" />
+          <div class="txt">
+            <h3>② 雙通道入口</h3>
+            <p>
+              <strong>個人微信</strong>：關係鏈強、場景碎，合規敏感度高。<br />
+              <strong>企業微信</strong>：組織帳號、更易接 CRM／權限／審計——企業項目應優先。<br />
+              兩路匯入同一<strong>客戶池</strong>，避免銷售各管各的、意向斷層。
+            </p>
+            <div class="flow">[個人微信] ──┐
+              ├──► 客戶池（統一檔案）──► 意向引擎 ──► 銷售隊列
+[企業微信] ──┘</div>
+          </div>
+        </article>
+
+        <article class="arch-card" id="compliance">
+          <img src="assets/06-human-in-loop.png" alt="人機協同才敢規模" />
+          <div class="txt">
+            <h3>③ 人機協同（敢規模的前提）</h3>
+            <p>
+              <strong>AI 建議</strong>：意向分、摘要、下一句建議、該轉誰。<br />
+              <strong>人工確認</strong>：報價、承諾、加微策略、敏感話術。<br />
+              <strong>成交</strong>：人簽約；灰產全自動群發／濫加好友應明確禁止。
+            </p>
+            <div class="warn-box" id="compliance-note">
+              <strong>合規紅線（寫進方案必提）：</strong>
+              不承諾繞過微信／企微平台規則；不預設「全自動加好友／群發」。
+              企業版應強調：權限、日誌、數據最小化、人工覆核、可關停。
+              聽後筆記「閉環已跑通」屬分享口徑，落地時仍要以客戶合規與抽檢為準。
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="playbook">
+      <h2>建議打法（有行業資源）</h2>
+      <p>四條線如何排：一條主營，其餘當武器。</p>
+      <ol>
+        <li><strong>主營 A（流程現場）：</strong>OpenFDE 式診斷 + Pilot + 年維。</li>
+        <li><strong>主營 B（成交漏斗，有私域資源時）：</strong>老袁式私域——企微優先、意向→銷售、人在環。</li>
+        <li><strong>武器：</strong>Watchless 做知識包；Explainer 做培訓／內宣片。</li>
+        <li><strong>90 天：</strong>至少 1 個付費 Pilot（流程或私域二選一先打穿），再橫向複製。</li>
+      </ol>
+    </section>
+
+    <p class="footer">
+      開啟：<code>outputs/business-top3/index.html</code>
+      · 私域配圖：<code>gimi-illustration-skill/outputs/20260719-private-domain-ops/</code>
+      · 風格：gimi-illustration · 繁體
+    </p>
+  </div>
+</body>
+</html>
