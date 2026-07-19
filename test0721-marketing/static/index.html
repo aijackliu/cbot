@@ -17,6 +17,7 @@
         <a href="#audiences">受眾</a>
         <a href="#pricing">方案</a>
         <a href="#ai">AI 文案</a>
+        <a href="#rag">RAG</a>
         <a href="#infra">基建</a>
         <a class="btn small" href="#lead">預約演示</a>
       </nav>
@@ -118,10 +119,43 @@
       </div>
     </section>
 
-    <section class="section soft" id="infra">
+    <section class="section soft" id="rag">
+      <div class="section-head">
+        <h2>RAG 知識問答</h2>
+        <p>Ollama embedding（qwen3-embedding）檢索 catch_crm 文檔 · qwen3 生成答案 · 索引快取於 Redis</p>
+      </div>
+      <div class="ai-box">
+        <div class="ai-form">
+          <label>問題</label>
+          <input id="ragQ" value="今年行銷計畫主題與預算是什麼？" />
+          <label>Top K</label>
+          <select id="ragK">
+            <option>3</option>
+            <option selected>5</option>
+            <option>8</option>
+          </select>
+          <button class="btn primary" id="btnRagAsk">檢索並回答</button>
+          <button class="btn ghost" id="btnRagRebuild" type="button">重建索引</button>
+          <p class="muted" id="ragMeta"></p>
+        </div>
+        <div>
+          <pre class="ai-out" id="ragOut">先點「重建索引」（首次），再提問…</pre>
+          <div class="panel" style="margin-top:12px">
+            <h3>檢索片段</h3>
+            <div id="ragHits" class="muted">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <h3>Ollama 模型（/api/tags）</h3>
+        <div id="ollamaTags" class="muted">載入中…</div>
+      </div>
+    </section>
+
+    <section class="section" id="infra">
       <div class="section-head">
         <h2>基礎設施</h2>
-        <p>Qwen · FastAPI · Redis · PostgreSQL</p>
+        <p>Qwen · Ollama · FastAPI · Redis · PostgreSQL</p>
       </div>
       <div class="infra" id="infraCards"></div>
     </section>
@@ -147,7 +181,7 @@
 
   <footer class="footer">
     <div>CATCH Growth Demo · 資料庫 catch_crm · 非正式對外報價</div>
-    <div class="mono">Qwen :8080 · API :9000 · Redis :6379 · PG :5432</div>
+    <div class="mono">Qwen :8080 · Ollama :11434 · API :9000 · Redis :6379 · PG :5432</div>
   </footer>
   <script src="/app.js"></script>
 </body>

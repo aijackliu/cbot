@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from . import config
 from .db import execute, fetch_all, fetch_one, json_safe
+from .rag import answer_with_rag, list_ollama_models, rebuild_index, search as rag_search
 from .seed import SEED_KEY, run_seed
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -146,7 +147,86 @@ def infra_status() -> dict:
             "url": f"postgresql://{config.PG_HOST}:{config.PG_PORT}/{config.PG_DB}",
         }
 
+    # Ollama tags
+    try:
+        t0 = time.time()
+        models = list_ollama_models()
+        names = [m.get("name") for m in models if m.get("name")]
+        services["ollama"] = {
+            "ok": True,
+            "detail": f"tags {round((time.time() - t0) * 1000)}ms · {len(names)} models",
+            "url": config.OLLAMA_TAGS_URL,
+            "models": names,
+            "embed_model": config.OLLAMA_EMBED_MODEL,
+            "chat_model": config.OLLAMA_CHAT_MODEL,
+        }
+    except Exception as e:  # noqa: BLE001
+        services["ollama"] = {
+            "ok": False,
+            "detail": str(e),
+            "url": config.OLLAMA_TAGS_URL,
+        }
+
     return {"ok": all(s.get("ok") for s in services.values()), "services": services}
+
+
+@app.get("/api/ollama/tags")
+def ollama_tags() -> dict:
+    try:
+        models = list_ollama_models()
+        return {
+            "ok": True,
+            "url": config.OLLAMA_TAGS_URL,
+            "count": len(models),
+            "models": [
+                {
+                    "name": m.get("name"),
+                    "size": m.get("size"),
+                    "parameter_size": (m.get("details") or {}).get("parameter_size"),
+                    "family": (m.get("details") or {}).get("family"),
+                }
+                for m in models
+            ],
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"Ollama tags error: {e}") from e
+
+
+class RagQuery(BaseModel):
+    question: str = Field(..., min_length=2, max_length=500)
+    top_k: int = Field(5, ge=1, le=10)
+
+
+@app.post("/api/rag/rebuild")
+def rag_rebuild() -> dict:
+    try:
+        meta = rebuild_index()
+        return {"ok": True, "meta": meta}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"RAG rebuild failed: {e}") from e
+
+
+@app.post("/api/rag/search")
+def rag_search_api(body: RagQuery) -> dict:
+    try:
+        hits = rag_search(body.question, top_k=body.top_k)
+        return {
+            "ok": True,
+            "question": body.question,
+            "hits": hits,
+            "embed_model": config.OLLAMA_EMBED_MODEL,
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"RAG search failed: {e}") from e
+
+
+@app.post("/api/rag/ask")
+def rag_ask(body: RagQuery) -> dict:
+    try:
+        result = answer_with_rag(body.question, top_k=body.top_k)
+        return {"ok": True, "question": body.question, **result}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"RAG ask failed: {e}") from e
 
 
 @app.get("/api/marketing/overview")

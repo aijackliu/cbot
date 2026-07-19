@@ -25,23 +25,28 @@ async function loadInfra() {
     const d = await api("/api/infra/status");
     const s = d.services || {};
     $("#infraMini").textContent = d.ok
-      ? "✓ Qwen · FastAPI · Redis · PostgreSQL 連線正常"
+      ? "✓ Qwen · Ollama · FastAPI · Redis · PostgreSQL 連線正常"
       : "部分服務異常，請看基建區塊";
     $("#infraMini").className = "trust " + (d.ok ? "ok" : "bad");
 
     const card = (key, title) => {
       const x = s[key] || {};
+      const models = (x.models || []).slice(0, 6).join(", ");
       return `<div class="infra-card">
         <h4>${title} · <span class="${x.ok ? "ok" : "bad"}">${x.ok ? "ONLINE" : "DOWN"}</span></h4>
         <div class="mono">${x.url || ""}</div>
         <div class="muted">${x.detail || ""}</div>
         ${x.model ? `<div class="muted">model: ${x.model}</div>` : ""}
+        ${x.embed_model ? `<div class="muted">embed: ${x.embed_model}</div>` : ""}
+        ${x.chat_model ? `<div class="muted">chat: ${x.chat_model}</div>` : ""}
         ${x.database ? `<div class="muted">db: ${x.database}</div>` : ""}
+        ${models ? `<div class="muted">tags: ${models}</div>` : ""}
         ${x.note ? `<div class="muted">${x.note}</div>` : ""}
       </div>`;
     };
     $("#infraCards").innerHTML = [
       card("qwen", "Qwen"),
+      card("ollama", "Ollama"),
       card("postgresql", "PostgreSQL"),
       card("redis", "Redis"),
       card("remote_fastapi", "Remote FastAPI"),
@@ -50,6 +55,77 @@ async function loadInfra() {
     $("#infraMini").textContent = "BFF 連線失敗：" + e.message;
     $("#infraMini").className = "trust bad";
   }
+}
+
+async function loadOllamaTags() {
+  try {
+    const d = await api("/api/ollama/tags");
+    $("#ollamaTags").innerHTML = table(
+      ["模型", "參數量", "大小"],
+      (d.models || []).map(
+        (m) => `<tr>
+        <td><strong>${m.name || "—"}</strong></td>
+        <td>${m.parameter_size || "—"}</td>
+        <td class="mono">${m.size != null ? Math.round(m.size / 1e9 * 10) / 10 + " GB" : "—"}</td>
+      </tr>`
+      )
+    );
+  } catch (e) {
+    $("#ollamaTags").textContent = "無法載入 tags：" + e.message;
+  }
+}
+
+function bindRag() {
+  $("#btnRagRebuild").onclick = async () => {
+    const btn = $("#btnRagRebuild");
+    const meta = $("#ragMeta");
+    btn.disabled = true;
+    meta.textContent = "重建索引中（寫入 Redis，首次較久）…";
+    try {
+      const res = await api("/api/rag/rebuild", { method: "POST", body: "{}" });
+      const m = res.meta || {};
+      meta.textContent = `索引完成：${m.chunk_count || 0} chunks · dim ${m.dim || "—"} · ${m.embed_model || ""}`;
+    } catch (e) {
+      meta.textContent = "重建失敗：" + e.message;
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  $("#btnRagAsk").onclick = async () => {
+    const btn = $("#btnRagAsk");
+    const out = $("#ragOut");
+    const hitsEl = $("#ragHits");
+    btn.disabled = true;
+    out.textContent = "檢索 + 生成中…";
+    hitsEl.textContent = "—";
+    try {
+      const res = await api("/api/rag/ask", {
+        method: "POST",
+        body: JSON.stringify({
+          question: $("#ragQ").value.trim(),
+          top_k: Number($("#ragK").value || 5),
+        }),
+      });
+      out.textContent =
+        (res.answer || "（無答案）") +
+        (res.model ? `\n\n— gen: ${res.model} · embed: ${res.embed_model || ""}` : "");
+      hitsEl.innerHTML = (res.hits || [])
+        .map(
+          (h, i) =>
+            `<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)">
+              <strong>[${i + 1}] ${h.title || h.id}</strong>
+              <span class="muted"> · ${h.source} · score ${h.score}</span>
+              <div class="muted">${h.text || ""}</div>
+            </div>`
+        )
+        .join("") || "無命中";
+    } catch (e) {
+      out.textContent = "錯誤：" + e.message;
+    } finally {
+      btn.disabled = false;
+    }
+  };
 }
 
 async function loadOverview() {
@@ -223,9 +299,14 @@ function bindLead() {
 async function boot() {
   bindAI();
   bindLead();
-  await Promise.all([loadInfra(), loadOverview().catch((e) => {
-    $("#kpis").innerHTML = `<div class="kpi"><label>錯誤</label><b style="font-size:14px">${e.message}</b></div>`;
-  })]);
+  bindRag();
+  await Promise.all([
+    loadInfra(),
+    loadOllamaTags(),
+    loadOverview().catch((e) => {
+      $("#kpis").innerHTML = `<div class="kpi"><label>錯誤</label><b style="font-size:14px">${e.message}</b></div>`;
+    }),
+  ]);
 }
 
 boot();
