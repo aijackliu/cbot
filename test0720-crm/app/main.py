@@ -19,6 +19,7 @@ from . import config
 from . import form_fill
 from . import sql_agent
 from . import support_memory as csmem
+from . import query_router
 from .db import fetch_all, fetch_one, json_safe
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -105,6 +106,11 @@ class CsMemIn(BaseModel):
 
 class CsChatIn(BaseModel):
     customer_id: str = Field(..., min_length=1, max_length=64)
+    message: str = Field(..., min_length=1, max_length=4000)
+
+
+class CsRouteIn(BaseModel):
+    customer_id: str = Field("Alex", min_length=1, max_length=64)
     message: str = Field(..., min_length=1, max_length=4000)
 
 
@@ -501,6 +507,25 @@ def cs_chat(body: CsChatIn) -> dict:
         raise HTTPException(400, str(e)) from e
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"cs chat failed: {e}") from e
+
+
+@app.get("/api/cs/departments")
+def cs_departments() -> dict:
+    return {"ok": True, "departments": query_router.list_departments()}
+
+
+@app.post("/api/cs/route")
+def cs_route(body: CsRouteIn) -> dict:
+    """
+    Lightweight query routing: signals + FAQ + memory → resolve|escalate.
+    Pattern from customer_query_routing_agent (no VectorAI).
+    """
+    try:
+        return {"ok": True, **query_router.route_query(body.customer_id, body.message)}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"route failed: {e}") from e
 
 
 @app.post("/api/ai/chat")

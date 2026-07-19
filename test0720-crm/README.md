@@ -38,8 +38,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 18720 --reload
 
 - 儀表板 KPI（帳戶／商機／電商客戶與營收）
 - 客戶帳戶、銷售機會管道、電商客戶、競品
-- **客服 AI · 記憶**（側欄）：CartMate 式跨會話記憶 + 填表 + 中文查庫  
-  - 記憶：`GET/POST/DELETE /api/cs/memory` · `POST /api/cs/seed` · `POST /api/cs/chat` · `GET /api/cs/greeting`（Redis，按 customer_id）  
+- **客服 AI · 路由**（側欄）：輕量路由 + 記憶 + 填表 + 中文查庫  
+  - 路由：`POST /api/cs/route` · `GET /api/cs/departments`  
+    （FAQ 關鍵字 + 訊號 + Qwen 編排 → resolve|escalate；升級給 ESC 案號並預填表單）  
+  - 記憶：`/api/cs/memory` · `/api/cs/chat` · `/api/cs/seed` · `/api/cs/greeting`  
   - 填表：`/api/forms/*`  
   - SQL：`/api/sql/*`（只讀白名單）
 - 基礎設施狀態（Qwen / FastAPI / Redis / Postgres）

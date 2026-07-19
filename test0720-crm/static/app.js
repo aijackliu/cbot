@@ -7,7 +7,7 @@ const titles = {
   opps: ["銷售機會", "管道階段與金額（NTD）"],
   customers: ["電商客戶", "web_customers RFM / LTV"],
   competitors: ["競品情報", "competitors + signals"],
-  ai: ["客服 AI · 記憶", "CartMate 式記憶 + 填表 + 中文查庫"],
+  ai: ["客服 AI · 路由", "記憶 + 輕量路由 + 填表 + 查庫"],
   infra: ["基礎設施", "Qwen · FastAPI · Redis · PostgreSQL"],
 };
 
@@ -309,10 +309,10 @@ function loadAI() {
 
   el.innerHTML = `
     <div class="card">
-      <h3>客服 AI · 記憶 · 填表 · 查庫</h3>
+      <h3>客服 AI · 輕量路由</h3>
       <p class="muted">
-        CartMate 式<strong>按客戶記憶</strong>（Redis）＋填表＋NL→SQL。
-        先填客戶名稱再對話；記憶側欄會即時更新。
+        <strong>路由模式</strong>：FAQ+記憶+訊號 → 自動回覆或升級建案（案號 ESC-…）·
+        另有客服記憶／填表／中文查庫。無 VectorAI，僅 Qwen + Redis。
       </p>
       <div class="cs-user-bar">
         <label class="muted">客戶 ID / 名稱
@@ -323,26 +323,35 @@ function loadAI() {
         <button type="button" class="btn ghost" id="btnCsClear">清除記憶</button>
       </div>
       <div class="form-mode-bar">
-        <label class="muted"><input type="radio" name="aiMode" value="support" checked /> 客服記憶</label>
+        <label class="muted"><input type="radio" name="aiMode" value="route" checked /> 輕量路由</label>
+        <label class="muted"><input type="radio" name="aiMode" value="support" /> 客服記憶</label>
         <label class="muted"><input type="radio" name="aiMode" value="crm" /> CRM 問答</label>
         <label class="muted"><input type="radio" name="aiMode" value="form" /> 填表</label>
         <label class="muted"><input type="radio" name="aiMode" value="sql" /> 中文查庫</label>
-        <span class="muted" id="formModeHint">客服記憶：跨會話記住訂單／偏好（Mem0 模式 → Redis）</span>
+        <span class="muted" id="formModeHint">路由：resolve 直接答 / escalate 給案號並預填表單</span>
       </div>
       <div class="sql-samples muted" id="sqlSamples"></div>
+      <div class="sql-samples muted" id="routeSamples"></div>
     </div>
     <div class="ai-split ai-split-3">
       <div class="chat">
         <div class="chat-log" id="chatLog">
-          <div class="bubble bot">輸入客戶名稱後點「載入問候」或直接對話。可切填表／查庫。</div>
+          <div class="bubble bot">預設「輕量路由」。試：退貨政策怎麼算？或：我要告你們／立刻退款！</div>
         </div>
         <div class="chat-input">
-          <input id="chatInput" placeholder="例：我的訂單 #NM-8821 還沒收… / 管道金額最高商機" />
+          <input id="chatInput" placeholder="例：到貨 3 天能退嗎？ / 訂單延遲氣死了要告你們" />
           <button class="btn primary" id="chatSend">送出</button>
         </div>
       </div>
       <div class="card form-panel" id="rightPanel">
-        <div id="panelForm">
+        <div id="panelRoute" class="">
+          <div class="form-panel-head">
+            <h3>路由決策</h3>
+            <span class="pill" id="routePill">待命</span>
+          </div>
+          <div class="route-box muted" id="routeBox">送出訊息後顯示部門／置信度／resolve|escalate</div>
+        </div>
+        <div id="panelForm" class="hidden">
           <div class="form-panel-head">
             <h3 id="formTitle">服務申請表</h3>
             <span class="pill" id="formStatus">未完成</span>
@@ -373,7 +382,7 @@ function loadAI() {
           <h3>客服記憶</h3>
           <span class="pill" id="memCount">0</span>
         </div>
-        <p class="muted" style="margin:0 0 8px">按客戶隔離 · Redis · 類似 CartMate 側欄</p>
+        <p class="muted" style="margin:0 0 8px">按客戶隔離 · Redis</p>
         <ul class="mem-list" id="memList"><li class="muted">尚未載入</li></ul>
       </div>
     </div>`;
@@ -388,7 +397,7 @@ function loadAI() {
   const customerId = () => ($("#csCustomer").value || "Alex").trim() || "Alex";
 
   const mode = () =>
-    ($("input[name=aiMode]:checked") || {}).value || "support";
+    ($("input[name=aiMode]:checked") || {}).value || "route";
 
   const refreshMemories = async () => {
     try {
@@ -414,15 +423,34 @@ function loadAI() {
 
   const syncRightPanel = () => {
     const m = mode();
-    const showSql = m === "sql";
-    $("#panelForm").classList.toggle("hidden", showSql);
-    $("#panelSql").classList.toggle("hidden", !showSql);
+    $("#panelRoute").classList.toggle("hidden", m !== "route" && m !== "support");
+    $("#panelForm").classList.toggle("hidden", m !== "form" && m !== "route");
+    // route mode: show both route decision + form (for escalate prefill)
+    if (m === "route") {
+      $("#panelRoute").classList.remove("hidden");
+      $("#panelForm").classList.remove("hidden");
+      $("#panelSql").classList.add("hidden");
+    } else if (m === "sql") {
+      $("#panelRoute").classList.add("hidden");
+      $("#panelForm").classList.add("hidden");
+      $("#panelSql").classList.remove("hidden");
+    } else if (m === "form") {
+      $("#panelRoute").classList.add("hidden");
+      $("#panelForm").classList.remove("hidden");
+      $("#panelSql").classList.add("hidden");
+    } else {
+      $("#panelRoute").classList.add("hidden");
+      $("#panelForm").classList.add("hidden");
+      $("#panelSql").classList.add("hidden");
+    }
     const hint = $("#formModeHint");
     if (m === "form") hint.textContent = "填表：說出公司／聯絡人／需求";
     else if (m === "sql") hint.textContent = "查庫：schema → SELECT → 結果";
     else if (m === "support")
       hint.textContent = "客服記憶：回憶過去 → 回答 → 寫入新事實";
-    else hint.textContent = "CRM 問答：KPI 建議（不跑 SQL、不寫記憶）";
+    else if (m === "route")
+      hint.textContent = "路由：FAQ+訊號 → resolve 或 escalate（預填表單）";
+    else hint.textContent = "CRM 問答：KPI 建議（不跑 SQL）";
   };
 
   $$("input[name=aiMode]").forEach((r) => {
@@ -430,6 +458,37 @@ function loadAI() {
   });
   syncRightPanel();
   refreshMemories();
+
+  // route sample chips
+  const routeQs = [
+    "到貨三天內可以退貨嗎？",
+    "發票怎麼開統編？",
+    "API 一直 401 怎麼辦？",
+    "訂單延遲三天了氣死了要找律師",
+    "想了解企業方案報價",
+  ];
+  const rbox = $("#routeSamples");
+  if (rbox) {
+    rbox.innerHTML =
+      "<span class='muted'>路由示例：</span> " +
+      routeQs
+        .map(
+          (q) =>
+            `<button type="button" class="chip-btn" data-rq="${q.replace(/"/g, "&quot;")}">${q}</button>`
+        )
+        .join(" ");
+    rbox.querySelectorAll("[data-rq]").forEach((b) => {
+      b.onclick = () => {
+        const r = document.querySelector('input[name=aiMode][value=route]');
+        if (r) {
+          r.checked = true;
+          syncRightPanel();
+        }
+        input.value = b.getAttribute("data-rq");
+        input.focus();
+      };
+    });
+  }
 
   // sample questions for SQL
   api("/api/sql/samples")
@@ -609,6 +668,62 @@ function loadAI() {
     }
   };
 
+  const renderRoute = (res) => {
+    const d = res.decision || {};
+    const pill = $("#routePill");
+    const act = res.action || d.action;
+    pill.textContent = act === "escalate" ? "升級" : "自動回覆";
+    pill.className = "pill " + (act === "escalate" ? "warn" : "ok");
+    const sig = (res.signals || []).join(", ") || "無";
+    const faq = (res.faq_hits || [])
+      .map((f) => f.title || f.id)
+      .join("、");
+    $("#routeBox").innerHTML = `
+      <div><b>部門</b>：${d.department_zh || d.department || "—"}</div>
+      <div><b>動作</b>：${act} · <b>置信度</b>：${d.confidence || "—"}</div>
+      <div><b>理由</b>：${d.reason_zh || "—"}</div>
+      <div><b>訊號</b>：${sig}</div>
+      <div><b>FAQ</b>：${faq || "—"}</div>
+      ${res.case_id ? `<div><b>案號</b>：${res.case_id}</div>` : ""}
+    `;
+    // prefill form on escalate
+    if (act === "escalate" && res.form_hints) {
+      formValues = { ...formValues, ...res.form_hints };
+      if (!formValues.contact) formValues.contact = customerId();
+      renderForm();
+      updateMissingUI();
+      $("#formMsg").textContent = "已依升級預填需求欄，請補齊必填後提交";
+    }
+  };
+
+  const goRoute = async (msg) => {
+    push("bot", "路由中（訊號+FAQ+編排）…");
+    const thinking = log.lastChild;
+    try {
+      const res = await api("/api/cs/route", {
+        method: "POST",
+        body: JSON.stringify({
+          customer_id: customerId(),
+          message: msg,
+        }),
+      });
+      renderRoute(res);
+      thinking.textContent = res.reply || "（空）";
+      const meta = document.createElement("div");
+      meta.className = "muted";
+      meta.style.fontSize = "11px";
+      const d = res.decision || {};
+      meta.textContent = `${d.department_zh || ""} · ${res.action} · conf=${d.confidence}${
+        res.case_id ? " · " + res.case_id : ""
+      }`;
+      log.appendChild(meta);
+      await refreshMemories();
+    } catch (e) {
+      thinking.textContent = "錯誤：" + e.message;
+      thinking.classList.add("err");
+    }
+  };
+
   const goForm = async (msg) => {
     push("bot", "填表中…");
     const thinking = log.lastChild;
@@ -670,6 +785,7 @@ function loadAI() {
       if (m === "form") await goForm(msg);
       else if (m === "sql") await goSql(msg);
       else if (m === "support") await goSupport(msg);
+      else if (m === "route") await goRoute(msg);
       else await goCrm(msg);
     } finally {
       send.disabled = false;
