@@ -180,6 +180,64 @@ function bindKbForm() {
   };
 }
 
+async function loadClinic() {
+  try {
+    const [ex, pat] = await Promise.all([
+      api("/api/clinic/examples"),
+      api("/api/clinic/patterns"),
+    ]);
+    $("#clinicExamples").innerHTML = (ex.examples || [])
+      .map(
+        (e) =>
+          `<button type="button" data-id="${e.id}"><strong>${e.title}</strong><div class="muted">${(e.preview || "").replace(/</g, "&lt;")}</div></button>`
+      )
+      .join("");
+    $("#clinicExamples").querySelectorAll("button").forEach((btn) => {
+      btn.onclick = async () => {
+        const res = await api("/api/clinic/examples/" + btn.dataset.id);
+        $("#clinicBug").value = res.bug || "";
+        $("#clinicStatus").textContent = "已載入案例 " + btn.dataset.id;
+      };
+    });
+    $("#clinicPatterns").innerHTML = (pat.patterns || [])
+      .map((p) => `<div><strong>${p.id}</strong> ${p.name}<br/>${p.summary}</div>`)
+      .join("<br/>");
+  } catch (e) {
+    $("#clinicExamples").innerHTML = `<div class="muted">診所載入失敗：${e.message}</div>`;
+  }
+}
+
+function bindClinic() {
+  $("#btnClinic").onclick = async () => {
+    const bug = $("#clinicBug").value.trim();
+    const out = $("#clinicOut");
+    const st = $("#clinicStatus");
+    if (bug.length < 20) {
+      st.textContent = "請先貼上足夠詳細的故障描述（至少約 20 字）";
+      return;
+    }
+    $("#btnClinic").disabled = true;
+    st.textContent = "診斷中（Qwen，可能需數十秒）…";
+    out.textContent = "執行中…";
+    try {
+      const res = await api("/api/clinic/diagnose", {
+        method: "POST",
+        body: JSON.stringify({ bug_description: bug }),
+      });
+      out.textContent =
+        (res.assistant_markdown || "（無結果）") +
+        (res.model ? `\n\n— model: ${res.model}` : "") +
+        (res.report_path ? `\n— report: ${res.report_path}` : "");
+      st.textContent = "完成 · 已寫入 clinic/reports/rag_failure_report.json";
+    } catch (e) {
+      out.textContent = "錯誤：" + e.message;
+      st.textContent = "失敗";
+    } finally {
+      $("#btnClinic").disabled = false;
+    }
+  };
+}
+
 function bindRag() {
   $("#btnRagRebuild").onclick = async () => {
     const btn = $("#btnRagRebuild");
@@ -406,11 +464,13 @@ async function boot() {
   bindLead();
   bindRag();
   bindKbForm();
+  bindClinic();
   await Promise.all([
     loadInfra(),
     loadOllamaTags(),
     loadTeam(),
     loadKnowledge(),
+    loadClinic(),
     loadOverview().catch((e) => {
       $("#kpis").innerHTML = `<div class="kpi"><label>錯誤</label><b style="font-size:14px">${e.message}</b></div>`;
     }),

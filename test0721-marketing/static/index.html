@@ -20,6 +20,7 @@
         <a href="#pricing">方案</a>
         <a href="#ai">AI 文案</a>
         <a href="#rag">RAG</a>
+        <a href="#clinic">診斷診所</a>
         <a href="#infra">基建</a>
         <a class="btn small" href="#lead">預約演示</a>
       </nav>
@@ -190,6 +191,33 @@
       <div class="panel" style="margin-top:14px">
         <h3>Ollama 模型（/api/tags）</h3>
         <div id="ollamaTags" class="muted">載入中…</div>
+      </div>
+    </section>
+
+    <section class="section soft" id="clinic">
+      <div class="section-head">
+        <h2>RAG 故障診斷診所</h2>
+        <p>
+          整合
+          <a href="https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_failure_diagnostics_clinic" target="_blank" rel="noopener">rag_failure_diagnostics_clinic</a>
+          · P01–P12 模式 · Qwen 分類 · 輸出 JSON 報告
+        </p>
+      </div>
+      <div class="clinic-layout">
+        <div class="panel">
+          <h3>測試案例</h3>
+          <div id="clinicExamples" class="clinic-examples"></div>
+          <h3 style="margin-top:14px">故障描述</h3>
+          <textarea id="clinicBug" rows="12" placeholder="貼上你的 RAG / LLM 故障描述…"></textarea>
+          <button class="btn primary" id="btnClinic" type="button">執行診斷</button>
+          <p class="muted" id="clinicStatus"></p>
+          <h3 style="margin-top:14px">模式庫 P01–P12</h3>
+          <div id="clinicPatterns" class="clinic-patterns muted"></div>
+        </div>
+        <div class="panel">
+          <h3>診斷結果</h3>
+          <pre class="ai-out clinic-out" id="clinicOut">選擇案例或貼上故障描述後執行…</pre>
+        </div>
       </div>
     </section>
 

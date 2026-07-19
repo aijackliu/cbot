@@ -15,6 +15,10 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from . import config
+from .clinic import diagnose as clinic_diagnose
+from .clinic import get_example as clinic_get_example
+from .clinic import list_examples as clinic_list_examples
+from .clinic import PATTERNS as CLINIC_PATTERNS
 from .db import execute, fetch_all, fetch_one, json_safe
 from .rag import (
     answer_with_rag,
@@ -289,6 +293,41 @@ class KbArticleIn(BaseModel):
     summary: str = Field("", max_length=300)
     body: str = Field(..., min_length=4, max_length=4000)
     owner: str = Field("展示用戶", max_length=40)
+
+
+@app.get("/api/clinic/patterns")
+def api_clinic_patterns() -> dict:
+    return {"ok": True, "patterns": CLINIC_PATTERNS}
+
+
+@app.get("/api/clinic/examples")
+def api_clinic_examples() -> dict:
+    return {"ok": True, "examples": clinic_list_examples()}
+
+
+@app.get("/api/clinic/examples/{example_id}")
+def api_clinic_example(example_id: str) -> dict:
+    bug = clinic_get_example(example_id)
+    if not bug:
+        raise HTTPException(404, "example not found")
+    return {"ok": True, "id": example_id, "bug": bug}
+
+
+class ClinicIn(BaseModel):
+    bug_description: str = Field(..., min_length=20, max_length=12000)
+    max_tokens: int = Field(1200, ge=256, le=4096)
+
+
+@app.post("/api/clinic/diagnose")
+def api_clinic_diagnose(body: ClinicIn) -> dict:
+    """RAG Failure Diagnostics Clinic (upstream awesome-llm-apps)."""
+    try:
+        result = clinic_diagnose(body.bug_description, max_tokens=body.max_tokens)
+        return {"ok": True, **result}
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"clinic failed: {e}") from e
 
 
 @app.post("/api/knowledge/articles")

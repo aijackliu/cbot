@@ -42,5 +42,14 @@ cd test0721-marketing
 | GET | `/api/knowledge` | 知識庫目錄 |
 | GET | `/api/knowledge/{id}` | 文件全文 |
 | POST | `/api/knowledge/articles` | 新增內部文章 |
+| GET | `/api/clinic/patterns` | P01–P12 模式 |
+| GET | `/api/clinic/examples` | 測試案例列表 |
+| POST | `/api/clinic/diagnose` | 執行診斷 |
 
 語料來源：`marketing_plans`、`audience_packs`、`kb_products`、`competitors`、`ad_daily` 摘要、FAQ、知識庫文章。
+
+### RAG Failure Diagnostics Clinic
+
+上游：`clinic/`（clone from awesome-llm-apps）  
+測試頁：站內導覽 **診斷診所**（`#clinic`）  
+報告輸出：`clinic/reports/rag_failure_report.json`
